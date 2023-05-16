@@ -12,6 +12,8 @@ use sniff::Changeset;
 
 pub(crate) use storage::RuleStorage;
 
+use crate::file::File;
+
 /// The threshhold for how frequent a change must be in order for it to become a rule.
 const FREQUENCY_TRESHHOLD: f64 = 0.6;
 
@@ -21,7 +23,7 @@ pub(crate) struct Rule {
     /// The frequency of cases that this rule is expected to match.
     frequency: f64,
     /// What this rule applies to.
-    matcher: RuleMatcher,
+    matcher: PathMatcher,
     /// The kind of behavior this rule describes.
     kind: RuleKind,
 }
@@ -71,34 +73,35 @@ impl FromStr for Rule {
 }
 
 impl Rule {
-    /// Whether the rule matches the given change.
-    fn matches<Timestamp>(&self, path: &str, diff: &sniff::MetaEntryDiff<Timestamp>) -> bool {
-        self.matcher.matches(path) && self.kind.matches(diff)
-    }
-
-    /// The frequency of rule matches in the given diff set.
-    pub(crate) fn match_frequency_in<'a, T>(&self, path: &str, diffs: &'a [T]) -> f64
-    where
-        ChangeKind: From<&'a T>,
-    {
-        if self.matcher.matches(path) {
-            let match_count = diffs.iter().filter(|&diff| self.kind.matches(diff)).count();
-
-            match_count as f64 / diffs.len() as f64
-        } else {
-            0.0
+    /// Returns a score between 0 and 1 for how much the rule matches the file.
+    ///
+    /// This will be 1 if the file behavior can be deterministically explained by the rule and 0 if
+    /// it cannot be explained at all.
+    pub(crate) fn match_score(&self, file: &File) -> f64 {
+        if !file.paths.iter().any(|path| self.matcher.matches(path)) {
+            return 0.0;
         }
+
+        for change in &file.changes {
+            let change_kind = ChangeKind::from(change);
+
+            if !self.kind.matches(&change_kind) && change_kind != ChangeKind::Unchanged {
+                return 0.0;
+            }
+        }
+
+        1.0
     }
 }
 
 /// Describes what a rule applies to.
 #[derive(Debug)]
-pub(crate) enum RuleMatcher {
+pub(crate) enum PathMatcher {
     /// The rule applies to all paths matching the given globby path.
     Glob(String),
 }
 
-impl fmt::Display for RuleMatcher {
+impl fmt::Display for PathMatcher {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Glob(glob) => write!(f, "{glob}"),
@@ -106,15 +109,15 @@ impl fmt::Display for RuleMatcher {
     }
 }
 
-impl FromStr for RuleMatcher {
+impl FromStr for PathMatcher {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(RuleMatcher::Glob(s.to_string()))
+        Ok(PathMatcher::Glob(s.to_string()))
     }
 }
 
-impl RuleMatcher {
+impl PathMatcher {
     /// Whether the rule matcher applies to the given path.
     fn matches(&self, path: &str) -> bool {
         match self {
@@ -237,7 +240,9 @@ pub(crate) enum ChangeKind {
     /// The content of the entry was changed.
     ///
     /// Only applies to files.
-    ContentModified,
+    ContentModification,
+    /// The path a symlink pointed to was changed.
+    SymlinkChange,
     /// The entry was deleted.
     Deleted,
     /// The entry was added.
@@ -287,7 +292,12 @@ impl<Timestamp> From<&sniff::MetaEntryDiff<Timestamp>> for ChangeKind {
                     ChangeKind::Unchanged
                 }
             }
-            sniff::MetaEntryDiff::EntryChange(_, _) => ChangeKind::ContentModified,
+            sniff::MetaEntryDiff::EntryChange(entry_diff, _) => match entry_diff {
+                sniff::EntryDiff::FileChanged { .. } => ChangeKind::ContentModification,
+                sniff::EntryDiff::SymlinkChanged { .. } => ChangeKind::SymlinkChange,
+                sniff::EntryDiff::TypeChange(_) => ChangeKind::Complex,
+                sniff::EntryDiff::OtherChange => ChangeKind::Complex,
+            },
         }
     }
 }
@@ -295,6 +305,36 @@ impl<Timestamp> From<&sniff::MetaEntryDiff<Timestamp>> for ChangeKind {
 impl From<&ChangeKind> for ChangeKind {
     fn from(value: &ChangeKind) -> Self {
         *value
+    }
+}
+
+impl<Timestamp> From<&Option<sniff::MetaEntryDiff<Timestamp>>> for ChangeKind {
+    fn from(value: &Option<sniff::MetaEntryDiff<Timestamp>>) -> ChangeKind {
+        let Some(value) = value else { return ChangeKind::Unchanged };
+        match value {
+            sniff::MetaEntryDiff::Added(_) => ChangeKind::Added,
+            sniff::MetaEntryDiff::Deleted(_) => ChangeKind::Deleted,
+            sniff::MetaEntryDiff::MetaOnlyChange(meta) => {
+                if matches!(&meta.changes[..], [sniff::MetadataChange::Size(_)]) {
+                    ChangeKind::SizeChange
+                } else if !meta.changes.is_empty() {
+                    ChangeKind::Complex
+                } else if meta.inode.is_changed() {
+                    ChangeKind::InodeChange
+                } else if meta.created.is_changed() {
+                    ChangeKind::CreatedTimestamp
+                } else if meta.modified.is_changed() {
+                    ChangeKind::ModifiedTimestamp
+                } else if meta.accessed.is_changed() {
+                    ChangeKind::AccessedTimestamp
+                } else if meta.inode_modified.is_changed() {
+                    ChangeKind::InodeModifiedTimestamp
+                } else {
+                    ChangeKind::Unchanged
+                }
+            }
+            sniff::MetaEntryDiff::EntryChange(_, _) => ChangeKind::ContentModification,
+        }
     }
 }
 
@@ -311,7 +351,8 @@ impl ChangeKind {
             SizeChange => "size change",
             InodeChange => "inode change",
             Complex => "complex metadata change",
-            ContentModified => "content change",
+            ContentModification => "content change",
+            SymlinkChange => "symlink change",
             Deleted => "deletion",
             Added => "addition",
         }
@@ -329,7 +370,8 @@ impl ChangeKind {
             SizeChange,
             InodeChange,
             Complex,
-            ContentModified,
+            ContentModification,
+            SymlinkChange,
             Deleted,
             Added,
         ]
@@ -377,7 +419,7 @@ pub(crate) fn learn_basic_rules<Timestamp>(
                     }
                     break 'rule Some(Rule {
                         frequency,
-                        matcher: RuleMatcher::Glob(crate::path::glob_escape(path)),
+                        matcher: PathMatcher::Glob(crate::path::glob_escape(path)),
                         kind: RuleKind::TwoChangeKinds(first_kind, second_kind),
                     });
                 } else {
@@ -388,7 +430,7 @@ pub(crate) fn learn_basic_rules<Timestamp>(
 
                     break 'rule Some(Rule {
                         frequency,
-                        matcher: RuleMatcher::Glob(crate::path::glob_escape(path)),
+                        matcher: PathMatcher::Glob(crate::path::glob_escape(path)),
                         kind: RuleKind::SingleChange(first_kind),
                     });
                 }
@@ -480,7 +522,7 @@ pub(crate) fn learn_glob_rules<Timestamp>(
             }
         }
 
-        let matcher = RuleMatcher::Glob(glob);
+        let matcher = PathMatcher::Glob(glob);
 
         let mut change_kinds = std::collections::BTreeMap::new();
         let mut num_paths = 0;

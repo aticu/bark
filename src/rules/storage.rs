@@ -2,7 +2,9 @@
 
 use radix_trie::{Trie, TrieCommon};
 
-use super::{Rule, RuleMatcher};
+use crate::file::File;
+
+use super::{PathMatcher, Rule};
 
 /// A container to efficiently match multiple rules.
 #[derive(Debug)]
@@ -24,7 +26,7 @@ impl RuleStorage {
 
     /// Inserts the given rule into the storeag.
     pub(crate) fn insert(&mut self, rule: Rule) {
-        let RuleMatcher::Glob(glob) = &rule.matcher;
+        let PathMatcher::Glob(glob) = &rule.matcher;
         let prefix = literal_match_prefix(glob);
         if let Some(vec) = self.map.get_mut(prefix) {
             vec.push(rule);
@@ -32,6 +34,18 @@ impl RuleStorage {
             self.map.insert(prefix.to_string(), vec![rule]);
         }
         self.len += 1;
+    }
+
+    /// Returns an iterator over all matching rules for the given file.
+    pub(crate) fn matching_rules<'trie>(
+        &'trie self,
+        file: &'trie File,
+        threshhold: f64,
+    ) -> impl Iterator<Item = &'trie Rule> {
+        file.paths.iter().flat_map(move |path| {
+            self.rules_for(path)
+                .filter(move |rule| rule.match_score(file) >= threshhold)
+        })
     }
 
     /// Returns an iterator over all rules matching the given path.

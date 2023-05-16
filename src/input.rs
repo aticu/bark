@@ -1,6 +1,8 @@
 //! Reads the input data into memory.
 
-use sniff::{Changeset, Timestamp};
+use sniff::{Changeset, MetaEntryDiff, Timestamp};
+
+use crate::file::{ChangeTime, File, Files};
 
 /// Reads the input from the given path.
 pub(crate) fn read_many(
@@ -19,12 +21,12 @@ pub(crate) fn read_many(
     }
 }
 
-/// Transforms the given changeset to relative time since the first change.
+/// Computes the timestamp of the first change in the given changeset.
 ///
-/// The time of the first change is returned, along with the updated changeset.
-pub(crate) fn transform_to_relative_time(
-    changeset: &Changeset<Timestamp>,
-) -> Option<(Timestamp, Changeset<time::Duration>)> {
+/// This is bounded by the `earliest_timestamp` of the changeset (adjusted by estimated timezone
+/// difference).
+/// Earlier changes are ignored.
+pub(crate) fn compute_time_of_first_change(changeset: &Changeset<Timestamp>) -> Option<Timestamp> {
     let (diff_sum, n) = changeset
         .changes
         .values()
@@ -71,7 +73,54 @@ pub(crate) fn transform_to_relative_time(
         })
         .min()?;
 
-    let new_changeset = changeset.transform_timestamps(|ts| **ts - *time_of_first_change);
+    Some(time_of_first_change)
+}
 
-    Some((time_of_first_change, new_changeset))
+/// Computes the change time of a list of changes.
+pub(crate) fn compute_change_time(
+    changes: &[Option<MetaEntryDiff<time::Duration>>],
+) -> Option<ChangeTime> {
+    let mut total = time::Duration::ZERO;
+    let mut n = 0;
+
+    let max_ts = |change: &sniff::MetaEntryDiff<time::Duration>| {
+        let meta = change.meta_info();
+        [
+            meta.created.new_val(),
+            meta.modified.new_val(),
+            meta.accessed.new_val(),
+            meta.inode_modified.new_val(),
+        ]
+        .into_iter()
+        .filter_map(|ts| *ts)
+        .filter(|ts| ts.is_positive())
+        .max()
+    };
+
+    for diff in changes {
+        let Some(diff) = diff else { continue };
+        let Some(ts) = max_ts(diff) else { continue };
+
+        total += ts;
+        n += 1;
+    }
+
+    if n == 0 {
+        return None;
+    }
+    let avg = total / n;
+
+    let mut std_dev_total = 0.0;
+
+    for diff in changes {
+        let Some(diff) = diff else { continue };
+        let Some(ts) = max_ts(diff) else { continue };
+        let ts_diff: time::Duration = avg - ts;
+
+        std_dev_total += ts_diff.as_seconds_f64().powi(2);
+    }
+
+    let std_dev = time::Duration::seconds_f64((std_dev_total / n as f64).sqrt());
+
+    Some(ChangeTime { avg, std_dev })
 }

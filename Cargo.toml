@@ -6,15 +6,21 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# Input handling
 serde = { version = "1.0.160", features = ["derive"] }
-time = { version = "0.3.20", features = ["macros", "parsing", "formatting"] }
 serde_json = "1.0.95"
-anyhow = "1.0.70"
-hex = "0.4.3"
-sniff = { path = "/home/niclas/projects/sniff" }
 postcard = "1.0.4"
-owo-colors = "3.5.0"
+
+# Data model
+time = { version = "0.3.20", features = ["macros", "parsing", "formatting"] }
+sniff = { path = "/home/niclas/projects/sniff" }
+
+# User interaction
 structopt = "0.3.26"
+eframe = "0.21.3"
+
+# Utils
+anyhow = "1.0.70"
 glob-match = "0.2.1"
 radix_trie = "0.2.1"
 smallvec = "1.10.0"
