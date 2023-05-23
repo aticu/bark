@@ -2,383 +2,251 @@
 
 mod storage;
 
-use std::{
-    collections::{BTreeMap, BTreeSet},
-    fmt,
-    str::FromStr,
-};
-
-use sniff::Changeset;
-
 pub(crate) use storage::RuleStorage;
 
-use crate::file::File;
-
-/// The threshhold for how frequent a change must be in order for it to become a rule.
-const FREQUENCY_TRESHHOLD: f64 = 0.6;
+use crate::{
+    file::{File, Files},
+    glob::glob_matches,
+};
 
 /// A rule to describe one facet of the system behavior.
 #[derive(Debug)]
 pub(crate) struct Rule {
-    /// The frequency of cases that this rule is expected to match.
-    frequency: f64,
-    /// What this rule applies to.
-    matcher: PathMatcher,
-    /// The kind of behavior this rule describes.
-    kind: RuleKind,
-}
-
-impl fmt::Display for Rule {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{} {:}% of the time at {}",
-            self.kind,
-            self.frequency * 100.0,
-            self.matcher,
-        )
-    }
-}
-
-impl FromStr for Rule {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let s = s.trim();
-        let first_num = s
-            .find(|c: char| c.is_ascii_digit())
-            .ok_or("expected to find a number")?;
-        let kind = s[..first_num].trim().parse()?;
-
-        let s = &s[first_num..];
-        let percent = s.find('%').ok_or("expected % sign")?;
-        let frequency = s[..percent]
-            .parse::<f64>()
-            .map_err(|_| "expected float number")?
-            / 100.0;
-
-        let s = &s[percent..];
-        if let Some(matcher) = s.strip_prefix("% of the time at ") {
-            let matcher = matcher.parse()?;
-
-            Ok(Self {
-                frequency,
-                matcher,
-                kind,
-            })
-        } else {
-            Err("expected the string `% of the time at `")
-        }
-    }
+    /// What paths this rules applies to.
+    glob: String,
+    /// The frequencies of changes at the matches paths.
+    pub(crate) frequencies: ChangeFrequencies,
 }
 
 impl Rule {
-    /// Returns a score between 0 and 1 for how much the rule matches the file.
+    /// Creates a rule with the given glob.
+    pub(crate) fn from_glob(glob: &str, files: &Files) -> Option<Rule> {
+        let frequencies = ChangeFrequencies::compute(glob, files.chronological_order())?;
+
+        Some(Rule {
+            glob: glob.to_string(),
+            frequencies,
+        })
+    }
+
+    /// Returns a score between `0.0` and `1.0` for how much the rule matches the file.
     ///
-    /// This will be 1 if the file behavior can be deterministically explained by the rule and 0 if
-    /// it cannot be explained at all.
+    /// This will be `1.0` if the file behavior can be deterministically explained by the rule and
+    /// `0.0` if it cannot be explained at all.
     pub(crate) fn match_score(&self, file: &File) -> f64 {
-        if !file.paths.iter().any(|path| self.matcher.matches(path)) {
-            return 0.0;
-        }
+        let Some(matching_path) = file.paths.iter().find(|path| glob_matches(&self.glob, path)) else { return 0.0 };
 
-        for change in &file.changes {
-            let change_kind = ChangeKind::from(change);
+        let Some(frequencies) =
+            ChangeFrequencies::compute(&self.glob, std::iter::once((matching_path.as_str(), file))) else { return 0.0 };
 
-            if !self.kind.matches(&change_kind) && change_kind != ChangeKind::Unchanged {
-                return 0.0;
-            }
-        }
-
-        1.0
+        // here we treat the frequencies as vectors in `[0.0, 1.0]^n` where `n` is the number of
+        // frequencies recorded
+        //
+        // then we compute the cosine angle between these vectors
+        // because of how the vector space is set up, this value will always be between 0 and 1
+        ChangeFrequencies::dot_product(&self.frequencies, &frequencies)
+            / (self.frequencies.magnitude() * frequencies.magnitude())
     }
 }
 
-/// Describes what a rule applies to.
+/// Contains all frequencies of changes at the given paths.
 #[derive(Debug)]
-pub(crate) enum PathMatcher {
-    /// The rule applies to all paths matching the given globby path.
-    Glob(String),
+pub(crate) struct ChangeFrequencies {
+    /// The frequency with which files at the given paths are added.
+    pub(crate) added: f64,
+    /// The frequency with which files at the given paths are deleted.
+    pub(crate) deleted: f64,
+    /// The frequency with which the file content is changed at the given paths.
+    pub(crate) content_changed: f64,
+    /// The frequency with which symlinks are changed at the given paths.
+    pub(crate) symlink_changed: f64,
+    /// The frequency with which the file inode is changed.
+    pub(crate) inode_changed: f64,
+    /// The frequency with which the file size increased.
+    pub(crate) size_increase: f64,
+    /// The frequency with which the file size decreased.
+    pub(crate) size_decrease: f64,
+    /// The frequency with which the inode modification timestamp of the file is changed.
+    pub(crate) inode_timestamp: f64,
+    /// The frequency with which the created timestamp of the file is changed.
+    pub(crate) created_timestamp: f64,
+    /// The frequency with which the modified timestamp of the file is changed.
+    pub(crate) modified_timestamp: f64,
+    /// The frequency with which the accessed timestamp of the file is changed.
+    pub(crate) accessed_timestamp: f64,
 }
 
-impl fmt::Display for PathMatcher {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Glob(glob) => write!(f, "{glob}"),
-        }
-    }
-}
-
-impl FromStr for PathMatcher {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(PathMatcher::Glob(s.to_string()))
-    }
-}
-
-impl PathMatcher {
-    /// Whether the rule matcher applies to the given path.
-    fn matches(&self, path: &str) -> bool {
-        match self {
-            Self::Glob(glob) => glob_match::glob_match(glob, path),
-        }
-    }
-}
-
-/// Describes the kind of behavior that a rule describes.
-#[derive(Debug)]
-pub(crate) enum RuleKind {
-    /// The rule only matches the single given change kind.
-    SingleChange(ChangeKind),
-    /// The rule only matches both of the given change kinds.
-    TwoChangeKinds(ChangeKind, ChangeKind),
-    /// The rule matches additions and optionally the given change kind.
-    Addition(Option<ChangeKind>),
-    /// The rule matches deletions and optionally the given change kind.
-    Deletion(Option<ChangeKind>),
-    /// The rule matches additions, deletions and optionally the given change kind.
-    AdditionAndDeletion(Option<ChangeKind>),
-}
-
-impl fmt::Display for RuleKind {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::SingleChange(change) => write!(f, "{change}"),
-            Self::TwoChangeKinds(change1, change2) => write!(f, "{change1} or {change2}"),
-            Self::Addition(Some(change)) => write!(f, "addition or {change}"),
-            Self::Addition(None) => write!(f, "addition"),
-            Self::Deletion(Some(change)) => write!(f, "deletion or {change}"),
-            Self::Deletion(None) => write!(f, "deletion"),
-            Self::AdditionAndDeletion(Some(change)) => write!(f, "addition, deletion or {change}"),
-            Self::AdditionAndDeletion(None) => write!(f, "addition or deletion"),
-        }
-    }
-}
-
-impl FromStr for RuleKind {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.starts_with("addition") {
-            if let Some(kind) = s.strip_prefix("addition or ") {
-                Ok(RuleKind::Addition(Some(kind.parse()?)))
-            } else if let Some(kind) = s.strip_prefix("addition, deletion or ") {
-                Ok(RuleKind::AdditionAndDeletion(Some(kind.parse()?)))
-            } else if s == "addition" {
-                Ok(RuleKind::Addition(None))
-            } else if s == "addition or deletion" {
-                Ok(RuleKind::AdditionAndDeletion(None))
-            } else {
-                Err("unexpected text starting with `addition`")
-            }
-        } else if s.starts_with("deletion") {
-            if let Some(kind) = s.strip_prefix("deletion or ") {
-                Ok(RuleKind::Deletion(Some(kind.parse()?)))
-            } else if s == "deletion" {
-                Ok(RuleKind::Deletion(None))
-            } else {
-                Err("unexpected text starting with `deletion`")
-            }
-        } else if let Some(or_index) = s.find(" or ") {
-            let first_kind = s[..or_index].parse()?;
-            let second_kind = s[or_index..].strip_prefix(" or ").unwrap().parse()?;
-
-            Ok(RuleKind::TwoChangeKinds(first_kind, second_kind))
-        } else {
-            Ok(RuleKind::SingleChange(s.parse()?))
-        }
-    }
-}
-
-impl RuleKind {
-    /// Whether the rule kind matches the given behavior.
-    fn matches<'a, T>(&self, diff: &'a T) -> bool
-    where
-        ChangeKind: From<&'a T>,
-    {
-        let kind = ChangeKind::from(diff);
-        match self {
-            Self::SingleChange(change_kind) => *change_kind == kind,
-            Self::TwoChangeKinds(change_kind1, change_kind2) => {
-                *change_kind1 == kind || *change_kind2 == kind
-            }
-            Self::Addition(change_kind) => kind == ChangeKind::Added || change_kind == &Some(kind),
-            Self::Deletion(change_kind) => {
-                kind == ChangeKind::Deleted || change_kind == &Some(kind)
-            }
-            Self::AdditionAndDeletion(change_kind) => {
-                kind == ChangeKind::Added
-                    || kind == ChangeKind::Deleted
-                    || change_kind == &Some(kind)
-            }
-        }
-    }
-}
-
-/// Describes the kinds of changes that can be made.
-///
-/// The change kinds are ordered so that more significant changes will compare as greater.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) enum ChangeKind {
-    /// The entry was unchanged.
-    Unchanged,
-    /// The inode modification timestamp of the entry was changed.
-    InodeModifiedTimestamp,
-    /// The accessed timestamp of the entry was changed.
-    AccessedTimestamp,
-    /// The modified timestamp of the entry was changed.
-    ModifiedTimestamp,
-    /// The created timestamp of the entry was changed.
-    CreatedTimestamp,
-    /// The size of the entry was changed.
-    SizeChange,
-    /// The inode of the entry changed.
-    InodeChange,
-    /// The entry metadata was changed in a more complex manner.
-    Complex,
-    /// The content of the entry was changed.
+impl ChangeFrequencies {
+    /// Compute the change frequencies for the given files.
     ///
-    /// Only applies to files.
-    ContentModification,
-    /// The path a symlink pointed to was changed.
-    SymlinkChange,
-    /// The entry was deleted.
-    Deleted,
-    /// The entry was added.
-    Added,
-}
+    /// Gives up on complex changes that are not easily represented by the model.
+    fn compute<'a>(
+        glob: &'a str,
+        files: impl Iterator<Item = (&'a str, &'a File)>,
+    ) -> Option<ChangeFrequencies> {
+        let mut added = 0;
+        let mut deleted = 0;
+        let mut content_changed = 0;
+        let mut symlink_changed = 0;
+        let mut inode_changed = 0;
+        let mut size_increase = 0;
+        let mut size_decrease = 0;
+        let mut inode_timestamp = 0;
+        let mut created_timestamp = 0;
+        let mut modified_timestamp = 0;
+        let mut accessed_timestamp = 0;
+        let mut total = 0;
 
-impl fmt::Display for ChangeKind {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.string_description())
-    }
-}
-
-impl FromStr for ChangeKind {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        for kind in Self::all_kinds() {
-            if kind.string_description() == s {
-                return Ok(kind);
+        for (path, file) in files {
+            if !glob_matches(glob, path) {
+                continue;
             }
-        }
-        Err("didn't find a known change kind")
-    }
-}
 
-impl<Timestamp> From<&sniff::MetaEntryDiff<Timestamp>> for ChangeKind {
-    fn from(value: &sniff::MetaEntryDiff<Timestamp>) -> ChangeKind {
-        match value {
-            sniff::MetaEntryDiff::Added(_) => ChangeKind::Added,
-            sniff::MetaEntryDiff::Deleted(_) => ChangeKind::Deleted,
-            sniff::MetaEntryDiff::MetaOnlyChange(meta) => {
-                if matches!(&meta.changes[..], [sniff::MetadataChange::Size(_)]) {
-                    ChangeKind::SizeChange
-                } else if !meta.changes.is_empty() {
-                    ChangeKind::Complex
-                } else if meta.inode.is_changed() {
-                    ChangeKind::InodeChange
-                } else if meta.created.is_changed() {
-                    ChangeKind::CreatedTimestamp
-                } else if meta.modified.is_changed() {
-                    ChangeKind::ModifiedTimestamp
-                } else if meta.accessed.is_changed() {
-                    ChangeKind::AccessedTimestamp
-                } else if meta.inode_modified.is_changed() {
-                    ChangeKind::InodeModifiedTimestamp
-                } else {
-                    ChangeKind::Unchanged
+            use sniff::{EntryDiff::*, MetaEntryDiff::*};
+
+            // to better handle deletions and additions, we track when the file existed
+            // if there are no additions or deletions, the file must have existed the whole time
+            let mut exists = if let Some(c) = file
+                .changes
+                .iter()
+                .find(|c| matches!(c, Some(Added(_)) | Some(Deleted(_))))
+            {
+                matches!(c, Some(Deleted(_)))
+            } else {
+                true
+            };
+
+            for change in &file.changes {
+                // we only count this change if the file exists or there's actually a change (which
+                // would likely be an addition if the file didn't exist)
+                if exists || change.is_some() {
+                    total += 1;
+                }
+
+                let Some(change) = change else { continue };
+                let meta = change.meta_info();
+
+                match change {
+                    Added(_) => {
+                        exists = true;
+                        added += 1;
+                    }
+                    Deleted(_) => {
+                        exists = false;
+                        deleted += 1;
+                    }
+                    MetaOnlyChange(_) => (),
+                    EntryChange(change, _) => match change {
+                        FileChanged { .. } => content_changed += 1,
+                        SymlinkChanged { .. } => symlink_changed += 1,
+                        TypeChange(_) => return None,
+                        OtherChange => return None,
+                    },
+                }
+
+                if meta.inode.is_changed() {
+                    inode_changed += 1;
+                }
+                match &meta.changes[..] {
+                    [sniff::MetadataChange::Size(change)] => match change.cmp() {
+                        std::cmp::Ordering::Less => size_increase += 1,
+                        std::cmp::Ordering::Equal => (),
+                        std::cmp::Ordering::Greater => size_decrease += 1,
+                    },
+                    [] => (),
+                    _ => return None,
+                }
+                if meta.inode_modified.is_changed() {
+                    inode_timestamp += 1;
+                }
+                if meta.created.is_changed() {
+                    created_timestamp += 1;
+                }
+                if meta.modified.is_changed() {
+                    modified_timestamp += 1;
+                }
+                if meta.accessed.is_changed() {
+                    accessed_timestamp += 1;
                 }
             }
-            sniff::MetaEntryDiff::EntryChange(entry_diff, _) => match entry_diff {
-                sniff::EntryDiff::FileChanged { .. } => ChangeKind::ContentModification,
-                sniff::EntryDiff::SymlinkChanged { .. } => ChangeKind::SymlinkChange,
-                sniff::EntryDiff::TypeChange(_) => ChangeKind::Complex,
-                sniff::EntryDiff::OtherChange => ChangeKind::Complex,
-            },
         }
-    }
-}
 
-impl From<&ChangeKind> for ChangeKind {
-    fn from(value: &ChangeKind) -> Self {
-        *value
-    }
-}
+        if total == 0 {
+            return None;
+        }
 
-impl<Timestamp> From<&Option<sniff::MetaEntryDiff<Timestamp>>> for ChangeKind {
-    fn from(value: &Option<sniff::MetaEntryDiff<Timestamp>>) -> ChangeKind {
-        let Some(value) = value else { return ChangeKind::Unchanged };
-        match value {
-            sniff::MetaEntryDiff::Added(_) => ChangeKind::Added,
-            sniff::MetaEntryDiff::Deleted(_) => ChangeKind::Deleted,
-            sniff::MetaEntryDiff::MetaOnlyChange(meta) => {
-                if matches!(&meta.changes[..], [sniff::MetadataChange::Size(_)]) {
-                    ChangeKind::SizeChange
-                } else if !meta.changes.is_empty() {
-                    ChangeKind::Complex
-                } else if meta.inode.is_changed() {
-                    ChangeKind::InodeChange
-                } else if meta.created.is_changed() {
-                    ChangeKind::CreatedTimestamp
-                } else if meta.modified.is_changed() {
-                    ChangeKind::ModifiedTimestamp
-                } else if meta.accessed.is_changed() {
-                    ChangeKind::AccessedTimestamp
-                } else if meta.inode_modified.is_changed() {
-                    ChangeKind::InodeModifiedTimestamp
-                } else {
-                    ChangeKind::Unchanged
-                }
+        macro_rules! return_val {
+            ($total:ident; $($name:ident)*) => {
+                Some(ChangeFrequencies {
+                    $(
+                        $name: ($name as f64 / $total as f64).clamp(0.0, 1.0),
+                    )*
+                })
             }
-            sniff::MetaEntryDiff::EntryChange(_, _) => ChangeKind::ContentModification,
         }
-    }
-}
-
-impl ChangeKind {
-    /// Returns a short string description of the change.
-    fn string_description(&self) -> &'static str {
-        use ChangeKind::*;
-        match self {
-            Unchanged => "no change",
-            InodeModifiedTimestamp => "inode timestamp change",
-            AccessedTimestamp => "access timestamp change",
-            ModifiedTimestamp => "modification timestamp change",
-            CreatedTimestamp => "creation timestamp change",
-            SizeChange => "size change",
-            InodeChange => "inode change",
-            Complex => "complex metadata change",
-            ContentModification => "content change",
-            SymlinkChange => "symlink change",
-            Deleted => "deletion",
-            Added => "addition",
+        return_val! {
+            total;
+            added
+            deleted
+            content_changed
+            symlink_changed
+            inode_changed
+            size_increase
+            size_decrease
+            inode_timestamp
+            created_timestamp
+            modified_timestamp
+            accessed_timestamp
         }
     }
 
-    /// Returns an iterator over all possible change kinds.
-    fn all_kinds() -> impl Iterator<Item = Self> {
-        use ChangeKind::*;
+    /// An iterator over all frequencies.
+    pub(crate) fn iter(&self) -> impl Iterator<Item = (&'static str, f64)> {
+        let Self {
+            added,
+            deleted,
+            content_changed,
+            symlink_changed,
+            inode_changed,
+            size_increase,
+            size_decrease,
+            inode_timestamp,
+            created_timestamp,
+            modified_timestamp,
+            accessed_timestamp,
+        } = self;
         [
-            Unchanged,
-            InodeModifiedTimestamp,
-            AccessedTimestamp,
-            ModifiedTimestamp,
-            CreatedTimestamp,
-            SizeChange,
-            InodeChange,
-            Complex,
-            ContentModification,
-            SymlinkChange,
-            Deleted,
-            Added,
+            ("added", *added),
+            ("deleted", *deleted),
+            ("content changed", *content_changed),
+            ("symlink changed", *symlink_changed),
+            ("inode changed", *inode_changed),
+            ("size increase", *size_increase),
+            ("size decrease", *size_decrease),
+            ("inode timestamp", *inode_timestamp),
+            ("created timestamp", *created_timestamp),
+            ("modified timestamp", *modified_timestamp),
+            ("accessed timestamp", *accessed_timestamp),
         ]
         .into_iter()
     }
+
+    /// The magnitude of the change vector.
+    fn magnitude(&self) -> f64 {
+        self.iter().map(|(_, f)| f * f).sum::<f64>().sqrt()
+    }
+
+    /// Computes the dot product between the two given change frequencies.
+    fn dot_product(frequencies1: &ChangeFrequencies, frequencies2: &ChangeFrequencies) -> f64 {
+        frequencies1
+            .iter()
+            .zip(frequencies2.iter())
+            .map(|((_, f1), (_, f2))| f1 * f2)
+            .sum()
+    }
 }
 
+/*
 /// Learns simple rules that only concern a single path.
 pub(crate) fn learn_basic_rules<Timestamp>(
     rules: &mut Vec<Rule>,
@@ -444,144 +312,4 @@ pub(crate) fn learn_basic_rules<Timestamp>(
         }
     }
 }
-
-/// Learns glob rules that affect multiple paths at once.
-pub(crate) fn learn_glob_rules<Timestamp>(
-    rules: &mut Vec<Rule>,
-    all_paths: &BTreeSet<&str>,
-    input: &[Changeset<Timestamp>],
-) {
-    let mut candidates = BTreeMap::new();
-
-    for path in all_paths {
-        if input.iter().any(|changeset| {
-            changeset
-                .changes
-                .get(*path)
-                .map(|change| {
-                    let kind = ChangeKind::from(change);
-                    kind == ChangeKind::Added || kind == ChangeKind::Deleted
-                })
-                .unwrap_or(false)
-        }) {
-            candidates
-                .entry(path.chars().count())
-                .or_insert_with(Vec::new)
-                .push(*path);
-        }
-    }
-
-    let mut prefix_groups = Vec::new();
-
-    for paths_of_len in candidates.values() {
-        let mut start = 0;
-
-        'outer: while start < paths_of_len.len() {
-            if paths_of_len.len() - start == 1 {
-                prefix_groups.push((paths_of_len[start], &paths_of_len[start..]));
-                start += 1;
-                continue;
-            }
-
-            let mut prefix =
-                crate::path::longest_common_prefix(paths_of_len[start], paths_of_len[start + 1]);
-            for i in start + 2..paths_of_len.len() {
-                let new_prefix = crate::path::longest_common_prefix(prefix, paths_of_len[i]);
-
-                // Allow shrinking the prefix by a little bit
-                if prefix.len() - new_prefix.len() < 5 {
-                    prefix = new_prefix;
-                } else {
-                    prefix_groups.push((prefix, &paths_of_len[start..i]));
-                    start = i;
-                    continue 'outer;
-                }
-            }
-
-            prefix_groups.push((prefix, &paths_of_len[start..paths_of_len.len()]));
-            start = paths_of_len.len();
-        }
-    }
-
-    'outer: for (_prefix, group) in &prefix_groups {
-        for path in *group {
-            if !path.match_indices('/').eq(group[0].match_indices('/')) {
-                // if the path segment separators don't line up, this likely isn't a group
-                continue 'outer;
-            }
-        }
-
-        let mut glob = String::new();
-        for (i, c) in group[0].chars().enumerate() {
-            if group.iter().all(|path| path.chars().nth(i).unwrap() == c) {
-                let (escape, c) = crate::path::glob_escape_char(c);
-                glob.extend(escape);
-                glob.push(c);
-            } else {
-                glob.push('?');
-            }
-        }
-
-        let matcher = PathMatcher::Glob(glob);
-
-        let mut change_kinds = std::collections::BTreeMap::new();
-        let mut num_paths = 0;
-        for path in all_paths {
-            if !matcher.matches(path) {
-                continue;
-            }
-            num_paths += 1;
-
-            for changeset in input {
-                let change_kind = if let Some(change) = changeset.changes.get(*path) {
-                    ChangeKind::from(change)
-                } else {
-                    continue;
-                };
-
-                *change_kinds.entry(change_kind).or_insert(0) += 1;
-            }
-        }
-
-        let addition = change_kinds.remove(&ChangeKind::Added).is_some();
-        let deletion = change_kinds.remove(&ChangeKind::Deleted).is_some();
-
-        if change_kinds.len() > 1 {
-            // for additions and deletions, we only have rules with one different change kind for
-            // now
-            continue;
-        }
-
-        let inner_kind = change_kinds.pop_last().map(|(kind, _)| kind);
-
-        if inner_kind == Some(ChangeKind::Complex) {
-            // complex changes should not simply be categorized together in a rule
-            continue;
-        }
-
-        let kind = match (addition, deletion) {
-            (false, false) => unreachable!("should have been sorted out earlier"),
-            (false, true) => RuleKind::Deletion(inner_kind),
-            (true, false) => RuleKind::Addition(inner_kind),
-            (true, true) => RuleKind::AdditionAndDeletion(inner_kind),
-        };
-
-        let rule = Rule {
-            // since no change is pretty much meaningless when the file may not exist (because of
-            // additions and deletions) and all other cases are handled, we just set the frequency
-            // like this
-            frequency: 1.0,
-            matcher,
-            kind,
-        };
-
-        println!("{rule}");
-        println!("# matched {} entries:", num_paths);
-        for path in all_paths {
-            if !rule.matcher.matches(path) {
-                continue;
-            }
-            println!("# {path}");
-        }
-    }
-}
+*/

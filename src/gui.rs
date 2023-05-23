@@ -1,4 +1,5 @@
 mod change_list;
+mod rule_writing;
 
 use eframe::{egui, epaint::Color32};
 
@@ -6,21 +7,24 @@ use crate::{file::Files, rules::RuleStorage};
 
 pub(crate) struct GuiApp {
     pub(crate) rules: RuleStorage,
-    pub(crate) files: &'static Files,
+    rule_writer: rule_writing::RuleWriter,
     change_list: change_list::ChangeList,
+    rule_mode: bool,
 }
 
 impl GuiApp {
     pub(crate) fn run(rules: RuleStorage, files: Files) -> Result<(), eframe::Error> {
         let files = Box::leak(Box::new(files));
         eframe::run_native(
-            "TODO: name",
+            "bark - behavior anomaly reconnaissance kit",
             eframe::NativeOptions::default(),
             Box::new(|_| {
+                let rule_writer = rule_writing::RuleWriter::new(files, &rules);
                 Box::new(GuiApp {
                     rules,
-                    files,
-                    change_list: change_list::ChangeList::new(files, "Filtered changes"),
+                    rule_writer,
+                    change_list: change_list::ChangeList::new(files, "Filtered changes", true),
+                    rule_mode: true,
                 })
             }),
         )
@@ -29,36 +33,14 @@ impl GuiApp {
 
 impl eframe::App for GuiApp {
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
-        /*
-        if let Some((x, y)) = self.highlighted {
-            egui::TopBottomPanel::bottom("root_bottom_panel").show(ctx, |ui| {
-                let (path, file) = match self.sort_type {
-                    FileOrder::Alphabetical => self.files.alphabetical_order().nth(y),
-                    FileOrder::Chronological => self.files.chronological_order().nth(y),
-                }
-                .unwrap();
-                if let Some(change) = file
-                    .changes
-                    .get(x)
-                    .and_then(|maybe_change| maybe_change.as_ref())
-                {
-                    ui.label(format!("{path}: {:#?}", change));
-                } else {
-                    for path in &file.paths {
-                        ui.label(path);
-                    }
-                }
-            });
-        }
-        */
-
         egui::CentralPanel::default().show(ctx, |ui| {
-            self.change_list.display(ui, |_path, file| {
-                self.rules
-                    .matching_rules(file, f64::EPSILON)
-                    .next()
-                    .is_none()
-            });
+            ui.checkbox(&mut self.rule_mode, "Write a rule");
+
+            if self.rule_mode {
+                self.rule_writer.display(ui, &mut self.rules);
+            } else {
+                self.change_list.display(ui, &self.rules);
+            }
         });
     }
 }

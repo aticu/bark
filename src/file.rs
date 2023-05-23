@@ -177,11 +177,6 @@ impl Files {
         }
     }
 
-    /// Iterates over the files in alphabetical_order.
-    pub(crate) fn alphabetical_order(&self) -> FileIter {
-        self.iter(FileOrder::Alphabetical)
-    }
-
     /// Iterates over the files in chronological order.
     pub(crate) fn chronological_order(&self) -> FileIter {
         self.iter(FileOrder::Chronological)

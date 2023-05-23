@@ -2,7 +2,7 @@
 
 use sniff::{Changeset, MetaEntryDiff, Timestamp};
 
-use crate::file::{ChangeTime, File, Files};
+use crate::file::ChangeTime;
 
 /// Reads the input from the given path.
 pub(crate) fn read_many(
