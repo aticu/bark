@@ -2,7 +2,11 @@
 
 use eframe::{egui, epaint::Color32};
 
-use crate::file::{File, FileOrder, Files};
+use crate::{
+    file::{File, FileOrder, Files},
+    path_matcher::PathMatcher,
+    rules::Rule,
+};
 
 /// The font used for normal text such as the time and the path.
 const TEXT_FONT: egui::FontId = egui::FontId {
@@ -114,6 +118,8 @@ pub(crate) struct ChangeList {
     /// The name of this change list.
     name: &'static str,
     /// The last time in seconds in the changed files.
+    ///
+    /// This is used to compute the background color for the displayed times.
     last_time: Option<f64>,
     /// The order in which the files should be sorted.
     order_type: FileOrder,
@@ -123,12 +129,14 @@ pub(crate) struct ChangeList {
     threshhold: Threshholder,
     /// The height of a single change field.
     change_height: f32,
-    /// The first visible row during the last frame.
+    /// The middle visible row during the last frame.
     middle_visible_row_last_frame: Option<usize>,
     /// The number of files filtered out.
     filtered_files: usize,
     /// The number of files shown.
     shown_files: usize,
+    /// The search text entered into the search box.
+    search_text: String,
 }
 
 impl ChangeList {
@@ -153,6 +161,7 @@ impl ChangeList {
             middle_visible_row_last_frame: None,
             filtered_files: 0,
             shown_files: 0,
+            search_text: String::new(),
         }
     }
 
@@ -222,6 +231,11 @@ impl ChangeList {
             }
         });
 
+        ui.horizontal(|ui| {
+            ui.label("Search:");
+            ui.text_edit_singleline(&mut self.search_text);
+        });
+
         self.shown_files = 0;
         self.filtered_files = 0;
 
@@ -237,7 +251,9 @@ impl ChangeList {
                 let mut expected_position = None;
 
                 for (y, (path, file)) in self.files.iter(self.order_type).enumerate() {
-                    if !self.threshhold.should_include_file(file, rules) {
+                    if !self.threshhold.should_include_file(file, rules)
+                        || !path.contains(&self.search_text)
+                    {
                         self.filtered_files += 1;
                         continue;
                     }
@@ -400,6 +416,23 @@ impl ChangeList {
                 element_type: ChangeListElementType::MatchScore,
             });
             *any_hovered = true;
+        }
+        if score_response.hovered() {
+            let mut iter = rules.all_rules_matching(file).peekable();
+
+            if iter.peek().is_some() {
+                egui::show_tooltip_at_pointer(ui.ctx(), "rule_display_tooltip".into(), |ui| {
+                    for rule in rules.all_rules_matching(file) {
+                        rule.show(
+                            ui,
+                            9.0,
+                            Some(3),
+                            true,
+                            Rule::from_matcher(PathMatcher::from_literal_path(path), self.files),
+                        );
+                    }
+                });
+            }
         }
 
         current_pos.x += ui.style().spacing.item_spacing.x;

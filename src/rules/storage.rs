@@ -1,46 +1,43 @@
 //! Provides a container for rules to efficiently match on them.
 
+use std::{fmt, path::Path};
+
 use radix_trie::{Trie, TrieCommon};
 
-use crate::{
-    file::File,
-    glob::{glob_matches, is_glob_special_char},
-};
+use crate::file::File;
 
 use super::Rule;
 
 /// A container to efficiently match multiple rules.
-#[derive(Debug)]
 pub(crate) struct RuleStorage {
-    /// The inner map to
+    /// The inner trie that stores the rules.
     map: Trie<String, Vec<Rule>>,
+    /// The number of rules in the rule storage.
+    len: usize,
 }
 
 impl RuleStorage {
     /// Creates a new empty rule storage.
     pub(crate) fn new() -> RuleStorage {
-        RuleStorage { map: Trie::new() }
-    }
-
-    /// Creates a new rule storage containing the given rule.
-    pub(crate) fn from_rule(rule: Rule) -> RuleStorage {
-        let mut this = Self::new();
-        this.insert(rule);
-        this
+        RuleStorage {
+            map: Trie::new(),
+            len: 0,
+        }
     }
 
     /// Inserts the given rule into the storeag.
     pub(crate) fn insert(&mut self, rule: Rule) {
-        let prefix = literal_match_prefix(&rule.glob);
-        if let Some(vec) = self.map.get_mut(prefix) {
+        let prefix = rule.path_matcher.literal_prefix();
+        if let Some(vec) = self.map.get_mut(&*prefix) {
             vec.push(rule);
         } else {
             self.map.insert(prefix.to_string(), vec![rule]);
         }
+        self.len += 1;
     }
 
     /// Returns an iterator over all matching rules for the given file.
-    fn all_rules_matching<'trie>(
+    pub(crate) fn all_rules_matching<'trie>(
         &'trie self,
         file: &'trie File,
     ) -> impl Iterator<Item = &'trie Rule> {
@@ -69,6 +66,18 @@ impl RuleStorage {
             path: Some(path),
         }
     }
+
+    /// Saves the rule storage to the given rule file.
+    pub(crate) fn save(&self, rule_file: impl AsRef<Path>) -> anyhow::Result<()> {
+        serde_json::to_writer_pretty(std::fs::File::create(rule_file)?, self)?;
+
+        Ok(())
+    }
+
+    /// Loads the rule storage from the given rule file.
+    pub(crate) fn load(rule_file: impl AsRef<Path>) -> anyhow::Result<Self> {
+        Ok(serde_json::from_reader(std::fs::File::open(rule_file)?)?)
+    }
 }
 
 /// An iterator over all matching rules in `trie` for the given `full_path`.
@@ -92,13 +101,12 @@ impl<'trie> Iterator for RulesFor<'trie> {
         loop {
             while let Some(rule) = self.slice.get(self.slice_idx) {
                 self.slice_idx += 1;
-                if glob_matches(&rule.glob, self.full_path) {
+                if rule.path_matcher.matches_path(self.full_path) {
                     return Some(rule);
                 }
             }
 
             let Some(path) = self.path else { return None };
-
             let Some(subtrie) = self.trie.get_ancestor(path) else { return None };
 
             let path = subtrie.key().unwrap();
@@ -113,8 +121,63 @@ impl<'trie> Iterator for RulesFor<'trie> {
     }
 }
 
-/// Returns the prefix of the string that only contains characters that are literally matches in
-/// globs.
-fn literal_match_prefix(s: &str) -> &str {
-    s.split(is_glob_special_char).next().unwrap()
+impl fmt::Debug for RuleStorage {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut list = f.debug_list();
+
+        for rule in self.map.values() {
+            list.entry(rule);
+        }
+
+        list.finish()
+    }
+}
+
+impl serde::Serialize for RuleStorage {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeSeq as _;
+
+        let mut seq = serializer.serialize_seq(Some(self.len))?;
+        for vec in self.map.values() {
+            for rule in vec {
+                seq.serialize_element(rule)?;
+            }
+        }
+        seq.end()
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for RuleStorage {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        struct Visitor;
+
+        impl<'de> serde::de::Visitor<'de> for Visitor {
+            type Value = RuleStorage;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("rule storage")
+            }
+
+            fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+            where
+                A: serde::de::SeqAccess<'de>,
+            {
+                let mut storage = RuleStorage::new();
+
+                while let Some(rule) = seq.next_element()? {
+                    storage.insert(rule)
+                }
+
+                Ok(storage)
+            }
+        }
+
+        deserializer.deserialize_seq(Visitor)
+    }
 }

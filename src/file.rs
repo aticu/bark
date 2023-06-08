@@ -182,6 +182,11 @@ impl Files {
         self.iter(FileOrder::Chronological)
     }
 
+    /// Iterates over the files in alphabetical order.
+    pub(crate) fn alphabetical_order(&self) -> FileIter {
+        self.iter(FileOrder::Alphabetical)
+    }
+
     /// Iterates over the files with the given order.
     pub(crate) fn iter(&self, order_type: FileOrder) -> FileIter {
         match order_type {
@@ -296,5 +301,12 @@ impl<'files> Iterator for FileIter<'files> {
                 (file.path(), file)
             }),
         }
+    }
+}
+
+impl<'files> FileIter<'files> {
+    /// Returns just the files of this file iterator.
+    pub(crate) fn files(self) -> impl Iterator<Item = &'files File> {
+        self.map(|(_, file)| file)
     }
 }

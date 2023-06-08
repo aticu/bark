@@ -1,5 +1,6 @@
 mod change_list;
 mod rule_writing;
+mod rules;
 
 use eframe::{egui, epaint::Color32};
 
@@ -13,13 +14,19 @@ pub(crate) struct GuiApp {
 }
 
 impl GuiApp {
-    pub(crate) fn run(rules: RuleStorage, files: Files) -> Result<(), eframe::Error> {
+    pub(crate) fn run(
+        rules: RuleStorage,
+        files: Files,
+        rule_file: Option<std::path::PathBuf>,
+        path_lists: std::collections::BTreeMap<String, crate::input::PathList>,
+    ) -> Result<(), eframe::Error> {
         let files = Box::leak(Box::new(files));
         eframe::run_native(
             "bark - behavior anomaly reconnaissance kit",
             eframe::NativeOptions::default(),
             Box::new(|_| {
-                let rule_writer = rule_writing::RuleWriter::new(files, &rules);
+                let rule_writer =
+                    rule_writing::RuleWriter::new(files, &rules, rule_file, path_lists);
                 Box::new(GuiApp {
                     rules,
                     rule_writer,

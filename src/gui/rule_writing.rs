@@ -1,39 +1,64 @@
 //! Implements a GUI for writing rules.
 
+use std::path::PathBuf;
+
 use eframe::{egui, epaint::Color32};
 
 use crate::{
     file::Files,
-    glob::{self, glob_pieces, suggest_glob},
+    path_matcher::{suggest_matcher, PathMatcher, PathMatcherPart},
     rules::{Rule, RuleStorage},
 };
 
 /// A widget for rule writing.
 pub(crate) struct RuleWriter {
     /// The string representation of the glob that will make up the rule.
-    glob_str: String,
-    /// The piece representation of the glob that will make up the rule.
-    glob_pieces: Vec<glob::GlobPiece>,
+    matcher_str: String,
     /// The files that the rule writer works on.
     files: &'static Files,
+    /// A collection of named lists of paths to use for match testing.
+    path_lists: std::collections::BTreeMap<String, crate::input::PathList>,
+    /// The selected path list as the one representing the current system.
+    selected_path_list: Option<String>,
+    /// The selected byte range from the previous frame.
+    prev_selection: Option<std::ops::Range<usize>>,
+    /// The last error that occurred.
+    last_err: Option<String>,
+    /// The number of paths to skip for a new suggestion.
+    skip_count: usize,
+    /// The file to store the rules to when a rule is added.
+    rule_file: Option<PathBuf>,
     /// A change list to display all the files that match the given rule.
     matching_changes: super::change_list::ChangeList,
 }
 
 impl RuleWriter {
     /// Creates a rule writer for the given files.
-    pub(crate) fn new(files: &'static Files, outer_rules: &RuleStorage) -> Self {
-        let suggested_glob = suggest_glob(files, outer_rules).unwrap_or_default();
-        RuleWriter {
-            glob_str: glob::pieces_to_str(&suggested_glob),
-            glob_pieces: suggested_glob,
+    pub(crate) fn new(
+        files: &'static Files,
+        outer_rules: &RuleStorage,
+        rule_file: Option<PathBuf>,
+        path_lists: std::collections::BTreeMap<String, crate::input::PathList>,
+    ) -> Self {
+        let mut this = RuleWriter {
+            matcher_str: String::new(),
             files,
+            path_lists,
+            selected_path_list: None,
+            prev_selection: None,
+            last_err: None,
+            skip_count: 0,
+            rule_file,
             matching_changes: super::change_list::ChangeList::new(
                 files,
                 "Files matching the rule",
                 false,
             ),
-        }
+        };
+
+        this.renew_suggestion(outer_rules);
+
+        this
     }
 
     /// Displays this rule writer.
@@ -41,72 +66,172 @@ impl RuleWriter {
         egui::ScrollArea::both()
             .max_height(f32::INFINITY)
             .show(ui, |ui| {
+                if let Some(last_err) = &self.last_err {
+                    ui.label(last_err);
+                }
+
+                let mut selection = None;
+
                 ui.horizontal(|ui| {
-                    if let Some(rule) = Rule::from_glob(&self.glob_str, self.files) {
+                    if let Some(rule) =
+                        Rule::from_matcher(self.matcher_str.as_str().into(), self.files)
+                    {
                         if ui
                             .add(egui::Button::new("Add").fill(Color32::DARK_GREEN))
                             .clicked()
                         {
                             outer_rules.insert(rule);
-                            self.glob_pieces =
-                                suggest_glob(self.files, outer_rules).unwrap_or_default();
-                            self.glob_str = glob::pieces_to_str(&self.glob_pieces);
+                            if let Some(rule_file) = &self.rule_file {
+                                if let Err(err) = outer_rules.save(rule_file) {
+                                    self.last_err = Some(err.to_string());
+                                }
+                            }
+                            self.renew_suggestion(outer_rules);
                         }
                     }
-                    ui.label("Enter the rule glob:");
-                    let mut glob_str = self.glob_str.clone();
-                    ui.add(
-                        egui::TextEdit::singleline(&mut glob_str)
-                            .desired_width(40.0)
-                            .clip_text(false)
-                            .id_source("change_list_text_edit"),
-                    );
+                    if ui.button("skip").clicked() {
+                        self.skip_count += 1;
+                        self.renew_suggestion(outer_rules);
+                    }
+                    ui.label("Enter the rule matcher:");
 
-                    if glob_str != self.glob_str {
-                        self.glob_pieces = glob_pieces(&glob_str);
-                        self.glob_str = glob::pieces_to_str(&self.glob_pieces);
+                    let output = egui::TextEdit::singleline(&mut self.matcher_str)
+                        .desired_width(40.0)
+                        .clip_text(false)
+                        .id_source("change_list_text_edit")
+                        .show(ui);
+
+                    if let Some(cursor_range) = output.cursor_range {
+                        let mut cursors = [
+                            cursor_range.primary.ccursor.index,
+                            cursor_range.secondary.ccursor.index,
+                        ];
+                        cursors.sort();
+
+                        // FIXME: should this maybe consider grapheme clusters instead of chars?
+                        let [start, end] = cursors.map(|pos| {
+                            self.matcher_str.char_indices().nth(pos).map(|(idx, _)| idx)
+                        });
+
+                        let (start, end) = if let (Some(start), Some(end)) = (start, end) {
+                            match (
+                                self.matcher_str[..start].split('<').next_back(),
+                                self.matcher_str[end..].split_inclusive('>').next(),
+                            ) {
+                                (Some(before), Some(after))
+                                    if (self.matcher_str[..start].contains('<')
+                                        || self.matcher_str[start..].starts_with('<'))
+                                        && (self.matcher_str[..end].ends_with('>')
+                                            || after.ends_with('>')) =>
+                                {
+                                    let new_start = if self.matcher_str[start..].starts_with('<') {
+                                        start
+                                    } else {
+                                        start - before.len() - 1
+                                    };
+                                    let new_end = if self.matcher_str[..end].ends_with('>') {
+                                        end
+                                    } else {
+                                        end + after.len()
+                                    };
+
+                                    let matcher =
+                                        PathMatcher::from(&self.matcher_str[new_start..new_end]);
+                                    if !matcher.is_literal() && matcher.parts.len() == 1 {
+                                        (Some(new_start), Some(new_end))
+                                    } else {
+                                        (Some(start), Some(end))
+                                    }
+                                }
+                                _ => (Some(start), Some(end)),
+                            }
+                        } else {
+                            (start, end)
+                        };
+
+                        match (start, end) {
+                            (Some(start), Some(end)) if start != end => {
+                                selection = Some(start..end)
+                            }
+                            (Some(start), None) => selection = Some(start..self.matcher_str.len()),
+                            _ => (),
+                        }
                     }
                 });
 
-                ui.horizontal(|ui| {
-                    let mut changed = false;
-                    for piece in &mut self.glob_pieces {
-                        ui.vertical(|ui| {
-                            for replacement in piece.possible_replacements() {
-                                if ui
-                                    .add(
-                                        egui::Button::new(
-                                            egui::RichText::new(
-                                                piece.display_replacement(replacement),
-                                            )
-                                            .color(Color32::BLACK),
-                                        )
-                                        .fill(
-                                            if replacement == piece.current_replacement() {
-                                                Color32::LIGHT_BLUE
-                                            } else {
-                                                Color32::DARK_GRAY
-                                            },
-                                        ),
-                                    )
-                                    .clicked()
+                if let Some(selection) = self.prev_selection.clone() {
+                    if selection.end <= self.matcher_str.len() {
+                        ui.horizontal(|ui| {
+                            let mut lit = None;
+                            let matcher_str = self.matcher_str.clone();
+
+                            if !PathMatcher::from(&matcher_str[selection.clone()]).is_literal() {
+                                let current_matcher = PathMatcher::from(matcher_str.as_str());
+
+                                if let Some((matching_path, _)) = self
+                                    .files
+                                    .alphabetical_order()
+                                    .find(|(path, _)| current_matcher.matches_path(path))
                                 {
-                                    piece.apply_replacement(replacement);
-                                    changed = true;
+                                    let start_matcher =
+                                        PathMatcher::from(&matcher_str[..selection.start]);
+                                    let end_matcher =
+                                        PathMatcher::from(&matcher_str[..selection.end]);
+
+                                    if let (Some(start), Some(end)) = (
+                                        start_matcher.match_len(matching_path),
+                                        end_matcher.match_len(matching_path),
+                                    ) {
+                                        lit = Some(&matching_path[start..end]);
+                                    }
+                                }
+                            } else {
+                                lit = Some(&matcher_str[selection.clone()]);
+                            }
+
+                            if let Some(lit) = lit {
+                                if lit != &matcher_str[selection.clone()]
+                                    && ui.button(lit).clicked()
+                                {
+                                    self.matcher_str = format!(
+                                        "{}{}{}",
+                                        &matcher_str[..selection.start],
+                                        PathMatcherPart::Literal(lit.into()),
+                                        &matcher_str[selection.end..]
+                                    );
+                                }
+
+                                for (part, _) in crate::path_matcher::possible_replacements(
+                                    lit, true, false, &None,
+                                ) {
+                                    if ui.button(format!("{}", part)).clicked() {
+                                        self.matcher_str = format!(
+                                            "{}{}{}",
+                                            &matcher_str[..selection.start],
+                                            part,
+                                            &matcher_str[selection.end..]
+                                        );
+                                        break;
+                                    }
                                 }
                             }
                         });
                     }
-                    if changed {
-                        self.glob_str = glob::pieces_to_str(&self.glob_pieces);
-                    }
-                });
+                }
+                self.prev_selection = selection;
 
-                let rule = Rule::from_glob(&self.glob_str, self.files);
+                if !self.path_lists.is_empty() {
+                    ui.separator();
+                    self.display_paths_lists(ui);
+                    ui.separator();
+                }
+
+                let rule = Rule::from_matcher(self.matcher_str.as_str().into(), self.files);
 
                 let mut storage = RuleStorage::new();
                 if let Some(rule) = rule {
-                    self.display_rule_summary(ui, &rule);
+                    rule.show(ui, 12.0, None, false, None);
+
                     storage.insert(rule);
                 }
 
@@ -116,95 +241,130 @@ impl RuleWriter {
             });
     }
 
-    /// Displays a summary of a rule.
-    pub(crate) fn display_rule_summary(&mut self, ui: &mut egui::Ui, rule: &Rule) {
+    /// Displays the matching paths lists for the current glob string.
+    fn display_paths_lists(&mut self, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
-            for (name, val) in rule.frequencies.iter() {
-                let font_size = 12.0;
-                let (rect, _) = ui.allocate_exact_size(
-                    egui::vec2(font_size * 10.0, font_size * 2.0),
-                    egui::Sense::hover(),
+            let mut first = true;
+
+            let mut names = self.path_lists.keys().collect::<Vec<_>>();
+            // sorts the names assuming the following formats
+            // - `<name>_<os>`
+            // - `<year>-<month>_<os>`
+            names.sort_by_key(|name| {
+                // unwraps are safe, because split always returns at least one element
+                let first_part = name.split('_').next().unwrap();
+                let os = name.split('_').last().unwrap();
+
+                (
+                    os,
+                    first_part.chars().all(|c| c.is_alphabetic()),
+                    first_part,
+                )
+            });
+
+            for name in names {
+                let matching_paths: Vec<_> = self.path_lists[name]
+                    .matching_paths(self.matcher_str.as_str().into());
+
+                let selected_os = self
+                    .selected_path_list
+                    .as_ref()
+                    .map(|name| name.split('_').last().unwrap());
+
+                if first {
+                    first = false;
+                } else {
+                    ui.separator();
+                }
+
+                let (symb, color) = match matching_paths.len() {
+                    0 => ("❌", Color32::RED),
+                    1 => ("✅", Color32::GREEN),
+                    _ => ("?", Color32::YELLOW),
+                };
+
+                let symb_response = ui.add(
+                    egui::Label::new(egui::RichText::new(symb).color(color).size(20.0))
+                        .sense(egui::Sense::click()),
                 );
-                display_rule_frequency(ui, rect, name, val);
+                let text_response = ui.add(
+                    egui::Label::new(egui::RichText::new(name).color(
+                        if Some(name) == self.selected_path_list.as_ref() {
+                            Color32::YELLOW
+                        } else if let Some(selected_os) = selected_os && name.ends_with(selected_os) {
+                            Color32::LIGHT_YELLOW
+                        } else {
+                            ui.style().noninteractive().text_color()
+                        },
+                    ))
+                    .sense(egui::Sense::click()),
+                );
+                let count_respone = if matching_paths.len() > 1 {
+                    Some(
+                        ui.add(
+                            egui::Label::new(format!("({})", matching_paths.len()))
+                                .sense(egui::Sense::click()),
+                        ),
+                    )
+                } else {
+                    None
+                };
+                let hovered = symb_response.hovered()
+                    || text_response.hovered()
+                    || count_respone.as_ref().map(|r| r.hovered()).unwrap_or(false);
+                let clicked = symb_response.clicked()
+                    || text_response.clicked()
+                    || count_respone.as_ref().map(|r| r.clicked()).unwrap_or(false);
+
+                if !matching_paths.is_empty() && hovered {
+                    egui::show_tooltip_at_pointer(ui.ctx(), "matching paths hover".into(), |ui| {
+                        ui.vertical(|ui| {
+                            for path in &matching_paths {
+                                ui.label(*path);
+                            }
+                        });
+                    });
+                }
+
+                if clicked {
+                    if Some(name) != self.selected_path_list.as_ref() {
+                        self.selected_path_list = Some(name.to_string());
+                    } else {
+                        self.selected_path_list = None;
+                    }
+                }
             }
         });
     }
-}
 
-/// Displays a single rule frequency.
-fn display_rule_frequency(ui: &mut egui::Ui, rect: egui::Rect, name: &str, val: f64) {
-    if !ui.is_rect_visible(rect) {
-        return;
+    /// Renews the suggestion for the next rule to create.
+    fn renew_suggestion(&mut self, outer_rules: &RuleStorage) {
+        let (selected_path_list, path_lists): (_, Vec<_>) =
+            if let Some(selected_path_list) = &self.selected_path_list {
+                let os = selected_path_list.split('_').next_back().unwrap();
+
+                (
+                    self.path_lists
+                        .iter()
+                        .find(|(name, _)| name == &selected_path_list)
+                        .map(|(_, list)| list),
+                    self.path_lists
+                        .iter()
+                        .filter_map(|(name, list)| name.ends_with(os).then_some(list))
+                        .collect(),
+                )
+            } else {
+                (None, self.path_lists.values().collect())
+            };
+
+        self.matcher_str = suggest_matcher(
+            self.files,
+            outer_rules,
+            selected_path_list,
+            &path_lists,
+            self.skip_count,
+        )
+        .map(|matcher| format!("{matcher}"))
+        .unwrap_or_else(String::new);
     }
-
-    let text_height = rect.size().y * 0.5;
-    let bar_height = rect.size().y - text_height;
-    let corner_radius = rect.size().y * 0.2;
-
-    let painter = ui.painter().with_clip_rect(rect);
-    let top_rect =
-        egui::Rect::from_min_size(rect.left_top(), egui::vec2(rect.width(), text_height));
-
-    painter.rect_filled(
-        top_rect,
-        egui::Rounding {
-            nw: corner_radius,
-            ne: corner_radius,
-            ..Default::default()
-        },
-        Color32::from_gray(60),
-    );
-    painter.text(
-        rect.center_top(),
-        egui::Align2::CENTER_TOP,
-        name,
-        egui::FontId {
-            size: text_height,
-            family: egui::FontFamily::Proportional,
-        },
-        Color32::from_gray(180),
-    );
-
-    let midpoint = egui::pos2(
-        rect.left() + rect.width() * val as f32,
-        rect.top() + text_height,
-    );
-    let left_rect = egui::Rect::from_two_pos(rect.left_bottom(), midpoint);
-    let right_rect = egui::Rect::from_two_pos(midpoint, rect.right_bottom());
-
-    let left_painter = painter.with_clip_rect(left_rect);
-    let right_painter = painter.with_clip_rect(right_rect);
-
-    let text = format!("{:.0}", val * 100.0);
-    let font_id = egui::FontId {
-        size: bar_height,
-        family: egui::FontFamily::Monospace,
-    };
-    let bottom_rect = egui::Rect::from_two_pos(left_rect.left_top(), right_rect.right_bottom());
-    let rounding = egui::Rounding {
-        sw: corner_radius,
-        se: corner_radius,
-        ..Default::default()
-    };
-
-    left_painter.rect_filled(
-        bottom_rect,
-        rounding,
-        super::lerp_color(Color32::RED, Color32::GREEN, val),
-    );
-    left_painter.text(
-        rect.center_bottom(),
-        egui::Align2::CENTER_BOTTOM,
-        &text,
-        font_id.clone(),
-        Color32::BLACK,
-    );
-    right_painter.rect_filled(bottom_rect, rounding, Color32::BLACK);
-    right_painter.text(
-        rect.center_bottom(),
-        egui::Align2::CENTER_BOTTOM,
-        &text,
-        font_id,
-        Color32::WHITE,
-    );
 }

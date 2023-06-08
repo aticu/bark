@@ -1,13 +1,13 @@
 //! Reads the input data into memory.
 
+use std::ops::{Range, RangeFrom};
+
 use sniff::{Changeset, MetaEntryDiff, Timestamp};
 
-use crate::file::ChangeTime;
+use crate::{file::ChangeTime, path_matcher::PathMatcher};
 
 /// Reads the input from the given path.
-pub(crate) fn read_many(
-    path: impl AsRef<std::path::Path>,
-) -> anyhow::Result<Vec<Changeset<Timestamp>>> {
+pub(crate) fn read(path: impl AsRef<std::path::Path>) -> anyhow::Result<Vec<Changeset<Timestamp>>> {
     let path = path.as_ref();
 
     let mut buf = Vec::new();
@@ -15,7 +15,8 @@ pub(crate) fn read_many(
     std::fs::File::open(path)?.read_to_end(&mut buf)?;
 
     if path.extension().map(|ext| ext == "json").unwrap_or(false) {
-        Ok(serde_json::from_slice(&buf)?)
+        let changeset = serde_json::from_slice(&buf)?;
+        Ok(vec![changeset])
     } else {
         Ok(postcard::from_bytes(&buf)?)
     }
@@ -123,4 +124,103 @@ pub(crate) fn compute_change_time(
     let std_dev = time::Duration::seconds_f64((std_dev_total / n as f64).sqrt());
 
     Some(ChangeTime { avg, std_dev })
+}
+
+/// A list of paths.
+pub(crate) struct PathList {
+    /// The ordered list of paths not starting with `/Users/<username>`.
+    ///
+    /// The range should always be `0..` here.
+    normal_paths: Vec<(String, RangeFrom<usize>)>,
+    /// The paths starting with `/Users/<username>`.
+    ///
+    /// The range refers to the part of the string after the match.
+    user_paths: Vec<(String, RangeFrom<usize>)>,
+}
+
+impl PathList {
+    /// Creates a new path list from the given list.
+    pub(crate) fn new(mut list: Vec<String>) -> Self {
+        let mut normal_paths = Vec::new();
+        let mut user_paths = Vec::new();
+
+        list.sort_unstable();
+
+        let user_matcher = PathMatcher::from("/Users/<username>");
+        for path in list {
+            if let Some(len) = user_matcher.match_len(&path) {
+                user_paths.push((path, (len..)));
+            } else {
+                normal_paths.push((path, (0..)));
+            }
+        }
+
+        normal_paths.sort_by(|(path1, _), (path2, _)| path1.cmp(path2));
+        user_paths.sort_by(|(path1, _), (path2, _)| path1.cmp(path2));
+
+        PathList {
+            normal_paths,
+            user_paths,
+        }
+    }
+
+    /// Returns all paths matching the given matcher.
+    pub(crate) fn matching_paths(&self, matcher: PathMatcher) -> Vec<&str> {
+        let user_matcher = PathMatcher::from("/Users/<username>");
+        let full_matcher = matcher.clone();
+
+        let (list, matcher) = if let Some(after_user_matcher) = matcher.strip_prefix(&user_matcher)
+        {
+            (&self.user_paths, after_user_matcher)
+        } else {
+            (&self.normal_paths, matcher)
+        };
+
+        let prefix = matcher.literal_prefix();
+        let range = search_sorted_list(
+            list,
+            &prefix.as_ref(),
+            |(path, range)| &path[range.clone()],
+            |(path, range)| path[range.clone()].starts_with(&*prefix),
+        );
+
+        list[range]
+            .iter()
+            .filter(|(path, _)| full_matcher.matches_path(path))
+            .map(|(path, _)| path.as_str())
+            .collect()
+    }
+}
+
+/// Searches the given sorted list for a section of needles, returning the beginning and end of it.
+///
+/// This function assumes that all needles will be sorted together in the list, the list looks like
+/// this:
+///
+/// ```
+/// [s_1, ..., s_i, n_1, ..., n_j, g_1, ..., g_k]
+/// ```
+///
+/// where `s_1`, ..., `s_i` are the elements comparing smaller than the needles, `n_1`, ..., `n_j`
+/// are the needles and `g_1`, ..., `g_k` are the elements comparing greater than the needles.
+///
+/// The result would then be `i..i + j` in this case.
+fn search_sorted_list<'a, T: 'a, B: Ord + 'a>(
+    list: &'a [T],
+    needle: &'a B,
+    map_to_needle: impl FnMut(&'a T) -> B,
+    mut is_needle: impl FnMut(&T) -> bool,
+) -> Range<usize> {
+    // the paths are sorted, so we can do binary search for paths
+    // where at least the literal prefix of the glob matches to speed
+    // up checking paths
+    let (Ok(middle_idx) | Err(middle_idx)) = list.binary_search_by_key(needle, map_to_needle);
+
+    // the binary search just returns any index into the middle
+    // part
+    // now we use `partition_point` to find the edges of the part
+    let start = list[..middle_idx].partition_point(|elem| !is_needle(elem));
+    let end = middle_idx + list[middle_idx..].partition_point(|elem| is_needle(elem));
+
+    start..end
 }
