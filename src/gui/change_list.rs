@@ -769,7 +769,21 @@ fn summarize_meta_info(result: &mut String, info: &sniff::MetadataInfo<time::Dur
                 write_change(result, gid, write_opt_val);
             }
             sniff::MetadataChange::NamedStream(ty, val) => {
-                result.push_str(&format!("named stream change ({ty:?}): {val:?}"));
+                result.push_str(&format!("named stream change ({ty:?}): "));
+                write_change(result, val, |result, val| {
+                    if let Some(val) = val {
+                        match std::str::from_utf8(val) {
+                            Ok(as_str) => {
+                                result.push('"');
+                                result.push_str(as_str);
+                                result.push('"');
+                            }
+                            Err(_) => result.push_str(&format!("{val:?}")),
+                        }
+                    } else {
+                        result.push_str("none");
+                    }
+                });
             }
         }
     }

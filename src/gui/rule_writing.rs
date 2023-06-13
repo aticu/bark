@@ -264,7 +264,7 @@ impl RuleWriter {
 
             for name in names {
                 let matching_paths: Vec<_> = self.path_lists[name]
-                    .matching_paths(self.matcher_str.as_str().into());
+                    .matching_paths(self.matcher_str.as_str().into()).collect();
 
                 let selected_os = self
                     .selected_path_list

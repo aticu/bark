@@ -74,13 +74,13 @@ impl MatcherViability {
         path_lists: &[&PathList],
     ) -> Self {
         let selected_matches = selected_path_list
-            .map(|list| list.matching_paths(matcher.clone()).len())
+            .map(|list| list.matching_paths(matcher.clone()).take(2).count())
             .unwrap_or(1);
 
         let mut one_match = 0;
         let mut multi_match = 0;
         for list in path_lists {
-            match list.matching_paths(matcher.clone()).len() {
+            match list.matching_paths(matcher.clone()).take(2).count() {
                 0 => (),
                 1 => one_match += 1,
                 _ => multi_match += 1,
@@ -156,6 +156,7 @@ fn best_variant(
             PathMatcher { parts: result }
         };
 
+        let mut min_len = None;
         let mut max_part = None;
         let mut max_viability =
             MatcherViability::compute(&leave_as_lit, files, selected_path_list, path_lists);
@@ -167,6 +168,14 @@ fn best_variant(
             if viability > max_viability {
                 max_part = Some((part, len));
                 max_viability = viability;
+            }
+
+            if let Some(prev_min_len) = min_len {
+                if len < prev_min_len {
+                    min_len = Some(len);
+                }
+            } else {
+                min_len = Some(len);
             }
         }
 
@@ -181,11 +190,16 @@ fn best_variant(
             continue;
         }
 
-        lit.push(subpath.chars().next().unwrap());
-        if let Some((char_width, _)) = subpath.char_indices().nth(1) {
-            i += char_width;
+        if let Some(min_len) = min_len {
+            lit.push_str(&subpath[..min_len]);
+            i += min_len;
         } else {
-            i = path.len();
+            lit.push(subpath.chars().next().unwrap());
+            if let Some((char_width, _)) = subpath.char_indices().nth(1) {
+                i += char_width;
+            } else {
+                i = path.len();
+            }
         }
     }
 
@@ -240,14 +254,14 @@ pub(crate) fn possible_replacements(
             }
         }
     }
-    if username.is_some() {
+    if username.is_some() || !automatic {
         possible_parts.push(PathMatcherPart::Username);
     }
 
     let mut result = Vec::new();
 
     for part in possible_parts {
-        let Some(match_len) = part.match_len(path_part, username) else { continue };
+        let Some(match_len) = part.match_len(path_part, username, None) else { continue };
         if full_match && match_len != path_part.len() {
             continue;
         }

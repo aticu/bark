@@ -216,9 +216,16 @@ impl PathMatcher {
     pub(crate) fn match_len(&self, path: &str) -> Option<usize> {
         let mut iter = path.chars().peekable();
         let mut username = None;
+        let mut parts = self.parts.iter().peekable();
 
-        for part in &self.parts {
-            if !part.matches(&mut iter, &mut username) {
+        while let Some(part) = parts.next() {
+            let next_lit = if let Some(PathMatcherPart::Literal(lit)) = parts.peek() {
+                Some(&**lit)
+            } else {
+                None
+            };
+
+            if !part.matches(&mut iter, &mut username, next_lit) {
                 return None;
             }
         }
@@ -283,12 +290,13 @@ impl PathMatcher {
 
 /// The usernames that are expected to be present on a Windows system and thus should not match a
 /// username matcher.
-pub(crate) const DEFAULT_USERS: [&str; 5] = [
+pub(crate) const DEFAULT_USERS: [&str; 6] = [
     "All Users",
     "Default User",
     "desktop.ini",
     "Public",
     "Default",
+    "defaultuser0",
 ];
 
 /// One part of a path matcher.
@@ -436,8 +444,9 @@ impl PathMatcherPart {
     /// If it returns `false`, the state of the iterator is unspecified.
     fn matches(
         &self,
-        iter: &mut std::iter::Peekable<impl Iterator<Item = char>>,
+        iter: &mut std::iter::Peekable<impl Iterator<Item = char> + Clone>,
         username: &mut Option<InlinableString>,
+        next_lit: Option<&str>,
     ) -> bool {
         match self {
             PathMatcherPart::Literal(lit) => iter.take(lit.len()).eq(lit.chars()),
@@ -543,7 +552,7 @@ impl PathMatcherPart {
                     let mut non_user_iters = DEFAULT_USERS.map(|user| Some(user.chars()));
 
                     let any_non_user_iter_matched =
-                        |non_user_iters: &mut [Option<std::str::Chars>; 5]| {
+                        |non_user_iters: &mut [Option<std::str::Chars>]| {
                             non_user_iters
                                 .iter_mut()
                                 .filter_map(|non_user_iter| non_user_iter.as_mut())
@@ -565,8 +574,17 @@ impl PathMatcherPart {
 
                             break;
                         }
-                        iter.next();
+                        if let Some(next_lit) = next_lit {
+                            if iter.clone().take(next_lit.len()).eq(next_lit.chars()) {
+                                if any_non_user_iter_matched(&mut non_user_iters) {
+                                    return false;
+                                }
 
+                                break;
+                            }
+                        }
+
+                        iter.next();
                         for opt_non_user_iter in &mut non_user_iters {
                             if let Some(non_user_iter) = opt_non_user_iter {
                                 if Some(c) != non_user_iter.next() {
@@ -586,12 +604,17 @@ impl PathMatcherPart {
     }
 
     /// Determines the length that the matcher matches on the given input, if it matches.
-    fn match_len(&self, input: &str, username: &Option<InlinableString>) -> Option<usize> {
+    fn match_len(
+        &self,
+        input: &str,
+        username: &Option<InlinableString>,
+        next_lit: Option<&str>,
+    ) -> Option<usize> {
         let mut username = username.clone();
         let total_len = input.chars().count();
         let mut iter = input.chars().peekable();
 
-        if self.matches(iter.by_ref(), &mut username) {
+        if self.matches(iter.by_ref(), &mut username, next_lit) {
             Some(total_len - iter.count())
         } else {
             None
@@ -835,14 +858,14 @@ mod tests {
 
             let mut iter = input.chars().peekable();
             if let Some(rest) = rest {
-                assert!(matcher.matches(&mut iter, &mut user));
+                assert!(matcher.matches(&mut iter, &mut user, None));
                 assert_eq!(
                     iter.collect::<String>(),
                     rest,
                     "expected {rest} for {input}"
                 );
             } else {
-                assert!(!matcher.matches(&mut iter, &mut user));
+                assert!(!matcher.matches(&mut iter, &mut user, None));
             }
 
             assert_eq!(user, user_before);
@@ -855,19 +878,20 @@ mod tests {
         rest: Option<&str>,
         user: Option<&str>,
         expected_user: Option<&str>,
+        next_lit: Option<&str>,
     ) {
         let mut user = user.map(|user| user.into());
 
         let mut iter = input.chars().peekable();
         if let Some(rest) = rest {
-            assert!(matcher.matches(&mut iter, &mut user));
+            assert!(matcher.matches(&mut iter, &mut user, next_lit));
             assert_eq!(
                 iter.collect::<String>(),
                 rest,
                 "expected {rest} for {input}"
             );
         } else {
-            assert!(!matcher.matches(&mut iter, &mut user));
+            assert!(!matcher.matches(&mut iter, &mut user, next_lit));
         }
 
         assert_eq!(
@@ -1058,19 +1082,51 @@ mod tests {
     fn path_matcher_username() {
         let matcher = PathMatcherPart::Username;
 
-        test_with_user(&matcher, "user", Some(""), None, Some("user"));
-        test_with_user(&matcher, "user/", Some("/"), None, Some("user"));
-        test_with_user(&matcher, "userbla", Some("bla"), Some("user"), Some("user"));
-        test_with_user(&matcher, "All Userss", Some(""), None, Some("All Userss"));
-        test_with_user(&matcher, "All User", Some(""), None, Some("All User"));
+        test_with_user(&matcher, "user", Some(""), None, Some("user"), None);
+        test_with_user(&matcher, "user/", Some("/"), None, Some("user"), None);
+        test_with_user(
+            &matcher,
+            "userbla",
+            Some("bla"),
+            Some("user"),
+            Some("user"),
+            None,
+        );
+        test_with_user(
+            &matcher,
+            "All Userss",
+            Some(""),
+            None,
+            Some("All Userss"),
+            None,
+        );
+        test_with_user(&matcher, "All User", Some(""), None, Some("All User"), None);
 
-        test_with_user(&matcher, "user/", None, Some("user2"), Some("user2"));
+        test_with_user(
+            &matcher,
+            "userblablub",
+            Some("blablub"),
+            None,
+            Some("user"),
+            Some("bla"),
+        );
+        test_with_user(
+            &matcher,
+            "userblablub",
+            Some(""),
+            None,
+            Some("userblablub"),
+            Some("ble"),
+        );
 
-        test_with_user(&matcher, "All Users", None, None, None);
-        test_with_user(&matcher, "Default User", None, None, None);
-        test_with_user(&matcher, "desktop.ini", None, None, None);
-        test_with_user(&matcher, "Public", None, None, None);
-        test_with_user(&matcher, "Default", None, None, None);
+        test_with_user(&matcher, "user/", None, Some("user2"), Some("user2"), None);
+
+        test_with_user(&matcher, "All Users", None, None, None, None);
+        test_with_user(&matcher, "Default User", None, None, None, None);
+        test_with_user(&matcher, "desktop.ini", None, None, None, None);
+        test_with_user(&matcher, "Public", None, None, None, None);
+        test_with_user(&matcher, "Default", None, None, None, None);
+        test_with_user(&matcher, "defaultuser0", None, None, None, None);
     }
 
     #[test]
@@ -1168,6 +1224,15 @@ mod tests {
         assert!(!matcher.matches_path("/Users/user/AppData/Local/ConnectedDevicesPlatform/L.oser"));
         assert!(!matcher.matches_path("/Users/user/AppData/Local/ConnectedDevicesPlatform/L.use"));
         assert!(!matcher.matches_path("/Users/user/AppData/Local/ConnectedPlatform/L.user"));
+
+        let matcher = PathMatcher::from(
+            "/Windows/ServiceProfiles/LocalService/AppData/Local/ConnectedDevicesPlatform/L.<username>.cdp"
+        );
+
+        assert!(matcher.matches_path("/Windows/ServiceProfiles/LocalService/AppData/Local/ConnectedDevicesPlatform/L.user.cdp"));
+        assert!(matcher.matches_path("/Windows/ServiceProfiles/LocalService/AppData/Local/ConnectedDevicesPlatform/L.another-user.cdp"));
+        assert!(matcher.matches_path("/Windows/ServiceProfiles/LocalService/AppData/Local/ConnectedDevicesPlatform/L.max.cdp"));
+        assert!(!matcher.matches_path("/Windows/ServiceProfiles/LocalService/AppData/Local/ConnectedDevicesPlatform/L.Public.cdp"));
     }
 
     #[test]

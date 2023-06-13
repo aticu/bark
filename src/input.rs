@@ -165,7 +165,7 @@ impl PathList {
     }
 
     /// Returns all paths matching the given matcher.
-    pub(crate) fn matching_paths(&self, matcher: PathMatcher) -> Vec<&str> {
+    pub(crate) fn matching_paths(&self, matcher: PathMatcher) -> impl Iterator<Item = &str> {
         let user_matcher = PathMatcher::from("/Users/<username>");
         let full_matcher = matcher.clone();
 
@@ -186,9 +186,8 @@ impl PathList {
 
         list[range]
             .iter()
-            .filter(|(path, _)| full_matcher.matches_path(path))
+            .filter(move |(path, _)| full_matcher.matches_path(path))
             .map(|(path, _)| path.as_str())
-            .collect()
     }
 }
 
