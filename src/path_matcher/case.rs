@@ -1,7 +1,7 @@
 //! This module deals with the case of text.
 
 /// The case of text.
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub(crate) enum Case {
     /// The text is fully upper case.
     Upper,

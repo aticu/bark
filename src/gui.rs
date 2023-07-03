@@ -1,19 +1,41 @@
 mod change_list;
 mod rule_writing;
 mod rules;
+mod utils;
 
-use eframe::{egui, epaint::Color32};
+use eframe::egui;
 
 use crate::{file::Files, rules::RuleStorage};
 
+pub(crate) use utils::lerp_color;
+
+/// The bark GUI app state.
 pub(crate) struct GuiApp {
-    pub(crate) rules: RuleStorage,
+    /// The rule writing GUI.
     rule_writer: rule_writing::RuleWriter,
+    /// The change list GUI.
     change_list: change_list::ChangeList,
-    rule_mode: bool,
+    /// The rule list GUI.
+    rule_list: rules::RuleList,
+    /// The rules used by the GUI app.
+    rules: RuleStorage,
+    /// The current GUI tab.
+    current_tab: Tab,
+}
+
+/// The possible tabs in bark.
+#[derive(Debug, PartialEq, Eq)]
+enum Tab {
+    /// The tab where rules are written.
+    RuleWriting,
+    /// The tab where the filtered changes are listed.
+    ChangeList,
+    /// The tab where the filtered changes are listed.
+    RuleList,
 }
 
 impl GuiApp {
+    /// Runs the GUI application.
     pub(crate) fn run(
         rules: RuleStorage,
         files: Files,
@@ -25,13 +47,17 @@ impl GuiApp {
             "bark - behavior anomaly reconnaissance kit",
             eframe::NativeOptions::default(),
             Box::new(|_| {
-                let rule_writer =
-                    rule_writing::RuleWriter::new(files, &rules, rule_file, path_lists);
                 Box::new(GuiApp {
-                    rules,
-                    rule_writer,
+                    rule_writer: rule_writing::RuleWriter::new(
+                        files,
+                        &rules,
+                        rule_file.clone(),
+                        path_lists,
+                    ),
                     change_list: change_list::ChangeList::new(files, "Filtered changes", true),
-                    rule_mode: true,
+                    rule_list: rules::RuleList::new(files, rule_file),
+                    rules,
+                    current_tab: Tab::ChangeList,
                 })
             }),
         )
@@ -40,35 +66,24 @@ impl GuiApp {
 
 impl eframe::App for GuiApp {
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
+        let start = std::time::Instant::now();
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.checkbox(&mut self.rule_mode, "Write a rule");
+            ui.horizontal(|ui| {
+                for (value, text) in [
+                    (Tab::RuleWriting, "Rule writing"),
+                    (Tab::ChangeList, "Change list"),
+                    (Tab::RuleList, "Rule list"),
+                ] {
+                    ui.selectable_value(&mut self.current_tab, value, text);
+                }
+            });
 
-            if self.rule_mode {
-                self.rule_writer.display(ui, &mut self.rules);
-            } else {
-                self.change_list.display(ui, &self.rules);
+            match self.current_tab {
+                Tab::RuleWriting => self.rule_writer.display(ui, &mut self.rules),
+                Tab::ChangeList => self.change_list.display(ui, &self.rules),
+                Tab::RuleList => self.rule_list.display(ui, &mut self.rules),
             }
         });
+        println!("frame time: {:?}", start.elapsed());
     }
-}
-
-/// Linearly interpolates between the two given colors.
-///
-/// If `between` is `0.0`, the result will be `color1` and if it is `1.0`, the result will be
-/// `color2`.
-fn lerp_color(color1: Color32, color2: Color32, mut between: f64) -> Color32 {
-    between = if between.is_nan() {
-        0.5
-    } else {
-        between.clamp(0.0, 1.0)
-    };
-
-    let transform = |val1, val2| (val1 as f64 * (1.0 - between) + val2 as f64 * between) as u8;
-
-    Color32::from_rgba_unmultiplied(
-        transform(color1.r(), color2.r()),
-        transform(color1.g(), color2.g()),
-        transform(color1.b(), color2.b()),
-        transform(color1.a(), color2.a()),
-    )
 }

@@ -15,7 +15,7 @@ use self::case::Case;
 pub(crate) use self::best_variant::{possible_replacements, suggest_matcher};
 
 /// A data structure that may either match a path or not.
-#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(from = "String")]
 #[serde(into = "String")]
 pub(crate) struct PathMatcher {
@@ -300,7 +300,7 @@ pub(crate) const DEFAULT_USERS: [&str; 6] = [
 ];
 
 /// One part of a path matcher.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub(crate) enum PathMatcherPart {
     /// The path part matches a literal string.
     Literal(InlinableString),

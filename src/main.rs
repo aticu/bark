@@ -1,6 +1,7 @@
 #![feature(let_chains)]
 
 mod file;
+mod future_value;
 mod gui;
 mod input;
 mod path_matcher;

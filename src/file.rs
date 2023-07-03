@@ -1,11 +1,12 @@
 //! Implements information about a single file across possibly multiple runs.
 
-use std::fmt;
+use std::{collections::HashMap, fmt};
 
+use radix_trie::{Trie, TrieCommon};
 use smallvec::SmallVec;
 use sniff::MetaEntryDiff;
 
-use crate::input;
+use crate::{future_value::ComputableValue, input, path_matcher::PathMatcher, rules::RuleStorage};
 
 /// Information about timestamp changes for a single file.
 #[derive(Debug, Default)]
@@ -92,12 +93,55 @@ impl File {
 }
 
 /// An index to reference a path within the `Files` struct.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub(crate) struct PathIdx {
     /// The index into the file list.
     file_idx: usize,
     /// The index into the path list within the file.
     path_idx: usize,
+}
+
+/// The ID of a file.
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+pub(crate) struct FileId {
+    /// The index into the file list.
+    index: usize,
+}
+
+/// A cache for the computed match scores of files.
+pub(crate) struct FileScoreCache {
+    /// The match scores of files, sorted by
+    match_scores: HashMap<FileId, Option<f64>>,
+    /// The version of the rule storage that this filter was generated with.
+    rule_version: u64,
+}
+
+impl FileScoreCache {
+    /// Gets the cached match score for the given file id.
+    pub(crate) fn get_score(&self, id: FileId) -> Option<Option<f64>> {
+        self.match_scores.get(&id).copied()
+    }
+}
+
+impl ComputableValue for FileScoreCache {
+    type CheckCtx = RuleStorage;
+    type ComputeCtx = (RuleStorage, &'static Files);
+
+    fn is_current(&self, ctx: &Self::CheckCtx) -> bool {
+        self.rule_version == ctx.version()
+    }
+
+    fn compute(ctx: Self::ComputeCtx) -> Self {
+        let (storage, files) = &ctx;
+
+        Self {
+            match_scores: files
+                .chronological_order()
+                .map(|file| (file.file_id, storage.match_score(file.file)))
+                .collect(),
+            rule_version: storage.version(),
+        }
+    }
 }
 
 /// Represents a collection of files.
@@ -112,6 +156,8 @@ pub(crate) struct Files {
     alphabetical_order: Vec<PathIdx>,
     /// The indexes of the files in chronological order.
     chronological_order: Vec<usize>,
+    /// The trie of all paths in the list.
+    path_trie: Trie<String, ()>,
 }
 
 impl Files {
@@ -135,6 +181,7 @@ impl Files {
         let mut files = Vec::<File>::new();
         let mut alphabetical_order = Vec::new();
         let mut chronological_order = Vec::<usize>::new();
+        let mut path_trie = Trie::new();
 
         // this allows de-duplication of files that have multiple paths
         let mut changes_to_file_idx = std::collections::HashMap::<_, usize>::new();
@@ -167,13 +214,16 @@ impl Files {
             alphabetical_order.push(crate::file::PathIdx {
                 file_idx: idx,
                 path_idx: files[idx].paths.len() - 1,
-            })
+            });
+
+            path_trie.insert(path.to_string(), ());
         }
 
         Files {
             files,
             alphabetical_order,
             chronological_order,
+            path_trie,
         }
     }
 
@@ -198,6 +248,21 @@ impl Files {
                 files: self,
                 iter: self.chronological_order.iter(),
             },
+        }
+    }
+
+    /// The number of paths that the given path matcher matches.
+    pub(crate) fn match_count(&self, path_matcher: &PathMatcher) -> usize {
+        if let Some(subtrie) = self.path_trie.get_ancestor(&*path_matcher.literal_prefix()) {
+            subtrie
+                .keys()
+                .filter(|path| path_matcher.matches_path(path))
+                .count()
+        } else {
+            self.path_trie
+                .keys()
+                .filter(|path| path_matcher.matches_path(path))
+                .count()
         }
     }
 }
@@ -238,21 +303,41 @@ pub(crate) enum FileIter<'files> {
     },
 }
 
+/// Resolves an alphabetical index.
+fn resolve_alphabetical_idx(idx: PathIdx, files: &Files) -> IteratedFile {
+    let file = &files.files[idx.file_idx];
+
+    IteratedFile {
+        file_id: FileId {
+            index: idx.file_idx,
+        },
+        path: file.paths[idx.path_idx].as_str(),
+        file,
+    }
+}
+
+/// Resolves a chronological index.
+fn resolve_chronological_idx(idx: usize, files: &Files) -> IteratedFile {
+    let file = &files.files[idx];
+
+    IteratedFile {
+        file_id: FileId { index: idx },
+        path: file.path(),
+        file,
+    }
+}
+
 impl<'files> Iterator for FileIter<'files> {
-    type Item = (&'files str, &'files File);
+    type Item = IteratedFile<'files>;
 
     fn next(&mut self) -> Option<Self::Item> {
         match self {
-            Self::Alphabetical { files, iter } => iter.next().map(|idx| {
-                let file = &files.files[idx.file_idx];
-
-                (file.paths[idx.path_idx].as_str(), file)
-            }),
-            Self::Chronological { files, iter } => iter.next().map(|&idx| {
-                let file = &files.files[idx];
-
-                (file.path(), file)
-            }),
+            Self::Alphabetical { files, iter } => {
+                iter.next().map(|&idx| resolve_alphabetical_idx(idx, files))
+            }
+            Self::Chronological { files, iter } => iter
+                .next()
+                .map(|&idx| resolve_chronological_idx(idx, files)),
         }
     }
 
@@ -275,31 +360,23 @@ impl<'files> Iterator for FileIter<'files> {
 
     fn last(self) -> Option<Self::Item> {
         match self {
-            Self::Alphabetical { files, iter } => iter.last().map(|idx| {
-                let file = &files.files[idx.file_idx];
-
-                (file.paths[idx.path_idx].as_str(), file)
-            }),
-            Self::Chronological { files, iter } => iter.last().map(|&idx| {
-                let file = &files.files[idx];
-
-                (file.path(), file)
-            }),
+            Self::Alphabetical { files, iter } => {
+                iter.last().map(|&idx| resolve_alphabetical_idx(idx, files))
+            }
+            Self::Chronological { files, iter } => iter
+                .last()
+                .map(|&idx| resolve_chronological_idx(idx, files)),
         }
     }
 
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
         match self {
-            Self::Alphabetical { files, iter } => iter.nth(n).map(|idx| {
-                let file = &files.files[idx.file_idx];
-
-                (file.paths[idx.path_idx].as_str(), file)
-            }),
-            Self::Chronological { files, iter } => iter.nth(n).map(|&idx| {
-                let file = &files.files[idx];
-
-                (file.path(), file)
-            }),
+            Self::Alphabetical { files, iter } => {
+                iter.nth(n).map(|&idx| resolve_alphabetical_idx(idx, files))
+            }
+            Self::Chronological { files, iter } => iter
+                .nth(n)
+                .map(|&idx| resolve_chronological_idx(idx, files)),
         }
     }
 }
@@ -307,6 +384,16 @@ impl<'files> Iterator for FileIter<'files> {
 impl<'files> FileIter<'files> {
     /// Returns just the files of this file iterator.
     pub(crate) fn files(self) -> impl Iterator<Item = &'files File> {
-        self.map(|(_, file)| file)
+        self.map(|iter_file| iter_file.file)
     }
+}
+
+/// The result of iterating over files.
+pub(crate) struct IteratedFile<'files> {
+    /// The id of the returned file.
+    pub(crate) file_id: FileId,
+    /// The current path of the returned file.
+    pub(crate) path: &'files str,
+    /// The file itself.
+    pub(crate) file: &'files File,
 }

@@ -2,6 +2,8 @@
 
 mod storage;
 
+use inlinable_string::InlinableString;
+use smallvec::SmallVec;
 pub(crate) use storage::RuleStorage;
 
 use crate::{
@@ -9,13 +11,22 @@ use crate::{
     path_matcher::PathMatcher,
 };
 
+/// The number of frequencies that are being reported.
+const FREQUENCY_NUM: usize = 11;
+
 /// A rule to describe one facet of the system behavior.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Hash, serde::Serialize, serde::Deserialize)]
 pub(crate) struct Rule {
     /// What paths this rules applies to.
-    pub(crate) path_matcher: PathMatcher,
+    path_matcher: PathMatcher,
     /// The frequencies of changes at the matches paths.
-    pub(crate) frequencies: ChangeFrequencies,
+    frequencies: ChangeFrequencies,
+    /// Tags that can classify the rule.
+    ///
+    /// Tags are just small pieces of text associated with a rule that can be used for a number of
+    /// purposes.
+    /// For example to explain where a rule originates (e.g. `win10`, `shutdown_button`).
+    pub(crate) tags: SmallVec<[InlinableString; 2]>,
 }
 
 impl Rule {
@@ -27,7 +38,27 @@ impl Rule {
         Some(Rule {
             path_matcher,
             frequencies,
+            tags: Default::default(),
         })
+    }
+
+    /// Returns the path matcher that this rule uses.
+    pub(crate) fn path_matcher(&self) -> &PathMatcher {
+        &self.path_matcher
+    }
+
+    /// The frequencies for the changes that this rule describes.
+    pub(crate) fn frequencies(&self) -> [(&'static str, f64); FREQUENCY_NUM] {
+        self.frequencies.as_array()
+    }
+
+    /// Tags a rule with the given tag.
+    ///
+    /// This has no effect if the rule is already tagged with the tag.
+    pub(crate) fn tag(&mut self, tag: &str) {
+        if !self.tags.iter().any(|t| *t == tag) {
+            self.tags.push(tag.into());
+        }
     }
 
     /// Returns a score between `0.0` and `1.0` for how much the rule matches the file.
@@ -63,30 +94,36 @@ impl Rule {
 }
 
 /// Contains all frequencies of changes at the given paths.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub(crate) struct ChangeFrequencies {
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+struct ChangeFrequencies {
     /// The frequency with which files at the given paths are added.
-    pub(crate) added: f64,
+    added: f64,
     /// The frequency with which files at the given paths are deleted.
-    pub(crate) deleted: f64,
+    deleted: f64,
     /// The frequency with which the file content is changed at the given paths.
-    pub(crate) content_changed: f64,
+    content_changed: f64,
     /// The frequency with which symlinks are changed at the given paths.
-    pub(crate) symlink_changed: f64,
+    symlink_changed: f64,
     /// The frequency with which the file inode is changed.
-    pub(crate) inode_changed: f64,
+    inode_changed: f64,
     /// The frequency with which the file size increased.
-    pub(crate) size_increase: f64,
+    size_increase: f64,
     /// The frequency with which the file size decreased.
-    pub(crate) size_decrease: f64,
+    size_decrease: f64,
     /// The frequency with which the inode modification timestamp of the file is changed.
-    pub(crate) inode_timestamp: f64,
+    inode_timestamp: f64,
     /// The frequency with which the created timestamp of the file is changed.
-    pub(crate) created_timestamp: f64,
+    created_timestamp: f64,
     /// The frequency with which the modified timestamp of the file is changed.
-    pub(crate) modified_timestamp: f64,
+    modified_timestamp: f64,
     /// The frequency with which the accessed timestamp of the file is changed.
-    pub(crate) accessed_timestamp: f64,
+    accessed_timestamp: f64,
+}
+
+impl std::hash::Hash for ChangeFrequencies {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.as_array().map(|(_, val)| val as u64).hash(state);
+    }
 }
 
 impl ChangeFrequencies {
@@ -214,7 +251,7 @@ impl ChangeFrequencies {
     }
 
     /// An iterator over all frequencies.
-    pub(crate) fn as_array(&self) -> [(&'static str, f64); 11] {
+    pub(crate) fn as_array(&self) -> [(&'static str, f64); FREQUENCY_NUM] {
         let Self {
             added,
             deleted,

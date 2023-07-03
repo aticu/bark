@@ -10,6 +10,8 @@ use crate::{
     rules::{Rule, RuleStorage},
 };
 
+use super::utils;
+
 /// A widget for rule writing.
 pub(crate) struct RuleWriter {
     /// The string representation of the glob that will make up the rule.
@@ -71,6 +73,7 @@ impl RuleWriter {
                 }
 
                 let mut selection = None;
+                let mut hovered_matcher_str = None;
 
                 ui.horizontal(|ui| {
                     if let Some(rule) =
@@ -98,64 +101,11 @@ impl RuleWriter {
                     let output = egui::TextEdit::singleline(&mut self.matcher_str)
                         .desired_width(40.0)
                         .clip_text(false)
-                        .id_source("change_list_text_edit")
+                        .id_source("rule_list_text_edit")
                         .show(ui);
 
                     if let Some(cursor_range) = output.cursor_range {
-                        let mut cursors = [
-                            cursor_range.primary.ccursor.index,
-                            cursor_range.secondary.ccursor.index,
-                        ];
-                        cursors.sort();
-
-                        // FIXME: should this maybe consider grapheme clusters instead of chars?
-                        let [start, end] = cursors.map(|pos| {
-                            self.matcher_str.char_indices().nth(pos).map(|(idx, _)| idx)
-                        });
-
-                        let (start, end) = if let (Some(start), Some(end)) = (start, end) {
-                            match (
-                                self.matcher_str[..start].split('<').next_back(),
-                                self.matcher_str[end..].split_inclusive('>').next(),
-                            ) {
-                                (Some(before), Some(after))
-                                    if (self.matcher_str[..start].contains('<')
-                                        || self.matcher_str[start..].starts_with('<'))
-                                        && (self.matcher_str[..end].ends_with('>')
-                                            || after.ends_with('>')) =>
-                                {
-                                    let new_start = if self.matcher_str[start..].starts_with('<') {
-                                        start
-                                    } else {
-                                        start - before.len() - 1
-                                    };
-                                    let new_end = if self.matcher_str[..end].ends_with('>') {
-                                        end
-                                    } else {
-                                        end + after.len()
-                                    };
-
-                                    let matcher =
-                                        PathMatcher::from(&self.matcher_str[new_start..new_end]);
-                                    if !matcher.is_literal() && matcher.parts.len() == 1 {
-                                        (Some(new_start), Some(new_end))
-                                    } else {
-                                        (Some(start), Some(end))
-                                    }
-                                }
-                                _ => (Some(start), Some(end)),
-                            }
-                        } else {
-                            (start, end)
-                        };
-
-                        match (start, end) {
-                            (Some(start), Some(end)) if start != end => {
-                                selection = Some(start..end)
-                            }
-                            (Some(start), None) => selection = Some(start..self.matcher_str.len()),
-                            _ => (),
-                        }
+                        selection = self.expand_selection(cursor_range);
                     }
                 });
 
@@ -168,11 +118,12 @@ impl RuleWriter {
                             if !PathMatcher::from(&matcher_str[selection.clone()]).is_literal() {
                                 let current_matcher = PathMatcher::from(matcher_str.as_str());
 
-                                if let Some((matching_path, _)) = self
+                                if let Some(file) = self
                                     .files
                                     .alphabetical_order()
-                                    .find(|(path, _)| current_matcher.matches_path(path))
+                                    .find(|file| current_matcher.matches_path(file.path))
                                 {
+                                    let matching_path = file.path;
                                     let start_matcher =
                                         PathMatcher::from(&matcher_str[..selection.start]);
                                     let end_matcher =
@@ -190,28 +141,38 @@ impl RuleWriter {
                             }
 
                             if let Some(lit) = lit {
-                                if lit != &matcher_str[selection.clone()]
-                                    && ui.button(lit).clicked()
-                                {
-                                    self.matcher_str = format!(
+                                if lit != &matcher_str[selection.clone()] {
+                                    let response = ui.button(lit);
+                                    let rendered_str = format!(
                                         "{}{}{}",
                                         &matcher_str[..selection.start],
                                         PathMatcherPart::Literal(lit.into()),
                                         &matcher_str[selection.end..]
                                     );
+
+                                    if response.clicked() {
+                                        self.matcher_str = rendered_str;
+                                    } else if response.hovered() {
+                                        hovered_matcher_str = Some(rendered_str);
+                                    }
                                 }
 
                                 for (part, _) in crate::path_matcher::possible_replacements(
                                     lit, true, false, &None,
                                 ) {
-                                    if ui.button(format!("{}", part)).clicked() {
-                                        self.matcher_str = format!(
-                                            "{}{}{}",
-                                            &matcher_str[..selection.start],
-                                            part,
-                                            &matcher_str[selection.end..]
-                                        );
+                                    let response = ui.button(format!("{}", part));
+                                    let rendered_str = format!(
+                                        "{}{}{}",
+                                        &matcher_str[..selection.start],
+                                        part,
+                                        &matcher_str[selection.end..]
+                                    );
+
+                                    if response.clicked() {
+                                        self.matcher_str = rendered_str;
                                         break;
+                                    } else if response.hovered() {
+                                        hovered_matcher_str = Some(rendered_str);
                                     }
                                 }
                             }
@@ -222,7 +183,14 @@ impl RuleWriter {
 
                 if !self.path_lists.is_empty() {
                     ui.separator();
-                    self.display_paths_lists(ui);
+
+                    let matcher = if let Some(matcher_str) = hovered_matcher_str {
+                        PathMatcher::from(matcher_str)
+                    } else {
+                        PathMatcher::from(&*self.matcher_str)
+                    };
+                    self.display_paths_lists(ui, matcher);
+
                     ui.separator();
                 }
 
@@ -241,8 +209,64 @@ impl RuleWriter {
             });
     }
 
+    /// Returns the byte indices of the current selection.
+    fn expand_selection(
+        &self,
+        cursor_range: egui::text_edit::CursorRange,
+    ) -> Option<std::ops::Range<usize>> {
+        let mut cursors = [
+            cursor_range.primary.ccursor.index,
+            cursor_range.secondary.ccursor.index,
+        ];
+        cursors.sort();
+
+        // FIXME: should this maybe consider grapheme clusters instead of chars?
+        let [start, end] =
+            cursors.map(|pos| self.matcher_str.char_indices().nth(pos).map(|(idx, _)| idx));
+
+        let (start, end) = if let (Some(start), Some(end)) = (start, end) {
+            match (
+                self.matcher_str[..start].split('<').next_back(),
+                self.matcher_str[end..].split_inclusive('>').next(),
+            ) {
+                (Some(before), Some(after))
+                    if (self.matcher_str[..start].contains('<')
+                        || self.matcher_str[start..].starts_with('<'))
+                        && (self.matcher_str[..end].ends_with('>') || after.ends_with('>')) =>
+                {
+                    let new_start = if self.matcher_str[start..].starts_with('<') {
+                        start
+                    } else {
+                        start - before.len() - 1
+                    };
+                    let new_end = if self.matcher_str[..end].ends_with('>') {
+                        end
+                    } else {
+                        end + after.len()
+                    };
+
+                    let matcher = PathMatcher::from(&self.matcher_str[new_start..new_end]);
+                    if !matcher.is_literal() && matcher.parts.len() == 1 {
+                        (Some(new_start), Some(new_end))
+                    } else {
+                        (Some(start), Some(end))
+                    }
+                }
+                _ => (Some(start), Some(end)),
+            }
+        } else {
+            (start, end)
+        };
+
+        match (start, end) {
+            (Some(start), Some(end)) if start != end => Some(start..end),
+            (Some(start), None) => Some(start..self.matcher_str.len()),
+            _ => None,
+        }
+    }
+
     /// Displays the matching paths lists for the current glob string.
-    fn display_paths_lists(&mut self, ui: &mut egui::Ui) {
+    fn display_paths_lists(&mut self, ui: &mut egui::Ui, matcher: PathMatcher) {
         ui.horizontal(|ui| {
             let mut first = true;
 
@@ -257,14 +281,15 @@ impl RuleWriter {
 
                 (
                     os,
-                    first_part.chars().all(|c| c.is_alphabetic()),
+                    first_part.chars().any(|c| c.is_alphabetic()),
                     first_part,
                 )
             });
 
             for name in names {
                 let matching_paths: Vec<_> = self.path_lists[name]
-                    .matching_paths(self.matcher_str.as_str().into()).collect();
+                    .matching_paths(matcher.clone())
+                    .collect();
 
                 let selected_os = self
                     .selected_path_list
@@ -283,12 +308,9 @@ impl RuleWriter {
                     _ => ("?", Color32::YELLOW),
                 };
 
-                let symb_response = ui.add(
-                    egui::Label::new(egui::RichText::new(symb).color(color).size(20.0))
-                        .sense(egui::Sense::click()),
-                );
-                let text_response = ui.add(
-                    egui::Label::new(egui::RichText::new(name).color(
+                let response = utils::sub_ui(ui, egui::Sense::click(), 0.0, |ui| {
+                    ui.label(egui::RichText::new(symb).color(color).size(20.0));
+                    ui.label(egui::RichText::new(name).color(
                         if Some(name) == self.selected_path_list.as_ref() {
                             Color32::YELLOW
                         } else if let Some(selected_os) = selected_os && name.ends_with(selected_os) {
@@ -296,27 +318,13 @@ impl RuleWriter {
                         } else {
                             ui.style().noninteractive().text_color()
                         },
-                    ))
-                    .sense(egui::Sense::click()),
-                );
-                let count_respone = if matching_paths.len() > 1 {
-                    Some(
-                        ui.add(
-                            egui::Label::new(format!("({})", matching_paths.len()))
-                                .sense(egui::Sense::click()),
-                        ),
-                    )
-                } else {
-                    None
-                };
-                let hovered = symb_response.hovered()
-                    || text_response.hovered()
-                    || count_respone.as_ref().map(|r| r.hovered()).unwrap_or(false);
-                let clicked = symb_response.clicked()
-                    || text_response.clicked()
-                    || count_respone.as_ref().map(|r| r.clicked()).unwrap_or(false);
+                    ));
+                    if matching_paths.len() > 1 {
+                        ui.label(format!("({})", matching_paths.len()));
+                    }
+                });
 
-                if !matching_paths.is_empty() && hovered {
+                if !matching_paths.is_empty() && response.hovered() {
                     egui::show_tooltip_at_pointer(ui.ctx(), "matching paths hover".into(), |ui| {
                         ui.vertical(|ui| {
                             for path in &matching_paths {
@@ -326,7 +334,7 @@ impl RuleWriter {
                     });
                 }
 
-                if clicked {
+                if response.clicked() {
                     if Some(name) != self.selected_path_list.as_ref() {
                         self.selected_path_list = Some(name.to_string());
                     } else {
