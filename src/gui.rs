@@ -3,6 +3,8 @@ mod rule_writing;
 mod rules;
 mod utils;
 
+use std::time::Duration;
+
 use eframe::egui;
 
 use crate::{file::Files, rules::RuleStorage};
@@ -21,6 +23,8 @@ pub(crate) struct GuiApp {
     rules: RuleStorage,
     /// The current GUI tab.
     current_tab: Tab,
+    /// The time the last frame took to compute.
+    last_frame_time: Option<Duration>,
 }
 
 /// The possible tabs in bark.
@@ -43,21 +47,24 @@ impl GuiApp {
         path_lists: std::collections::BTreeMap<String, crate::input::PathList>,
     ) -> Result<(), eframe::Error> {
         let files = Box::leak(Box::new(files));
+        let path_lists = Box::leak(Box::new(path_lists));
         eframe::run_native(
             "bark - behavior anomaly reconnaissance kit",
             eframe::NativeOptions::default(),
-            Box::new(|_| {
+            Box::new(|ctx| {
                 Box::new(GuiApp {
                     rule_writer: rule_writing::RuleWriter::new(
                         files,
                         &rules,
                         rule_file.clone(),
                         path_lists,
+                        ctx.egui_ctx.clone(),
                     ),
                     change_list: change_list::ChangeList::new(files, "Filtered changes", true),
                     rule_list: rules::RuleList::new(files, rule_file),
                     rules,
                     current_tab: Tab::ChangeList,
+                    last_frame_time: None,
                 })
             }),
         )
@@ -67,6 +74,7 @@ impl GuiApp {
 impl eframe::App for GuiApp {
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
         let start = std::time::Instant::now();
+
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.horizontal(|ui| {
                 for (value, text) in [
@@ -76,6 +84,19 @@ impl eframe::App for GuiApp {
                 ] {
                     ui.selectable_value(&mut self.current_tab, value, text);
                 }
+
+                if let Some(frame_time) = self.last_frame_time {
+                    ui.painter().text(
+                        ui.cursor().min + egui::vec2(ui.available_width(), 0.0),
+                        egui::Align2::RIGHT_TOP,
+                        format!("{:.0} FPS", 1.0 / frame_time.as_secs_f64()),
+                        eframe::epaint::FontId {
+                            size: 10.0,
+                            family: egui::FontFamily::Proportional,
+                        },
+                        ui.style().noninteractive().text_color(),
+                    );
+                }
             });
 
             match self.current_tab {
@@ -84,6 +105,11 @@ impl eframe::App for GuiApp {
                 Tab::RuleList => self.rule_list.display(ui, &mut self.rules),
             }
         });
-        println!("frame time: {:?}", start.elapsed());
+
+        let frame_time = start.elapsed();
+        self.last_frame_time = Some(frame_time);
+        if frame_time > Duration::from_millis(50) {
+            eprintln!("Unusually long frame time: {frame_time:?}");
+        }
     }
 }

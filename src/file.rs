@@ -124,10 +124,11 @@ impl FileScoreCache {
 }
 
 impl ComputableValue for FileScoreCache {
-    type CheckCtx = RuleStorage;
+    type CheckCtx<'check> = &'check RuleStorage;
+
     type ComputeCtx = (RuleStorage, &'static Files);
 
-    fn is_current(&self, ctx: &Self::CheckCtx) -> bool {
+    fn is_current(&self, ctx: Self::CheckCtx<'_>) -> bool {
         self.rule_version == ctx.version()
     }
 

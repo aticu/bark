@@ -121,15 +121,16 @@ fn best_variant(
     selected_path_list: Option<&PathList>,
     path_lists: &[&PathList],
 ) -> PathMatcher {
-    let construct_partial = |parts: &[PathMatcherPart], lit: &str, part, rest: &str| {
-        let mut result = SmallVec::from(parts);
-        if !lit.is_empty() {
-            result.push(PathMatcherPart::Literal(lit.into()));
-        }
-        result.push(part);
-        result.push(PathMatcherPart::Literal(rest.into()));
-        PathMatcher { parts: result }
-    };
+    let construct_partial =
+        |parts: &[PathMatcherPart], lit: &str, part: PathMatcherPart, rest: &str| {
+            let mut result = SmallVec::from(parts);
+            if !lit.is_empty() {
+                result.push(PathMatcherPart::Literal(lit.into()));
+            }
+            result.push(part);
+            result.push(PathMatcherPart::Literal(rest.into()));
+            PathMatcher { parts: result }
+        };
 
     let mut lit = InlinableString::new();
     let mut parts = SmallVec::new();

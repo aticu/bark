@@ -19,7 +19,7 @@ pub(crate) struct RuleWriter {
     /// The files that the rule writer works on.
     files: &'static Files,
     /// A collection of named lists of paths to use for match testing.
-    path_lists: std::collections::BTreeMap<String, crate::input::PathList>,
+    path_lists: &'static std::collections::BTreeMap<String, crate::input::PathList>,
     /// The selected path list as the one representing the current system.
     selected_path_list: Option<String>,
     /// The selected byte range from the previous frame.
@@ -28,6 +28,8 @@ pub(crate) struct RuleWriter {
     last_err: Option<String>,
     /// The number of paths to skip for a new suggestion.
     skip_count: usize,
+    /// A receiver for the next matcher suggestion.
+    matcher_suggestion_receiver: Option<std::sync::mpsc::Receiver<String>>,
     /// The file to store the rules to when a rule is added.
     rule_file: Option<PathBuf>,
     /// A change list to display all the files that match the given rule.
@@ -40,7 +42,8 @@ impl RuleWriter {
         files: &'static Files,
         outer_rules: &RuleStorage,
         rule_file: Option<PathBuf>,
-        path_lists: std::collections::BTreeMap<String, crate::input::PathList>,
+        path_lists: &'static std::collections::BTreeMap<String, crate::input::PathList>,
+        ctx: egui::Context,
     ) -> Self {
         let mut this = RuleWriter {
             matcher_str: String::new(),
@@ -50,6 +53,7 @@ impl RuleWriter {
             prev_selection: None,
             last_err: None,
             skip_count: 0,
+            matcher_suggestion_receiver: None,
             rule_file,
             matching_changes: super::change_list::ChangeList::new(
                 files,
@@ -58,13 +62,20 @@ impl RuleWriter {
             ),
         };
 
-        this.renew_suggestion(outer_rules);
+        this.renew_suggestion(outer_rules, ctx);
 
         this
     }
 
     /// Displays this rule writer.
     pub(crate) fn display(&mut self, ui: &mut egui::Ui, outer_rules: &mut RuleStorage) {
+        if let Some(receiver) = &self.matcher_suggestion_receiver {
+            if let Ok(val) = receiver.try_recv() {
+                self.matcher_str = val;
+                self.matcher_suggestion_receiver = None;
+            }
+        }
+
         egui::ScrollArea::both()
             .max_height(f32::INFINITY)
             .show(ui, |ui| {
@@ -73,7 +84,6 @@ impl RuleWriter {
                 }
 
                 let mut selection = None;
-                let mut hovered_matcher_str = None;
 
                 ui.horizontal(|ui| {
                     if let Some(rule) =
@@ -89,12 +99,12 @@ impl RuleWriter {
                                     self.last_err = Some(err.to_string());
                                 }
                             }
-                            self.renew_suggestion(outer_rules);
+                            self.renew_suggestion(outer_rules, ui.ctx().clone());
                         }
                     }
                     if ui.button("skip").clicked() {
                         self.skip_count += 1;
-                        self.renew_suggestion(outer_rules);
+                        self.renew_suggestion(outer_rules, ui.ctx().clone());
                     }
                     ui.label("Enter the rule matcher:");
 
@@ -109,76 +119,7 @@ impl RuleWriter {
                     }
                 });
 
-                if let Some(selection) = self.prev_selection.clone() {
-                    if selection.end <= self.matcher_str.len() {
-                        ui.horizontal(|ui| {
-                            let mut lit = None;
-                            let matcher_str = self.matcher_str.clone();
-
-                            if !PathMatcher::from(&matcher_str[selection.clone()]).is_literal() {
-                                let current_matcher = PathMatcher::from(matcher_str.as_str());
-
-                                if let Some(file) = self
-                                    .files
-                                    .alphabetical_order()
-                                    .find(|file| current_matcher.matches_path(file.path))
-                                {
-                                    let matching_path = file.path;
-                                    let start_matcher =
-                                        PathMatcher::from(&matcher_str[..selection.start]);
-                                    let end_matcher =
-                                        PathMatcher::from(&matcher_str[..selection.end]);
-
-                                    if let (Some(start), Some(end)) = (
-                                        start_matcher.match_len(matching_path),
-                                        end_matcher.match_len(matching_path),
-                                    ) {
-                                        lit = Some(&matching_path[start..end]);
-                                    }
-                                }
-                            } else {
-                                lit = Some(&matcher_str[selection.clone()]);
-                            }
-
-                            if let Some(lit) = lit {
-                                if lit != &matcher_str[selection.clone()] {
-                                    let response = ui.button(lit);
-                                    let rendered_str = format!(
-                                        "{}{}{}",
-                                        &matcher_str[..selection.start],
-                                        PathMatcherPart::Literal(lit.into()),
-                                        &matcher_str[selection.end..]
-                                    );
-
-                                    if response.clicked() {
-                                        self.matcher_str = rendered_str;
-                                    } else if response.hovered() {
-                                        hovered_matcher_str = Some(rendered_str);
-                                    }
-                                }
-
-                                for (part, _) in crate::path_matcher::possible_replacements(
-                                    lit, true, false, &None,
-                                ) {
-                                    let response = ui.button(format!("{}", part));
-                                    let rendered_str = format!(
-                                        "{}{}{}",
-                                        &matcher_str[..selection.start],
-                                        part,
-                                        &matcher_str[selection.end..]
-                                    );
-
-                                    if response.clicked() {
-                                        self.matcher_str = rendered_str;
-                                        break;
-                                    } else if response.hovered() {
-                                        hovered_matcher_str = Some(rendered_str);
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
+                let hovered_matcher_str = self.display_replacements(ui);
                 self.prev_selection = selection;
 
                 if !self.path_lists.is_empty() {
@@ -207,6 +148,73 @@ impl RuleWriter {
 
                 self.matching_changes.display(ui, &storage);
             });
+    }
+
+    /// Displays the possible replacements for the current selection.
+    fn display_replacements(&mut self, ui: &mut egui::Ui) -> Option<String> {
+        let mut hovered_matcher_str = None;
+
+        if let Some(selection) = self.prev_selection.clone() {
+            if selection.end <= self.matcher_str.len() {
+                ui.horizontal(|ui| {
+                    let mut lit = None;
+                    let matcher_str = self.matcher_str.clone();
+
+                    if !PathMatcher::from(&matcher_str[selection.clone()]).is_literal() {
+                        let current_matcher = PathMatcher::from(matcher_str.as_str());
+
+                        if let Some(file) = self
+                            .files
+                            .alphabetical_order()
+                            .find(|file| current_matcher.matches_path(file.path))
+                        {
+                            let matching_path = file.path;
+                            let start_matcher = PathMatcher::from(&matcher_str[..selection.start]);
+                            let end_matcher = PathMatcher::from(&matcher_str[..selection.end]);
+
+                            if let (Some(start), Some(end)) = (
+                                start_matcher.match_len(matching_path),
+                                end_matcher.match_len(matching_path),
+                            ) {
+                                lit = Some(&matching_path[start..end]);
+                            }
+                        }
+                    } else {
+                        lit = Some(&matcher_str[selection.clone()]);
+                    }
+
+                    if let Some(lit) = lit {
+                        let prefix = &matcher_str[..selection.start];
+                        let suffix = &matcher_str[selection.end..];
+
+                        let mut show_button = |text: &str, replacement: String| {
+                            let response = ui.button(text);
+
+                            if response.clicked() {
+                                self.matcher_str = replacement;
+                            } else if response.hovered() {
+                                hovered_matcher_str = Some(replacement);
+                            }
+                        };
+
+                        if lit != &matcher_str[selection.clone()] {
+                            show_button(
+                                lit,
+                                format!("{prefix}{}{suffix}", PathMatcherPart::Literal(lit.into())),
+                            );
+                        }
+
+                        for (part, _) in
+                            crate::path_matcher::possible_replacements(lit, true, false, &None)
+                        {
+                            show_button(&format!("{}", part), format!("{prefix}{}{suffix}", part));
+                        }
+                    }
+                });
+            }
+        }
+
+        hovered_matcher_str
     }
 
     /// Returns the byte indices of the current selection.
@@ -346,7 +354,7 @@ impl RuleWriter {
     }
 
     /// Renews the suggestion for the next rule to create.
-    fn renew_suggestion(&mut self, outer_rules: &RuleStorage) {
+    fn renew_suggestion(&mut self, outer_rules: &RuleStorage, ctx: egui::Context) {
         let (selected_path_list, path_lists): (_, Vec<_>) =
             if let Some(selected_path_list) = &self.selected_path_list {
                 let os = selected_path_list.split('_').next_back().unwrap();
@@ -365,14 +373,26 @@ impl RuleWriter {
                 (None, self.path_lists.values().collect())
             };
 
-        self.matcher_str = suggest_matcher(
-            self.files,
-            outer_rules,
-            selected_path_list,
-            &path_lists,
-            self.skip_count,
-        )
-        .map(|matcher| format!("{matcher}"))
-        .unwrap_or_else(String::new);
+        let (sender, receiver) = std::sync::mpsc::channel();
+
+        let files = self.files;
+        let outer_rules = outer_rules.clone();
+        let skip_count = self.skip_count;
+        std::thread::spawn(move || {
+            let matcher = suggest_matcher(
+                files,
+                &outer_rules,
+                selected_path_list,
+                &path_lists,
+                skip_count,
+            )
+            .map(|matcher| format!("{matcher}"))
+            .unwrap_or_else(String::new);
+
+            sender.send(matcher).ok();
+            ctx.request_repaint();
+        });
+
+        self.matcher_suggestion_receiver = Some(receiver);
     }
 }

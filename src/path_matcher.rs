@@ -627,7 +627,7 @@ impl PathMatcherPart {
     }
 
     /// Returns all the variants of this part that could match the given length.
-    fn variants_with_match_len(&self, len: usize) -> SmallVec<[PathMatcherPart; 3]> {
+    fn variants_with_match_len(&self, len: usize) -> SmallVec<[PathMatcherPart; 2]> {
         if len == 0 {
             return SmallVec::new();
         }
