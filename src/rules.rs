@@ -4,7 +4,7 @@ mod storage;
 
 use inlinable_string::InlinableString;
 use smallvec::SmallVec;
-pub(crate) use storage::RuleStorage;
+pub(crate) use storage::{MatchCountCache, RuleStorage};
 
 use crate::{
     file::{File, Files},
@@ -52,7 +52,7 @@ impl Rule {
         self.frequencies.as_array()
     }
 
-    /// Tags a rule with the given tag.
+    /// Tags the rule with the given tag.
     ///
     /// This has no effect if the rule is already tagged with the tag.
     pub(crate) fn tag(&mut self, tag: &str) {

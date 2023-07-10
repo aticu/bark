@@ -1,11 +1,19 @@
 //! Provides a container for rules to efficiently match on them.
 
-use std::{fmt, path::Path};
+use std::{
+    collections::HashMap,
+    fmt,
+    path::{Path, PathBuf},
+};
 
 use radix_trie::{Trie, TrieCommon};
 use smallvec::SmallVec;
 
-use crate::file::File;
+use crate::{
+    file::{File, Files},
+    future_value::ComputableValue,
+    path_matcher::PathMatcher,
+};
 
 use super::Rule;
 
@@ -29,7 +37,7 @@ impl RuleStorage {
         }
     }
 
-    /// Inserts the given rule into the storeag.
+    /// Inserts the given rule into the storage.
     pub(crate) fn insert(&mut self, rule: Rule) {
         let prefix = rule.path_matcher.literal_prefix().to_string();
 
@@ -78,9 +86,14 @@ impl RuleStorage {
         }
     }
 
+    /// Returns an iterator over the contained rules.
+    pub(crate) fn iter(&self) -> std::slice::Iter<Rule> {
+        self.rules.iter()
+    }
+
     /// Returns a mutable iterator over the contained rules.
-    pub(crate) fn iter_mut(&mut self) -> impl Iterator<Item = &mut Rule> {
-        self.into_iter()
+    pub(crate) fn iter_mut(&mut self) -> std::slice::IterMut<Rule> {
+        self.rules.iter_mut()
     }
 
     /// Returns a number indicative of the current version of this rule storage.
@@ -98,23 +111,43 @@ impl RuleStorage {
     }
 
     /// Saves the rule storage to the given rule file.
-    pub(crate) fn save(&self, rule_file: impl AsRef<Path>) -> anyhow::Result<()> {
-        let path = rule_file.as_ref();
+    pub(crate) fn save(&self, rule_file: impl Into<PathBuf>) {
+        use std::sync::atomic::{AtomicBool, Ordering};
 
-        if let Some(dir) = path.parent() {
-            let temp = tempfile::NamedTempFile::new_in(dir)?;
-            serde_json::to_writer_pretty(&temp, self)?;
-            temp.persist(path)?;
-        } else {
-            anyhow::bail!("file path does not have a parent")
+        static SAVE_IN_PROGRESS: AtomicBool = AtomicBool::new(false);
+
+        while SAVE_IN_PROGRESS.load(Ordering::Acquire) {
+            std::thread::sleep(std::time::Duration::from_millis(10));
         }
 
-        Ok(())
+        let path = rule_file.into();
+        let clone = self.clone();
+        std::thread::spawn(move || {
+            SAVE_IN_PROGRESS.store(true, Ordering::Relaxed);
+
+            'end: {
+                if let Some(dir) = path.parent() {
+                    let Ok(temp) = tempfile::NamedTempFile::new_in(dir) else { break 'end };
+                    let mut file = std::io::BufWriter::new(temp);
+                    if serde_json::to_writer_pretty(&mut file, &clone).is_err() {
+                        break 'end;
+                    };
+                    let Ok(temp) = file.into_inner() else { break 'end };
+                    if temp.persist(path).is_err() {
+                        break 'end;
+                    };
+                }
+            }
+
+            SAVE_IN_PROGRESS.store(false, Ordering::Release);
+        });
     }
 
     /// Loads the rule storage from the given rule file.
     pub(crate) fn load(rule_file: impl AsRef<Path>) -> anyhow::Result<Self> {
-        Ok(serde_json::from_reader(std::fs::File::open(rule_file)?)?)
+        Ok(serde_json::from_reader(std::io::BufReader::new(
+            std::fs::File::open(rule_file)?,
+        ))?)
     }
 }
 
@@ -123,7 +156,7 @@ impl<'storage> IntoIterator for &'storage RuleStorage {
     type IntoIter = std::slice::Iter<'storage, Rule>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.rules.iter()
+        self.iter()
     }
 }
 
@@ -132,7 +165,7 @@ impl<'storage> IntoIterator for &'storage mut RuleStorage {
     type IntoIter = std::slice::IterMut<'storage, Rule>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.rules.iter_mut()
+        self.iter_mut()
     }
 }
 
@@ -234,5 +267,48 @@ impl<'de> serde::Deserialize<'de> for RuleStorage {
         }
 
         deserializer.deserialize_seq(Visitor)
+    }
+}
+
+/// A cache for storing the number of matches for rules.
+///
+/// The matches refer to the number of matching paths in `Files`.
+pub(crate) struct MatchCountCache {
+    /// The internal map of the path matchers to the match count.
+    map: HashMap<PathMatcher, usize>,
+    /// The version of the rule storage that this is derived from.
+    rule_version: u64,
+}
+
+impl MatchCountCache {
+    /// Returns the match count for the given path matcher.
+    pub(crate) fn get_count(&self, matcher: &PathMatcher) -> Option<usize> {
+        self.map.get(matcher).copied()
+    }
+}
+
+impl ComputableValue for MatchCountCache {
+    type CheckCtx<'check> = &'check RuleStorage;
+
+    type ComputeCtx = (RuleStorage, &'static Files);
+
+    fn is_current(&self, ctx: Self::CheckCtx<'_>) -> bool {
+        self.rule_version == ctx.version()
+    }
+
+    fn compute(ctx: Self::ComputeCtx) -> Self {
+        let (storage, files) = &ctx;
+
+        Self {
+            map: storage
+                .iter()
+                .map(|rule| {
+                    let matcher = rule.path_matcher().clone();
+                    let count = files.match_count(&matcher);
+                    (matcher, count)
+                })
+                .collect(),
+            rule_version: storage.version(),
+        }
     }
 }

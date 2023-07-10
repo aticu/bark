@@ -6,9 +6,11 @@ use eframe::egui::{self, Color32};
 
 use crate::{
     file::Files,
-    rules::{Rule, RuleStorage},
+    future_value::FutureValue,
+    rules::{MatchCountCache, Rule, RuleStorage},
 };
 
+/// Displays a list of rules.
 pub(crate) struct RuleList {
     /// The source list of changed files.
     files: &'static Files,
@@ -22,8 +24,8 @@ pub(crate) struct RuleList {
     shown_rules: usize,
     /// The file to store the rules to when a rule is added.
     rule_file: Option<PathBuf>,
-    /// The last error that occurred.
-    last_err: Option<String>,
+    /// The cache for the match counts of the rules.
+    match_count_cache: FutureValue<MatchCountCache>,
 }
 
 /// The match status of shown rules.
@@ -46,17 +48,13 @@ impl RuleList {
             tag_str: String::new(),
             shown_rules: 0,
             rule_file,
-            last_err: None,
+            match_count_cache: Default::default(),
         }
     }
 
     /// Displays the rules in the given rule storage.
     pub(crate) fn display(&mut self, ui: &mut egui::Ui, storage: &mut RuleStorage) {
         let mut apply_tag = None;
-
-        if let Some(last_err) = &self.last_err {
-            ui.label(last_err);
-        }
 
         ui.horizontal(|ui| {
             ui.label("Filter:");
@@ -95,52 +93,68 @@ impl RuleList {
 
         let mut shown_rules = 0;
 
-        egui::ScrollArea::both()
-            .auto_shrink([false, true])
-            .show(ui, |ui| {
-                for rule in storage.iter_mut() {
-                    // TODO: maybe do something like smart case here?
-                    if format!("{}", rule.path_matcher())
-                        .to_lowercase()
-                        .contains(&self.filter.to_lowercase())
-                    {
-                        let matcher = rule.path_matcher();
-                        let match_count = self.files.match_count(matcher);
+        if self.match_count_cache.update_check(storage) {
+            let ctx = ui.ctx().clone();
+            self.match_count_cache
+                .update((storage.clone(), self.files), move || ctx.request_repaint());
+        }
 
-                        let show = match self.match_status {
-                            MatchStatus::Ignore => true,
-                            MatchStatus::OnlyMatching => match_count > 0,
-                            MatchStatus::OnlyNonMatching => match_count == 0,
-                        };
-                        if show {
-                            ui.horizontal(|ui| {
-                                ui.add_sized(
-                                    egui::vec2(
-                                        20.0,
-                                        ui.style().text_styles[&egui::TextStyle::Body].size,
-                                    ),
-                                    egui::Label::new(format!("{match_count}")),
-                                );
-                                rule.show(ui, 9.0, None, true, None);
+        if self.match_count_cache.is_current(storage) {
+            egui::ScrollArea::both()
+                .auto_shrink([false, true])
+                .show(ui, |ui| {
+                    for rule in storage.iter_mut() {
+                        // TODO: maybe do something like smart case here?
+                        if format!("{}", rule.path_matcher())
+                            .to_lowercase()
+                            .contains(&self.filter.to_lowercase())
+                        {
+                            let matcher = rule.path_matcher();
+                            let match_count = self
+                                .match_count_cache
+                                .get()
+                                .unwrap()
+                                .get_count(matcher)
+                                .unwrap_or(0);
 
-                                shown_rules += 1;
+                            let show = match self.match_status {
+                                MatchStatus::Ignore => true,
+                                MatchStatus::OnlyMatching => match_count > 0,
+                                MatchStatus::OnlyNonMatching => match_count == 0,
+                            };
+                            if show {
+                                ui.horizontal(|ui| {
+                                    ui.add_sized(
+                                        egui::vec2(
+                                            20.0,
+                                            ui.style().text_styles[&egui::TextStyle::Body].size,
+                                        ),
+                                        egui::Label::new(format!("{match_count}")),
+                                    );
+                                    rule.show(ui, 9.0, None, true, None);
 
-                                if let Some(tag) = &apply_tag {
-                                    rule.tag(tag);
-                                }
-                            });
+                                    shown_rules += 1;
+
+                                    if let Some(tag) = &apply_tag {
+                                        rule.tag(tag);
+                                    }
+                                });
+                            }
                         }
                     }
-                }
+                });
+        } else {
+            ui.horizontal(|ui| {
+                ui.spinner();
+                ui.label("computing rule list");
             });
+        }
 
         self.shown_rules = shown_rules;
 
         if apply_tag.is_some() {
             if let Some(rule_file) = &self.rule_file {
-                if let Err(err) = storage.save(rule_file) {
-                    self.last_err = Some(err.to_string());
-                }
+                storage.save(rule_file);
             }
         }
     }

@@ -286,6 +286,28 @@ impl PathMatcher {
             None
         }
     }
+
+    /// Makes sure that the path matcher is canonical by merging together parts that can be merged.
+    fn canonicalize(&mut self) {
+        if self
+            .parts
+            .windows(2)
+            .any(|win| win[0].is_literal() && win[1].is_literal())
+        {
+            let mut new_parts = SmallVec::new();
+
+            for part in std::mem::take(&mut self.parts) {
+                if let PathMatcherPart::Literal(new_lit) = &part &&
+                    let Some(PathMatcherPart::Literal(lit)) = new_parts.last_mut() {
+                        lit.push_str(new_lit);
+                } else {
+                    new_parts.push(part);
+                }
+            }
+
+            self.parts = new_parts;
+        }
+    }
 }
 
 /// The usernames that are expected to be present on a Windows system and thus should not match a
@@ -716,8 +738,64 @@ impl PathMatcherPart {
     /// Returns a value that can be used to compare how flexible matcher parts are.
     ///
     /// Values comparing lower will match fewer paths while higher comparing values will match more paths.
-    fn flexibility(&self) -> impl Ord + fmt::Debug {
-        use std::cmp::Reverse;
+    fn flexibility(&self) -> u64 {
+        // the resulting number is split as follows:
+        //
+        // MSB               LSB
+        //  | `flags` | `len` |
+        //
+        // where
+        // - `flags` encode general information about the part (ordered by importance)
+        // - `len` encodes information about the possible lengths allowed by the matcher part
+
+        const IMPORTANCE: &[&str] = &[
+            "lit",
+            "username",
+            "locale",
+            "uuid",
+            "mixed_case",
+            "assemblyver",
+            "digit",
+            "hexdigit",
+            "alpha",
+            "alphanum",
+            "dynamic_len",
+        ];
+
+        const FLAG_BITS: usize = IMPORTANCE.len();
+        const FLAGS_START: usize = 64 - FLAG_BITS;
+        const LEN_BITS: usize = 64 - FLAG_BITS;
+        const LEN_START: usize = FLAGS_START - LEN_BITS;
+        const MAX_LEN_VAL: u64 = (1 << (LEN_BITS + 1)) - 1;
+
+        let mut score = 0u64;
+
+        macro_rules! add_flag {
+            ($val:literal) => {{
+                score |=
+                    1 << (IMPORTANCE.iter().position(|elem| elem == &$val).unwrap() + FLAGS_START);
+            }};
+        }
+
+        {
+            match self {
+                PathMatcherPart::Literal(_) => add_flag!("lit"),
+                PathMatcherPart::Uuid(_) => add_flag!("uuid"),
+                PathMatcherPart::Locale => add_flag!("locale"),
+                PathMatcherPart::AssemblyVersion => add_flag!("assemblyver"),
+                PathMatcherPart::Digit { .. } => add_flag!("digit"),
+                PathMatcherPart::HexDigit { .. } => add_flag!("hexdigit"),
+                PathMatcherPart::AlphaOrAlphanumeric {
+                    contains_digits: false,
+                    ..
+                } => add_flag!("alpha"),
+                PathMatcherPart::AlphaOrAlphanumeric {
+                    contains_digits: true,
+                    ..
+                } => add_flag!("alphanum"),
+                PathMatcherPart::Username => add_flag!("username"),
+            }
+        }
 
         let (hex_min, hex_max) = match self {
             PathMatcherPart::HexDigit {
@@ -735,74 +813,56 @@ impl PathMatcherPart {
             PathMatcherPart::Digit { min_len, max_len } => (*min_len, *max_len),
             _ => (None, None),
         };
-        let fixed_len = hex_min.is_some() && hex_min == hex_max
-            || digit_min.is_some() && digit_min == digit_max
-            || alpha_min.is_some() && alpha_min == alpha_max;
+        let has_len_component = match self {
+            PathMatcherPart::Literal(_)
+            | PathMatcherPart::Uuid(_)
+            | PathMatcherPart::Locale
+            | PathMatcherPart::AssemblyVersion
+            | PathMatcherPart::Username => false,
+            PathMatcherPart::Digit { .. }
+            | PathMatcherPart::HexDigit { .. }
+            | PathMatcherPart::AlphaOrAlphanumeric { .. } => true,
+        };
 
-        (
-            [
-                !self.is_literal(),
-                !matches!(self, PathMatcherPart::Username),
-                !matches!(self, PathMatcherPart::Locale),
-                !matches!(self, PathMatcherPart::Uuid(Case::Upper | Case::Lower)),
-                !matches!(self, PathMatcherPart::Uuid(Case::Mixed)),
-                !matches!(self, PathMatcherPart::AssemblyVersion),
-                !fixed_len,
-                !matches!(self, PathMatcherPart::Digit { .. }),
-                !matches!(
-                    self,
-                    PathMatcherPart::HexDigit {
-                        case: Case::Upper | Case::Lower,
-                        ..
-                    }
-                ),
-                !matches!(
-                    self,
-                    PathMatcherPart::HexDigit {
-                        case: Case::Mixed,
-                        ..
-                    }
-                ),
-                !matches!(
-                    self,
-                    PathMatcherPart::AlphaOrAlphanumeric {
-                        contains_digits: false,
-                        case: Case::Upper | Case::Lower,
-                        ..
-                    }
-                ),
-                !matches!(
-                    self,
-                    PathMatcherPart::AlphaOrAlphanumeric {
-                        contains_digits: true,
-                        case: Case::Upper | Case::Lower,
-                        ..
-                    }
-                ),
-                !matches!(
-                    self,
-                    PathMatcherPart::AlphaOrAlphanumeric {
-                        contains_digits: false,
-                        case: Case::Mixed,
-                        ..
-                    }
-                ),
-                !matches!(
-                    self,
-                    PathMatcherPart::AlphaOrAlphanumeric {
-                        contains_digits: true,
-                        case: Case::Mixed,
-                        ..
-                    }
-                ),
-            ],
-            Reverse(alpha_min),
-            Reverse(alpha_max.map(Reverse)),
-            Reverse(hex_min),
-            Reverse(hex_max.map(Reverse)),
-            Reverse(digit_min),
-            Reverse(digit_max.map(Reverse)),
-        )
+        let min = hex_min.or(alpha_min).or(digit_min);
+        let max = hex_max.or(alpha_max).or(digit_max);
+        let dynamic_len = has_len_component && (min != max || min.is_none() || max.is_none());
+
+        let mixed_case = match self {
+            PathMatcherPart::Literal(_)
+            | PathMatcherPart::Locale
+            | PathMatcherPart::AssemblyVersion
+            | PathMatcherPart::Digit { .. }
+            | PathMatcherPart::Username => false,
+            PathMatcherPart::Uuid(case)
+            | PathMatcherPart::HexDigit { case, .. }
+            | PathMatcherPart::AlphaOrAlphanumeric { case, .. } => *case == Case::Mixed,
+        };
+
+        if dynamic_len {
+            add_flag!("dynamic_len");
+        }
+
+        if mixed_case {
+            add_flag!("mixed_case");
+        }
+
+        let possible_lens = match (min, max) {
+            (Some(min), Some(max)) => {
+                if max > min {
+                    (max - min) as u64
+                } else {
+                    0
+                }
+            }
+            (Some(min), None) => MAX_LEN_VAL.saturating_sub(min as u64),
+            (None, Some(max)) => (max as u64).min(MAX_LEN_VAL),
+            (None, None) => MAX_LEN_VAL,
+        };
+
+        score |= possible_lens << LEN_START;
+
+        score
     }
 }
 
@@ -1233,6 +1293,10 @@ mod tests {
         assert!(matcher.matches_path("/Windows/ServiceProfiles/LocalService/AppData/Local/ConnectedDevicesPlatform/L.another-user.cdp"));
         assert!(matcher.matches_path("/Windows/ServiceProfiles/LocalService/AppData/Local/ConnectedDevicesPlatform/L.max.cdp"));
         assert!(!matcher.matches_path("/Windows/ServiceProfiles/LocalService/AppData/Local/ConnectedDevicesPlatform/L.Public.cdp"));
+
+        let matcher = PathMatcher::from("/Program Files (x86)/Microsoft/EdgeUpdate");
+
+        assert!(matcher.matches_path("/Program Files (x86)/Microsoft/EdgeUpdate"));
     }
 
     #[test]
@@ -1252,6 +1316,13 @@ mod tests {
         let matcher = PathMatcher::from("/only-lits");
 
         assert!(matcher.matches_path("/only-lits"));
+    }
+
+    #[test]
+    fn path_matcher_empty_len() {
+        let matcher = PathMatcher::from("");
+
+        assert_eq!(matcher.match_len("/test/path"), Some(0));
     }
 
     #[test]
@@ -1290,24 +1361,16 @@ mod tests {
                 max_len: Some(1),
             },
             PathMatcherPart::AlphaOrAlphanumeric {
-                contains_digits: true,
-                case: Case::Lower,
-                min_len: Some(1),
-                max_len: Some(1),
-            },
-            PathMatcherPart::AlphaOrAlphanumeric {
                 contains_digits: false,
                 case: Case::Mixed,
                 min_len: Some(1),
                 max_len: Some(1),
             },
-            PathMatcherPart::Digit {
-                min_len: Some(2),
-                max_len: None,
-            },
-            PathMatcherPart::Digit {
+            PathMatcherPart::AlphaOrAlphanumeric {
+                contains_digits: true,
+                case: Case::Lower,
                 min_len: Some(1),
-                max_len: None,
+                max_len: Some(1),
             },
             PathMatcherPart::Digit {
                 min_len: None,
@@ -1316,6 +1379,14 @@ mod tests {
             PathMatcherPart::Digit {
                 min_len: None,
                 max_len: Some(5),
+            },
+            PathMatcherPart::Digit {
+                min_len: Some(2),
+                max_len: None,
+            },
+            PathMatcherPart::Digit {
+                min_len: Some(1),
+                max_len: None,
             },
             PathMatcherPart::Digit {
                 min_len: None,

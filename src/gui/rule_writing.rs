@@ -16,6 +16,14 @@ use super::utils;
 pub(crate) struct RuleWriter {
     /// The string representation of the glob that will make up the rule.
     matcher_str: String,
+    /// The suggested matcher.
+    suggested_matcher: Option<String>,
+    /// The suggested lenient_matcher.
+    suggested_lenient_matcher: Option<String>,
+    /// The content of the "always replace" textbox.
+    always_replace_source: String,
+    /// The content of the "with" textbox.
+    always_replace_target: String,
     /// The files that the rule writer works on.
     files: &'static Files,
     /// A collection of named lists of paths to use for match testing.
@@ -24,12 +32,10 @@ pub(crate) struct RuleWriter {
     selected_path_list: Option<String>,
     /// The selected byte range from the previous frame.
     prev_selection: Option<std::ops::Range<usize>>,
-    /// The last error that occurred.
-    last_err: Option<String>,
     /// The number of paths to skip for a new suggestion.
     skip_count: usize,
     /// A receiver for the next matcher suggestion.
-    matcher_suggestion_receiver: Option<std::sync::mpsc::Receiver<String>>,
+    matcher_suggestion_receiver: Option<std::sync::mpsc::Receiver<(String, Option<String>)>>,
     /// The file to store the rules to when a rule is added.
     rule_file: Option<PathBuf>,
     /// A change list to display all the files that match the given rule.
@@ -47,11 +53,14 @@ impl RuleWriter {
     ) -> Self {
         let mut this = RuleWriter {
             matcher_str: String::new(),
+            suggested_matcher: None,
+            suggested_lenient_matcher: None,
+            always_replace_source: String::new(),
+            always_replace_target: String::new(),
             files,
             path_lists,
             selected_path_list: None,
             prev_selection: None,
-            last_err: None,
             skip_count: 0,
             matcher_suggestion_receiver: None,
             rule_file,
@@ -70,8 +79,20 @@ impl RuleWriter {
     /// Displays this rule writer.
     pub(crate) fn display(&mut self, ui: &mut egui::Ui, outer_rules: &mut RuleStorage) {
         if let Some(receiver) = &self.matcher_suggestion_receiver {
-            if let Ok(val) = receiver.try_recv() {
-                self.matcher_str = val;
+            if let Ok((suggested_matcher, suggested_lenient_matcher)) = receiver.try_recv() {
+                if self.matcher_str.is_empty() {
+                    if !self.always_replace_target.is_empty()
+                        && !self.always_replace_source.is_empty()
+                    {
+                        self.matcher_str = suggested_matcher
+                            .replace(&self.always_replace_source, &self.always_replace_target);
+                    } else {
+                        self.matcher_str = suggested_matcher.clone();
+                    }
+                }
+
+                self.suggested_matcher = Some(suggested_matcher);
+                self.suggested_lenient_matcher = suggested_lenient_matcher;
                 self.matcher_suggestion_receiver = None;
             }
         }
@@ -79,10 +100,6 @@ impl RuleWriter {
         egui::ScrollArea::both()
             .max_height(f32::INFINITY)
             .show(ui, |ui| {
-                if let Some(last_err) = &self.last_err {
-                    ui.label(last_err);
-                }
-
                 let mut selection = None;
 
                 ui.horizontal(|ui| {
@@ -95,9 +112,7 @@ impl RuleWriter {
                         {
                             outer_rules.insert(rule);
                             if let Some(rule_file) = &self.rule_file {
-                                if let Err(err) = outer_rules.save(rule_file) {
-                                    self.last_err = Some(err.to_string());
-                                }
+                                outer_rules.save(rule_file);
                             }
                             self.renew_suggestion(outer_rules, ui.ctx().clone());
                         }
@@ -119,23 +134,79 @@ impl RuleWriter {
                     }
                 });
 
-                let hovered_matcher_str = self.display_replacements(ui);
+                ui.horizontal(|ui| {
+                    ui.label("Always replace");
+                    ui.text_edit_singleline(&mut self.always_replace_source);
+                    ui.label("with");
+                    ui.text_edit_singleline(&mut self.always_replace_target);
+                });
+
+                let mut hovered_matcher_str = self.display_replacements(ui);
                 self.prev_selection = selection;
 
                 if !self.path_lists.is_empty() {
                     ui.separator();
 
-                    let matcher = if let Some(matcher_str) = hovered_matcher_str {
-                        PathMatcher::from(matcher_str)
+                    let matcher = if let Some(matcher_str) = &hovered_matcher_str {
+                        PathMatcher::from(&**matcher_str)
                     } else {
                         PathMatcher::from(&*self.matcher_str)
                     };
-                    self.display_paths_lists(ui, matcher);
+
+                    ui.horizontal(|ui| {
+                        ui.add_sized([70.0, 0.0], egui::Label::new("current"));
+                        ui.separator();
+                        self.display_paths_lists(ui, matcher);
+                    });
 
                     ui.separator();
+
+                    for (matcher_str, name) in [
+                        (
+                            self.suggested_matcher
+                                .as_deref()
+                                .map(Into::<PathMatcher>::into),
+                            "suggested",
+                        ),
+                        (
+                            self.suggested_lenient_matcher
+                                .as_deref()
+                                .map(Into::<PathMatcher>::into),
+                            "lenient",
+                        ),
+                    ] {
+                        if let Some(matcher) = matcher_str {
+                            ui.horizontal(|ui| {
+                                let response = ui.add_sized(
+                                    [70.0, 0.0],
+                                    egui::Label::new(name).sense(egui::Sense::click()),
+                                );
+
+                                let rendered = format!("{matcher}");
+                                if response.clicked() {
+                                    self.matcher_str = rendered;
+                                } else if response.hovered() {
+                                    response.on_hover_ui_at_pointer(|ui| {
+                                        ui.label(&rendered);
+                                    });
+                                    hovered_matcher_str = Some(rendered);
+                                }
+
+                                ui.separator();
+                                self.display_paths_lists(ui, matcher);
+                            });
+                            ui.separator();
+                        }
+                    }
                 }
 
-                let rule = Rule::from_matcher(self.matcher_str.as_str().into(), self.files);
+                let rule = Rule::from_matcher(
+                    hovered_matcher_str
+                        .as_deref()
+                        .unwrap_or(self.matcher_str.as_str())
+                        .into(),
+                    self.files,
+                );
 
                 let mut storage = RuleStorage::new();
                 if let Some(rule) = rule {
@@ -295,9 +366,13 @@ impl RuleWriter {
             });
 
             for name in names {
-                let matching_paths: Vec<_> = self.path_lists[name]
-                    .matching_paths(matcher.clone())
-                    .collect();
+                let matching_paths = if matcher.parts.is_empty() {
+                    Vec::new()
+                } else {
+                    self.path_lists[name]
+                        .matching_paths(matcher.clone())
+                        .collect()
+                };
 
                 let selected_os = self
                     .selected_path_list
@@ -316,20 +391,31 @@ impl RuleWriter {
                     _ => ("?", Color32::YELLOW),
                 };
 
+                let text_color = if Some(name) == self.selected_path_list.as_ref() {
+                    Color32::YELLOW
+                } else if let Some(selected_os) = selected_os && name.ends_with(selected_os) {
+                    Color32::LIGHT_YELLOW
+                } else {
+                    ui.style().noninteractive().text_color()
+                };
+
                 let response = utils::sub_ui(ui, egui::Sense::click(), 0.0, |ui| {
-                    ui.label(egui::RichText::new(symb).color(color).size(20.0));
-                    ui.label(egui::RichText::new(name).color(
-                        if Some(name) == self.selected_path_list.as_ref() {
-                            Color32::YELLOW
-                        } else if let Some(selected_os) = selected_os && name.ends_with(selected_os) {
-                            Color32::LIGHT_YELLOW
-                        } else {
-                            ui.style().noninteractive().text_color()
-                        },
-                    ));
-                    if matching_paths.len() > 1 {
-                        ui.label(format!("({})", matching_paths.len()));
-                    }
+                    ui.add_sized([250.0, 0.0], |ui: &mut egui::Ui| {
+                        let mut resp = None;
+                        ui.with_layout(
+                            egui::Layout::left_to_right(egui::Align::LEFT)
+                                .with_cross_align(egui::Align::Center),
+                            |ui| {
+                                ui.label(egui::RichText::new(symb).color(color).size(20.0));
+                                resp = Some(ui.label(egui::RichText::new(name).color(text_color)));
+                                if matching_paths.len() > 1 {
+                                    ui.label(format!("({})", matching_paths.len()));
+                                }
+                            },
+                        );
+
+                        resp.unwrap()
+                    });
                 });
 
                 if !matching_paths.is_empty() && response.hovered() {
@@ -373,23 +459,32 @@ impl RuleWriter {
                 (None, self.path_lists.values().collect())
             };
 
+        self.matcher_str.clear();
+        self.suggested_matcher = None;
+        self.suggested_lenient_matcher = None;
+
         let (sender, receiver) = std::sync::mpsc::channel();
 
         let files = self.files;
         let outer_rules = outer_rules.clone();
         let skip_count = self.skip_count;
         std::thread::spawn(move || {
-            let matcher = suggest_matcher(
+            let matchers = suggest_matcher(
                 files,
                 &outer_rules,
                 selected_path_list,
                 &path_lists,
                 skip_count,
             )
-            .map(|matcher| format!("{matcher}"))
-            .unwrap_or_else(String::new);
+            .map(|(matcher, lenient_matcher)| {
+                (
+                    format!("{matcher}",),
+                    lenient_matcher.map(|matcher| format!("{matcher}")),
+                )
+            })
+            .unwrap_or_else(|| (String::new(), None));
 
-            sender.send(matcher).ok();
+            sender.send(matchers).ok();
             ctx.request_repaint();
         });
 

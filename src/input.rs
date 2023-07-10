@@ -127,67 +127,80 @@ pub(crate) fn compute_change_time(
 }
 
 /// A list of paths.
+///
+/// The range is the substring of the path that comes after the corresponding matcher for this
+/// inner list matches.
+type InnerPathList = Vec<(String, RangeFrom<usize>)>;
+
+/// A list of paths.
 pub(crate) struct PathList {
-    /// The ordered list of paths not starting with `/Users/<username>`.
+    /// The sub-path lists separated by prefixes in the form of matchers.
     ///
-    /// The range should always be `0..` here.
-    normal_paths: Vec<(String, RangeFrom<usize>)>,
-    /// The paths starting with `/Users/<username>`.
-    ///
-    /// The range refers to the part of the string after the match.
-    user_paths: Vec<(String, RangeFrom<usize>)>,
+    /// For each matcher there will be a list of paths where the matcher matches a prefix of that
+    /// path.
+    /// Each part is also accompanied by the range of the path that is not matched by the prefix
+    /// matcher.
+    /// The list is sorted by that part of the path.
+    path_lists: Vec<(PathMatcher, InnerPathList)>,
 }
 
 impl PathList {
     /// Creates a new path list from the given list.
     pub(crate) fn new(mut list: Vec<String>) -> Self {
-        let mut normal_paths = Vec::new();
-        let mut user_paths = Vec::new();
+        list.sort();
 
-        list.sort_unstable();
+        // Since the matchers are tried in order, it's important to order them from most specific
+        // to least specific.
+        let matchers = [
+            PathMatcher::from("/Users/<username>"),
+            PathMatcher::from("/Windows/servicing/<locale>"),
+            PathMatcher::from(""),
+        ];
 
-        let user_matcher = PathMatcher::from("/Users/<username>");
+        let mut list_map = std::collections::HashMap::new();
+
+        for matcher in &matchers {
+            list_map.insert(matcher, Vec::new());
+        }
+
         for path in list {
-            if let Some(len) = user_matcher.match_len(&path) {
-                user_paths.push((path, (len..)));
-            } else {
-                normal_paths.push((path, (0..)));
+            for matcher in &matchers {
+                if let Some(len) = matcher.match_len(&path) {
+                    list_map.get_mut(matcher).unwrap().push((path, len..));
+                    break;
+                }
             }
         }
 
-        normal_paths.sort_by(|(path1, _), (path2, _)| path1.cmp(path2));
-        user_paths.sort_by(|(path1, _), (path2, _)| path1.cmp(path2));
-
-        PathList {
-            normal_paths,
-            user_paths,
+        // use this method instead of a simple collect to ensure that the order is correct
+        let mut path_lists = Vec::new();
+        for matcher in &matchers {
+            path_lists.push((matcher.clone(), list_map.remove(matcher).unwrap()));
         }
+
+        PathList { path_lists }
     }
 
     /// Returns all paths matching the given matcher.
     pub(crate) fn matching_paths(&self, matcher: PathMatcher) -> impl Iterator<Item = &str> {
-        let user_matcher = PathMatcher::from("/Users/<username>");
-        let full_matcher = matcher.clone();
+        for (list_matcher, list) in &self.path_lists {
+            let Some(after_prefix_matcher) = matcher.strip_prefix(list_matcher) else { continue };
 
-        let (list, matcher) = if let Some(after_user_matcher) = matcher.strip_prefix(&user_matcher)
-        {
-            (&self.user_paths, after_user_matcher)
-        } else {
-            (&self.normal_paths, matcher)
-        };
+            let needle = after_prefix_matcher.literal_prefix();
+            let range = search_sorted_list(
+                &list[..],
+                &needle.as_ref(),
+                |(path, range)| &path[range.clone()],
+                |(path, range)| path[range.clone()].starts_with(&*needle),
+            );
 
-        let prefix = matcher.literal_prefix();
-        let range = search_sorted_list(
-            list,
-            &prefix.as_ref(),
-            |(path, range)| &path[range.clone()],
-            |(path, range)| path[range.clone()].starts_with(&*prefix),
-        );
+            return list[range]
+                .iter()
+                .filter(move |(path, _)| matcher.matches_path(path))
+                .map(|(path, _)| path.as_str());
+        }
 
-        list[range]
-            .iter()
-            .filter(move |(path, _)| full_matcher.matches_path(path))
-            .map(|(path, _)| path.as_str())
+        unreachable!("there should always be the empty matcher in the list")
     }
 }
 
@@ -203,17 +216,20 @@ impl PathList {
 /// where `s_1`, ..., `s_i` are the elements comparing smaller than the needles, `n_1`, ..., `n_j`
 /// are the needles and `g_1`, ..., `g_k` are the elements comparing greater than the needles.
 ///
+/// The `seed_needle` argument can be any element which compares within the needle region, but it
+/// may or may not be present within the region itself.
+///
 /// The result would then be `i..i + j` in this case.
-fn search_sorted_list<'a, T: 'a, B: Ord + 'a>(
+fn search_sorted_list<'a, T: 'a, Needle: Ord + 'a>(
     list: &'a [T],
-    needle: &'a B,
-    map_to_needle: impl FnMut(&'a T) -> B,
+    seed_needle: &'a Needle,
+    map_to_needle: impl FnMut(&'a T) -> Needle,
     mut is_needle: impl FnMut(&T) -> bool,
 ) -> Range<usize> {
     // the paths are sorted, so we can do binary search for paths
     // where at least the literal prefix of the glob matches to speed
     // up checking paths
-    let (Ok(middle_idx) | Err(middle_idx)) = list.binary_search_by_key(needle, map_to_needle);
+    let (Ok(middle_idx) | Err(middle_idx)) = list.binary_search_by_key(seed_needle, map_to_needle);
 
     // the binary search just returns any index into the middle
     // part

@@ -269,7 +269,7 @@ impl Files {
 }
 
 /// The different available sorting orders for files.
-#[derive(Default, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+#[derive(Default, Hash, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 pub(crate) enum FileOrder {
     /// The files are sorted alphabetically.
     ///

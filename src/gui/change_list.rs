@@ -22,7 +22,7 @@ const HOVERED_HIGHLIGHT_COLOR: Color32 = Color32::WHITE;
 const HOVERED_HIGHLIGHT_PERCENT: f64 = 0.1;
 
 /// The type of threshhold to apply.
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
 enum ThreshholdType {
     /// Don't use a threshhold.
     None,
@@ -33,6 +33,7 @@ enum ThreshholdType {
 }
 
 /// Determines the thresh hold for rule filtering.
+#[derive(Hash)]
 struct Threshholder {
     /// Whether to include matched files or exclude them.
     include_unmatched: bool,
@@ -183,6 +184,8 @@ pub(crate) struct ChangeList {
     file_score_cache: FutureValue<FileScoreCache>,
     /// The maximum size of the change list last frame.
     last_frame_size: Option<egui::Vec2>,
+    /// The state hash from last frame.
+    last_frame_state_hash: Option<u64>,
     /// The search text entered into the search box.
     search_text: String,
 }
@@ -211,6 +214,7 @@ impl ChangeList {
             shown_files: 0,
             file_score_cache: Default::default(),
             last_frame_size: None,
+            last_frame_state_hash: None,
             search_text: String::new(),
         }
     }
@@ -221,6 +225,12 @@ impl ChangeList {
 
         self.shown_files = 0;
         self.filtered_files = 0;
+
+        let state_hash = self.state_hash();
+        if Some(state_hash) != self.last_frame_state_hash {
+            self.last_frame_state_hash = Some(state_hash);
+            self.last_frame_size = None;
+        }
 
         if self.file_score_cache.update_check(rules) {
             let ctx = ui.ctx().clone();
@@ -697,6 +707,23 @@ impl ChangeList {
                 break;
             }
         }
+    }
+
+    /// The hash of the internal state of the change list.
+    fn state_hash(&self) -> u64 {
+        use std::{
+            collections::hash_map::DefaultHasher,
+            hash::{Hash as _, Hasher as _},
+        };
+
+        let mut hasher = DefaultHasher::new();
+        self.order_type.hash(&mut hasher);
+        self.threshhold.hash(&mut hasher);
+        self.change_height.to_bits().hash(&mut hasher);
+        self.filtered_files.hash(&mut hasher);
+        self.shown_files.hash(&mut hasher);
+        self.search_text.hash(&mut hasher);
+        hasher.finish()
     }
 }
 

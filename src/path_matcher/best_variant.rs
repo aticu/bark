@@ -1,5 +1,6 @@
+use std::cmp::Ordering;
+
 use inlinable_string::{InlinableString, StringExt as _};
-use smallvec::SmallVec;
 
 use crate::{file::Files, input::PathList, rules::RuleStorage};
 
@@ -25,10 +26,14 @@ struct MatcherViability {
     /// Dynamic in this case refers to files which are created or deleted at least once in the
     /// input data.
     dynamic_files_match: usize,
+    /// The total number of all matches anywhere.
+    total_matches: usize,
 }
 
-impl Ord for MatcherViability {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+impl MatcherViability {
+    /// Compares the viability of two matches, taking into account whether strict rules should
+    /// apply.
+    fn cmp(&self, other: &Self, strict: bool) -> Ordering {
         use std::cmp::Reverse;
 
         /// Creates a tuple for both `self` and `other` that is then used for the comparison.
@@ -41,31 +46,27 @@ impl Ord for MatcherViability {
                     $val.selected_matches == 1,
                     $val.static_files_match <= 1,
                     $val.dynamic_files_match,
-                    $val.one_match,
+                    $val.one_match + $val.multi_match,
+                    Reverse($val.multi_match),
+                )
+            };
+            (allow_multi: $val:ident) => {
+                (
+                    $val.selected_matches >= 1,
+                    $val.total_matches,
+                    Reverse($val.selected_matches),
                     Reverse($val.multi_match),
                 )
             };
         }
 
-        tuple!(self).cmp(&tuple!(other))
+        if strict {
+            tuple!(self).cmp(&tuple!(other))
+        } else {
+            tuple!(allow_multi: self).cmp(&tuple!(allow_multi: other))
+        }
     }
-}
 
-impl PartialOrd for MatcherViability {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Eq for MatcherViability {}
-
-impl PartialEq for MatcherViability {
-    fn eq(&self, other: &Self) -> bool {
-        self.cmp(other).is_eq()
-    }
-}
-
-impl MatcherViability {
     /// Computes the viability of the given matcher in the given environment.
     fn compute(
         matcher: &PathMatcher,
@@ -77,13 +78,20 @@ impl MatcherViability {
             .map(|list| list.matching_paths(matcher.clone()).take(2).count())
             .unwrap_or(1);
 
+        let mut total_matches = selected_matches;
         let mut one_match = 0;
         let mut multi_match = 0;
         for list in path_lists {
             match list.matching_paths(matcher.clone()).take(2).count() {
                 0 => (),
-                1 => one_match += 1,
-                _ => multi_match += 1,
+                1 => {
+                    one_match += 1;
+                    total_matches += 1;
+                }
+                n => {
+                    multi_match += 1;
+                    total_matches += n;
+                }
             }
         }
 
@@ -104,43 +112,30 @@ impl MatcherViability {
             }
         }
 
+        total_matches += static_files_match;
+        total_matches += dynamic_files_match;
+
         MatcherViability {
             selected_matches,
             one_match,
             multi_match,
             static_files_match,
             dynamic_files_match,
+            total_matches,
         }
     }
 }
 
-/// Computes the best variant of the matcher.
-fn best_variant(
-    path: &str,
-    files: &Files,
-    selected_path_list: Option<&PathList>,
-    path_lists: &[&PathList],
-) -> PathMatcher {
-    let construct_partial =
-        |parts: &[PathMatcherPart], lit: &str, part: PathMatcherPart, rest: &str| {
-            let mut result = SmallVec::from(parts);
-            if !lit.is_empty() {
-                result.push(PathMatcherPart::Literal(lit.into()));
-            }
-            result.push(part);
-            result.push(PathMatcherPart::Literal(rest.into()));
-            PathMatcher { parts: result }
-        };
-
-    let mut lit = InlinableString::new();
-    let mut parts = SmallVec::new();
+/// Finds possible replacements for a given path.
+fn find_replacements(path: &str) -> Vec<Vec<PathMatcherPart>> {
+    let mut replacements = Vec::new();
     let mut i = 0;
 
     let username = if let Some(maybe_user) = path.strip_prefix("/Users/") {
         let username: InlinableString = maybe_user.split('/').next().unwrap().into();
 
-        parts.push(PathMatcherPart::Literal("/Users/".into()));
-        parts.push(PathMatcherPart::Username);
+        replacements.push(vec![PathMatcherPart::Literal("/Users/".into())]);
+        replacements.push(vec![PathMatcherPart::Username]);
         i += "/Users/".len() + username.len();
 
         Some(username)
@@ -148,67 +143,174 @@ fn best_variant(
         None
     };
 
+    let mut lit_start = i;
     while i < path.len() {
+        let prefix = &path[..i];
         let subpath = &path[i..];
 
-        let leave_as_lit = {
-            let mut result = parts.clone();
-            result.push(PathMatcherPart::Literal(lit.clone() + subpath));
-            PathMatcher { parts: result }
+        // we haven't found good replacements starting at the current position, so search at the
+        // next one
+        macro_rules! bail {
+            () => {
+                i += subpath
+                    .char_indices()
+                    .nth(1)
+                    .map(|(char_width, _)| char_width)
+                    .unwrap_or(path.len() - i);
+
+                continue;
+            };
+        }
+
+        let possible_replacements = possible_replacements(subpath, false, true, &username);
+        if possible_replacements.is_empty() {
+            bail!();
+        }
+
+        let len = possible_replacements
+            .iter()
+            .map(|(_, len)| *len)
+            .max()
+            .unwrap();
+
+        let prev_char_is_text = prefix
+            .chars()
+            .last()
+            .map(|c| c.is_ascii_alphabetic())
+            .unwrap_or(false);
+        let next_char_is_text = path[i + len..]
+            .chars()
+            .next()
+            .map(|c| c.is_ascii_alphabetic())
+            .unwrap_or(false);
+
+        let bordered_by_alpha = prev_char_is_text || next_char_is_text;
+
+        let mut possible_parts: Vec<_> = possible_replacements
+            .into_iter()
+            .filter(|(_, part_len)| *part_len == len)
+            .filter(|(part, len)| {
+                // a 2-letter locale that is bordered by other alphabetic characters is very likely not a locale
+                !(bordered_by_alpha && matches!(part, PathMatcherPart::Locale) && *len == 2)
+            })
+            .filter(|(part, _)| {
+                // hex digits bordered by other alphabetic characters are likely not hex digits
+                !(bordered_by_alpha && matches!(part, PathMatcherPart::HexDigit { .. }))
+            })
+            .map(|(part, _)| part)
+            .collect();
+
+        if possible_parts.is_empty() {
+            bail!();
+        }
+
+        if lit_start != i {
+            replacements.push(vec![PathMatcherPart::Literal(path[lit_start..i].into())]);
+        }
+
+        possible_parts.push(PathMatcherPart::Literal(subpath[..len].into()));
+        possible_parts.sort_by_key(|part| part.flexibility());
+
+        replacements.push(possible_parts);
+
+        i += len;
+        lit_start = i;
+    }
+
+    if lit_start < path.len() {
+        replacements.push(vec![PathMatcherPart::Literal(path[lit_start..].into())]);
+    }
+
+    replacements
+}
+
+/// Finds the best matcher for the given path.
+fn best_matcher_for_path(
+    path: &str,
+    files: &Files,
+    selected_path_list: Option<&PathList>,
+    path_lists: &[&PathList],
+) -> (PathMatcher, Option<PathMatcher>) {
+    let replacements = find_replacements(path);
+
+    // generate all permutations of matchers for a given path
+    let part_len: Vec<_> = replacements.iter().map(|vec| vec.len()).collect();
+    let mut part_pos = vec![0; part_len.len()];
+
+    if part_len.iter().product::<usize>() > 2500 {
+        // too many combinations to evaluate
+        // its probably faster to just let the user do it manually
+
+        // the least flexible part should be at the start, so we just take the first part
+        let mut matcher = PathMatcher {
+            parts: replacements
+                .iter()
+                .map(|repl| repl.first().unwrap().clone())
+                .collect(),
         };
+        matcher.canonicalize();
+        return (matcher, None);
+    }
 
-        let mut min_len = None;
-        let mut max_part = None;
-        let mut max_viability =
-            MatcherViability::compute(&leave_as_lit, files, selected_path_list, path_lists);
+    let mut max_matcher_strict = None;
+    let mut max_matcher = None;
 
-        for (part, len) in possible_replacements(subpath, false, true, &username) {
-            let matcher = construct_partial(&parts, &lit, part.clone(), &subpath[len..]);
-            let viability =
-                MatcherViability::compute(&matcher, files, selected_path_list, path_lists);
-            if viability > max_viability {
-                max_part = Some((part, len));
-                max_viability = viability;
-            }
+    'outer: loop {
+        let matcher = PathMatcher {
+            parts: replacements
+                .iter()
+                .zip(part_pos.iter().copied())
+                .map(|(vec, idx)| vec[idx].clone())
+                .collect(),
+        };
+        let flexibility: u128 = matcher
+            .parts
+            .iter()
+            .map(|part| part.flexibility() as u128)
+            .sum();
+        let viability = MatcherViability::compute(&matcher, files, selected_path_list, path_lists);
 
-            if let Some(prev_min_len) = min_len {
-                if len < prev_min_len {
-                    min_len = Some(len);
+        let update_max = |current_max: &mut Option<(PathMatcher, u128, MatcherViability)>,
+                          allow_multiple_selected| {
+            if let Some((_, max_flexibility, max_viability)) = current_max.as_mut() {
+                match viability.cmp(max_viability, allow_multiple_selected) {
+                    Ordering::Less => (),
+                    Ordering::Equal => {
+                        if *max_flexibility > flexibility {
+                            *current_max = Some((matcher.clone(), flexibility, viability.clone()));
+                        }
+                    }
+                    Ordering::Greater => {
+                        *current_max = Some((matcher.clone(), flexibility, viability.clone()));
+                    }
                 }
             } else {
-                min_len = Some(len);
+                *current_max = Some((matcher.clone(), flexibility, viability.clone()));
             }
-        }
+        };
 
-        if let Some((part, len)) = max_part {
-            if !lit.is_empty() {
-                parts.push(PathMatcherPart::Literal(lit));
-                lit = InlinableString::new();
-            }
+        update_max(&mut max_matcher_strict, true);
+        update_max(&mut max_matcher, false);
 
-            parts.push(part);
-            i += len;
-            continue;
-        }
-
-        if let Some(min_len) = min_len {
-            lit.push_str(&subpath[..min_len]);
-            i += min_len;
-        } else {
-            lit.push(subpath.chars().next().unwrap());
-            if let Some((char_width, _)) = subpath.char_indices().nth(1) {
-                i += char_width;
+        for (pos, len) in part_pos.iter_mut().zip(part_len.iter().copied()) {
+            if *pos + 1 >= len {
+                *pos = 0;
             } else {
-                i = path.len();
+                *pos += 1;
+                continue 'outer;
             }
         }
+        break;
     }
 
-    if !lit.is_empty() {
-        parts.push(PathMatcherPart::Literal(lit));
-    }
+    let mut max_matcher = max_matcher.unwrap().0;
+    max_matcher.canonicalize();
+    let mut max_matcher_strict = max_matcher_strict.unwrap().0;
+    max_matcher_strict.canonicalize();
 
-    PathMatcher { parts }
+    let lenient = (max_matcher != max_matcher_strict).then_some(max_matcher);
+
+    (max_matcher_strict, lenient)
 }
 
 /// Returns possible replacements for the given path part along with their matching length.
@@ -286,11 +388,11 @@ pub(crate) fn suggest_matcher(
     selected_path_list: Option<&PathList>,
     path_lists: &[&PathList],
     skip: usize,
-) -> Option<PathMatcher> {
+) -> Option<(PathMatcher, Option<PathMatcher>)> {
     files
         .alphabetical_order()
         .files()
         .filter(|file| !rules.is_matched(file))
         .nth(skip)
-        .map(|file| best_variant(file.path(), files, selected_path_list, path_lists))
+        .map(|file| best_matcher_for_path(file.path(), files, selected_path_list, path_lists))
 }
