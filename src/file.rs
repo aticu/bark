@@ -159,6 +159,8 @@ pub(crate) struct Files {
     chronological_order: Vec<usize>,
     /// The trie of all paths in the list.
     path_trie: Trie<String, ()>,
+    /// The number of changes contained within each file.
+    width: usize,
 }
 
 impl Files {
@@ -220,12 +222,25 @@ impl Files {
             path_trie.insert(path.to_string(), ());
         }
 
+        let width = files.get(0).map(|file| file.changes.len()).unwrap_or(0);
+
         Files {
             files,
             alphabetical_order,
             chronological_order,
             path_trie,
+            width,
         }
+    }
+
+    /// The number of changes contained within each file.
+    pub(crate) fn width(&self) -> usize {
+        self.width
+    }
+
+    /// Returns the file for the given `id`.
+    pub(crate) fn get(&self, id: FileId) -> Option<&File> {
+        self.files.get(id.index)
     }
 
     /// Iterates over the files in chronological order.

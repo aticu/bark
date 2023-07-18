@@ -1,6 +1,7 @@
 #![feature(let_chains)]
 
 mod file;
+mod fs_tree;
 mod future_value;
 mod gui;
 mod input;

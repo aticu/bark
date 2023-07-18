@@ -68,6 +68,7 @@ impl RuleWriter {
                 files,
                 "Files matching the rule",
                 false,
+                Some(crate::file::FileOrder::Alphabetical),
             ),
         };
 

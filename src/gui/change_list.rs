@@ -1,9 +1,12 @@
 //! Implements displaying of a list of changes.
 
+use std::hash::Hash;
+
 use eframe::{egui, epaint::Color32};
 
 use crate::{
-    file::{File, FileOrder, FileScoreCache, Files},
+    file::{File, FileId, FileOrder, FileScoreCache, Files},
+    fs_tree::{self, FsTree, FsTreeIter},
     future_value::FutureValue,
     path_matcher::PathMatcher,
     rules::{Rule, RuleStorage},
@@ -24,23 +27,32 @@ const HOVERED_HIGHLIGHT_PERCENT: f64 = 0.1;
 /// The type of threshhold to apply.
 #[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
 enum ThreshholdType {
-    /// Don't use a threshhold.
+    /// Don't match anything when matching is requested.
     None,
-    /// Allow rules smaller than the given value.
+    /// Match things with a match score that is smaller than the value.
     Smaller,
-    /// Allow rules greater than the given value.
+    /// Match things with a match score that is greater than the value.
     Greater,
+    /// Match all the things.
+    All,
 }
 
 /// Determines the thresh hold for rule filtering.
-#[derive(Hash)]
 struct Threshholder {
     /// Whether to include matched files or exclude them.
     include_unmatched: bool,
     /// The value of the threshhold.
-    val: String,
+    val: f64,
     /// The type of threshhold to apply.
     ty: ThreshholdType,
+}
+
+impl Hash for Threshholder {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.include_unmatched.hash(state);
+        self.val.to_ne_bytes().hash(state);
+        self.ty.hash(state);
+    }
 }
 
 impl Threshholder {
@@ -80,29 +92,31 @@ impl Threshholder {
                     .button("matching files files with score greater than")
                     .clicked()
                 {
+                    self.ty = ThreshholdType::All;
+                }
+            }
+            ThreshholdType::All => {
+                if ui.button("everything else").clicked() {
                     self.ty = ThreshholdType::None;
                 }
             }
         }
 
-        if self.ty != ThreshholdType::None {
-            ui.add(
-                egui::TextEdit::singleline(&mut self.val)
-                    .desired_width(30.0)
-                    .clip_text(false),
-            );
+        if matches!(self.ty, ThreshholdType::Smaller | ThreshholdType::Greater) {
+            ui.add(egui::Slider::new(&mut self.val, 0.0..=100.0).text("Score"));
         }
     }
 
     /// Determines if the given file should be included.
     fn should_include_file(&self, match_score: Option<f64>) -> bool {
         match match_score {
-            Some(score) => match (self.ty, self.val.parse::<f64>()) {
-                (ThreshholdType::Greater, Ok(thresh)) => score > thresh / 100.0,
-                (ThreshholdType::Smaller, Ok(thresh)) => score < thresh / 100.0,
-                (_, _) => !self.include_unmatched,
+            Some(score) => match (self.ty, self.val) {
+                (ThreshholdType::Greater, thresh) => score > thresh / 100.0,
+                (ThreshholdType::Smaller, thresh) => score < thresh / 100.0,
+                (ThreshholdType::None, _) => !self.include_unmatched,
+                (_, _) => true,
             },
-            None => self.include_unmatched,
+            None => self.ty == ThreshholdType::All || self.include_unmatched,
         }
     }
 }
@@ -169,7 +183,15 @@ pub(crate) struct ChangeList {
     /// This is used to compute the background color for the displayed times.
     last_time: Option<f64>,
     /// The order in which the files should be sorted.
-    order_type: FileOrder,
+    ///
+    /// If `None`, the files are sorted structurally in a tree.
+    order_type: Option<FileOrder>,
+    /// The tree view of `files`.
+    ///
+    /// If there is a `FileId`, its changes will be shown as in a flat view.
+    ///
+    /// The `bool` indicates whether the contents of a directory should be hidden.
+    file_tree: FsTree<(Option<FileId>, bool)>,
     /// The currently hovered element.
     hovered: Option<ChangeListElement>,
     /// The threshhold for rule filtering.
@@ -192,7 +214,16 @@ pub(crate) struct ChangeList {
 
 impl ChangeList {
     /// Creates a new list of changes to display from the given files.
-    pub(crate) fn new(files: &'static Files, name: &'static str, include_unmatched: bool) -> Self {
+    pub(crate) fn new(
+        files: &'static Files,
+        name: &'static str,
+        include_unmatched: bool,
+        order_type: Option<FileOrder>,
+    ) -> Self {
+        let mut file_tree = FsTree::new();
+        for file in files.alphabetical_order() {
+            file_tree.insert(file.path, (Some(file.file_id), false));
+        }
         ChangeList {
             files,
             name,
@@ -202,11 +233,12 @@ impl ChangeList {
                     .as_ref()
                     .map(|time| time.avg.as_seconds_f64())
             }),
-            order_type: FileOrder::Chronological,
+            order_type,
+            file_tree,
             hovered: None,
             threshhold: Threshholder {
                 include_unmatched,
-                val: "50".to_string(),
+                val: 50.0,
                 ty: ThreshholdType::None,
             },
             change_height: 24.0,
@@ -248,29 +280,13 @@ impl ChangeList {
                     let start_pos = draw_ctx.current_pos;
                     let mut size = egui::Vec2::ZERO;
 
-                    for (y, file) in self.files.iter(self.order_type).enumerate() {
-                        let match_score = self
-                            .file_score_cache
-                            .get()
-                            .unwrap()
-                            .get_score(file.file_id)
-                            .flatten();
-
-                        if !self.threshhold.should_include_file(match_score)
-                            || !file.path.contains(&self.search_text)
-                        {
-                            self.filtered_files += 1;
-                            continue;
+                    match self.order_type {
+                        Some(order) => {
+                            self.draw_flat_list(ui, &mut draw_ctx, &mut size, order);
                         }
-                        self.shown_files += 1;
-
-                        self.draw_row(ui, &mut draw_ctx, y, file.path, file.file);
-
-                        size.x = (draw_ctx.current_pos.x - start_pos.x).max(size.x);
-                        size.y += draw_ctx.time_dimensions.y;
-
-                        draw_ctx.current_pos.x = start_pos.x;
-                        draw_ctx.current_pos.y += draw_ctx.time_dimensions.y;
+                        None => {
+                            self.draw_tree(ui, &mut draw_ctx, &mut size);
+                        }
                     }
 
                     if !draw_ctx.any_hovered {
@@ -305,14 +321,16 @@ impl ChangeList {
 
             if ui
                 .button(match self.order_type {
-                    FileOrder::Alphabetical => "sorted alphabetically",
-                    FileOrder::Chronological => "sorted chronologically",
+                    Some(FileOrder::Alphabetical) => "sorted alphabetically",
+                    Some(FileOrder::Chronological) => "sorted chronologically",
+                    None => "sorted structurally",
                 })
                 .clicked()
             {
                 self.order_type = match self.order_type {
-                    FileOrder::Alphabetical => FileOrder::Chronological,
-                    FileOrder::Chronological => FileOrder::Alphabetical,
+                    Some(FileOrder::Alphabetical) => Some(FileOrder::Chronological),
+                    Some(FileOrder::Chronological) => None,
+                    None => Some(FileOrder::Alphabetical),
                 }
             }
 
@@ -336,16 +354,126 @@ impl ChangeList {
         });
     }
 
-    /// Draws a single row of the change list.
+    /// Draws a directory tree in the change list.
+    fn draw_tree(&mut self, ui: &mut egui::Ui, draw_ctx: &mut DrawCtx, size: &mut egui::Vec2) {
+        let start_pos = draw_ctx.current_pos;
+        let mut y = 0;
+        let mut iter = FsTreeIter::new();
+        let mut tree =
+            self.file_tree
+                .copy_filtered(|(file_id, collapsed)| match (file_id, collapsed) {
+                    (_, true) => fs_tree::FilterResult::DiscardChildren,
+                    (Some(file_id), false) => {
+                        let file = self.files.get(*file_id).unwrap();
+                        let match_score = self
+                            .file_score_cache
+                            .get()
+                            .unwrap()
+                            .get_score(*file_id)
+                            .flatten();
+
+                        if self.threshhold.should_include_file(match_score)
+                            && (self.search_text.is_empty()
+                                || file
+                                    .paths
+                                    .iter()
+                                    .any(|path| path.contains(&self.search_text)))
+                        {
+                            fs_tree::FilterResult::Keep
+                        } else {
+                            fs_tree::FilterResult::Discard
+                        }
+                    }
+                    (None, false) => fs_tree::FilterResult::Discard,
+                });
+
+        while let Some(result) = iter.next(&mut tree) {
+            y += 1;
+            let y = y - 1;
+            let file_id = result.value.0;
+
+            if file_id.is_some() {
+                self.shown_files += 1;
+            }
+
+            let file = file_id.and_then(|file_id| self.files.get(file_id));
+            let match_score = file_id
+                .and_then(|file_id| self.file_score_cache.get().unwrap().get_score(file_id))
+                .flatten();
+            self.draw_changes(ui, draw_ctx, y, file, match_score);
+
+            if result.name != "/" {
+                let mut collapsed = result.value.1;
+                self.draw_dir_markers(
+                    ui,
+                    draw_ctx,
+                    result.parents,
+                    result.has_children || result.value.1,
+                    &mut collapsed,
+                );
+
+                if collapsed != result.value.1 {
+                    self.file_tree.get_mut(&result.path()).unwrap().val_mut().1 = collapsed;
+                }
+            }
+            self.draw_path(ui, draw_ctx, file, &result.name, y);
+
+            size.x = (draw_ctx.current_pos.x - start_pos.x).max(size.x);
+            size.y += draw_ctx.time_dimensions.y;
+
+            draw_ctx.current_pos.x = start_pos.x;
+            draw_ctx.current_pos.y += draw_ctx.time_dimensions.y;
+        }
+
+        self.filtered_files = self.files.alphabetical_order().count() - self.shown_files;
+    }
+
+    /// Draws the changes as a flat list as opposed to a tree.
+    fn draw_flat_list(
+        &mut self,
+        ui: &mut egui::Ui,
+        draw_ctx: &mut DrawCtx,
+        size: &mut egui::Vec2,
+        order: FileOrder,
+    ) {
+        let start_pos = draw_ctx.current_pos;
+        for (y, file) in self.files.iter(order).enumerate() {
+            let match_score = self
+                .file_score_cache
+                .get()
+                .unwrap()
+                .get_score(file.file_id)
+                .flatten();
+
+            if !self.threshhold.should_include_file(match_score)
+                || !file.path.contains(&self.search_text)
+            {
+                self.filtered_files += 1;
+                continue;
+            }
+            self.shown_files += 1;
+
+            self.draw_changes(ui, draw_ctx, y, Some(file.file), match_score);
+            self.draw_path(ui, draw_ctx, Some(file.file), file.path, y);
+
+            size.x = (draw_ctx.current_pos.x - start_pos.x).max(size.x);
+            size.y += draw_ctx.time_dimensions.y;
+
+            draw_ctx.current_pos.x = start_pos.x;
+            draw_ctx.current_pos.y += draw_ctx.time_dimensions.y;
+        }
+    }
+
+    /// Draws the changes in the change list.
     ///
     /// Returns true if the row was visible.
-    fn draw_row(
+    fn draw_changes(
         &mut self,
         ui: &mut egui::Ui,
         draw_ctx: &mut DrawCtx,
         y: usize,
-        path: &str,
-        file: &File,
+        file: Option<&File>,
+        match_score: Option<f64>,
     ) -> bool {
         let row_height = draw_ctx
             .time_dimensions
@@ -362,43 +490,53 @@ impl ChangeList {
             return false;
         }
 
-        {
-            self.draw_time(ui, draw_ctx, file, y);
-            draw_ctx.current_pos.x += ui.style().spacing.item_spacing.x;
-        }
+        if let Some(file) = file {
+            {
+                self.draw_time(ui, draw_ctx, file, y);
+                draw_ctx.current_pos.x += ui.style().spacing.item_spacing.x;
+            }
 
-        {
-            self.draw_score(ui, draw_ctx, file, y);
-            draw_ctx.current_pos.x += ui.style().spacing.item_spacing.x;
-        }
+            {
+                self.draw_score(ui, draw_ctx, file, match_score, y);
+                draw_ctx.current_pos.x += ui.style().spacing.item_spacing.x;
+            }
 
-        for (x, change) in file.changes.iter().enumerate() {
-            let is_highlighted = if let Some(hovered) = self.hovered {
-                if hovered.row == y {
-                    true
-                } else if let ChangeListElementType::Change { column } = hovered.element_type {
-                    column == x
+            for (x, change) in file.changes.iter().enumerate() {
+                let is_highlighted = if let Some(hovered) = self.hovered {
+                    if hovered.row == y {
+                        true
+                    } else if let ChangeListElementType::Change { column } = hovered.element_type {
+                        column == x
+                    } else {
+                        false
+                    }
                 } else {
                     false
+                };
+
+                let change_response = self.draw_single_change(
+                    ui,
+                    &mut draw_ctx.current_pos,
+                    x,
+                    is_highlighted,
+                    change,
+                );
+                if ui.rect_contains_pointer(change_response.rect) && !draw_ctx.any_hovered {
+                    self.hovered = Some(ChangeListElement {
+                        row: y,
+                        element_type: ChangeListElementType::Change { column: x },
+                    });
+                    draw_ctx.any_hovered = true;
                 }
-            } else {
-                false
-            };
-
-            let change_response =
-                self.draw_single_change(ui, &mut draw_ctx.current_pos, x, is_highlighted, change);
-            if ui.rect_contains_pointer(change_response.rect) && !draw_ctx.any_hovered {
-                self.hovered = Some(ChangeListElement {
-                    row: y,
-                    element_type: ChangeListElementType::Change { column: x },
-                });
-                draw_ctx.any_hovered = true;
             }
+
+            draw_ctx.current_pos.x += ui.style().spacing.item_spacing.x;
+        } else {
+            draw_ctx.current_pos.x += ui.style().spacing.item_spacing.x * 3.0
+                + draw_ctx.time_dimensions.x
+                + draw_ctx.match_score_dimensions.x
+                + self.files.width() as f32 * self.change_height / 2.0;
         }
-
-        draw_ctx.current_pos.x += ui.style().spacing.item_spacing.x;
-
-        self.draw_path(ui, draw_ctx, file, path, y);
 
         ui.is_rect_visible(row_rect)
     }
@@ -428,8 +566,6 @@ impl ChangeList {
                 element_type,
             });
         }
-
-        draw_ctx.current_pos.x += ui.style().spacing.item_spacing.x;
 
         response
     }
@@ -493,6 +629,7 @@ impl ChangeList {
         ui: &mut egui::Ui,
         draw_ctx: &mut DrawCtx,
         file: &File,
+        match_score: Option<f64>,
         y: usize,
     ) -> bool {
         let score_response = self.draw_sized_row_component(
@@ -501,7 +638,7 @@ impl ChangeList {
             y,
             draw_ctx.match_score_dimensions,
             ChangeListElementType::MatchScore,
-            |ui, rect| match draw_ctx.rules.match_score(file) {
+            |ui, rect| match match_score {
                 Some(score) => {
                     ui.painter().rect_filled(
                         rect,
@@ -553,16 +690,14 @@ impl ChangeList {
     }
 
     /// Draws the path for a single row.
-    ///
-    /// Returns whether the path was visible.
     fn draw_path(
         &mut self,
         ui: &mut egui::Ui,
         draw_ctx: &mut DrawCtx,
-        file: &File,
+        file: Option<&File>,
         path: &str,
         y: usize,
-    ) -> bool {
+    ) {
         let path_rect = ui.painter().text(
             egui::pos2(
                 draw_ctx.current_pos.x,
@@ -581,7 +716,7 @@ impl ChangeList {
             });
             draw_ctx.any_hovered = true;
 
-            if file.paths.len() > 1 {
+            if let Some(file) = file {
                 egui::show_tooltip_at_pointer(ui.ctx(), "hover_tooltip".into(), |ui| {
                     ui.label(file.paths.join("\n"))
                 });
@@ -589,8 +724,98 @@ impl ChangeList {
         }
 
         draw_ctx.current_pos.x += path_rect.width();
+    }
 
-        ui.is_rect_visible(path_rect)
+    /// Draws the directory tree prefix.
+    ///
+    /// The `dir_info` refers to whether the folder at that level is at it's last level or not.
+    fn draw_dir_markers(
+        &mut self,
+        ui: &mut egui::Ui,
+        draw_ctx: &mut DrawCtx,
+        dir_info: &[(String, bool)],
+        allow_collapse: bool,
+        collapsed: &mut bool,
+    ) {
+        let stroke = egui::Stroke::new(1.0, ui.style().noninteractive().text_color());
+
+        let no_branch_ongoing = |ui: &mut egui::Ui, rect: egui::Rect| {
+            let painter = ui.painter();
+            painter.line_segment([rect.center_top(), rect.center_bottom()], stroke);
+        };
+        let branch_ongoing = |ui: &mut egui::Ui, rect: egui::Rect| {
+            let painter = ui.painter();
+            painter.line_segment([rect.center_top(), rect.center_bottom()], stroke);
+            painter.line_segment([rect.center(), rect.right_center()], stroke);
+        };
+        let just_branch = |ui: &mut egui::Ui, rect: egui::Rect| {
+            let painter = ui.painter();
+            painter.line_segment([rect.center_top(), rect.center()], stroke);
+            painter.line_segment([rect.center(), rect.right_center()], stroke);
+        };
+
+        for (i, last_in_level) in dir_info.iter().enumerate() {
+            let last_level = i == dir_info.len() - 1;
+            let rect = egui::Rect::from_min_size(
+                draw_ctx.current_pos,
+                egui::vec2(self.change_height / 2.0, self.change_height),
+            );
+            draw_ctx.current_pos.x += rect.width();
+
+            match (last_in_level.1, last_level) {
+                (false, false) => no_branch_ongoing(ui, rect),
+                (false, true) => branch_ongoing(ui, rect),
+                (true, false) => (),
+                (true, true) => just_branch(ui, rect),
+            }
+
+            if !last_in_level.1 || last_level {
+                ui.allocate_rect(rect, egui::Sense::hover())
+                    .on_hover_text_at_pointer(&last_in_level.0);
+            }
+        }
+
+        if allow_collapse {
+            let painter = ui.painter();
+            let rect = egui::Rect::from_min_size(
+                draw_ctx.current_pos,
+                egui::vec2(self.change_height / 2.0, self.change_height),
+            );
+            draw_ctx.current_pos.x += rect.width();
+
+            let half_triangle_height = self.change_height / 8.0;
+            let triangle_width = self.change_height / 5.0;
+
+            painter.line_segment([rect.left_center(), rect.center()], stroke);
+            if *collapsed {
+                painter.add(egui::epaint::PathShape {
+                    points: vec![
+                        rect.center() + egui::vec2(-half_triangle_height, triangle_width),
+                        rect.center() + egui::vec2(-half_triangle_height, -triangle_width),
+                        rect.center() + egui::vec2(half_triangle_height, 0.0),
+                    ],
+                    closed: true,
+                    fill: Color32::DARK_RED,
+                    stroke: egui::Stroke::NONE,
+                });
+            } else {
+                painter.line_segment([rect.center(), rect.center_bottom()], stroke);
+                painter.add(egui::epaint::PathShape {
+                    points: vec![
+                        rect.center() + egui::vec2(-triangle_width, -half_triangle_height),
+                        rect.center() + egui::vec2(triangle_width, -half_triangle_height),
+                        rect.center() + egui::vec2(0.0, half_triangle_height),
+                    ],
+                    closed: true,
+                    fill: ui.style().noninteractive().text_color(),
+                    stroke: egui::Stroke::NONE,
+                });
+            }
+
+            if ui.allocate_rect(rect, egui::Sense::click()).clicked() {
+                *collapsed = !*collapsed;
+            }
+        }
     }
 
     /// Draws a single change.
@@ -723,6 +948,7 @@ impl ChangeList {
         self.filtered_files.hash(&mut hasher);
         self.shown_files.hash(&mut hasher);
         self.search_text.hash(&mut hasher);
+        self.file_tree.hash(&mut hasher);
         hasher.finish()
     }
 }

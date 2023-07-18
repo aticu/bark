@@ -60,7 +60,12 @@ impl GuiApp {
                         path_lists,
                         ctx.egui_ctx.clone(),
                     ),
-                    change_list: change_list::ChangeList::new(files, "Filtered changes", true),
+                    change_list: change_list::ChangeList::new(
+                        files,
+                        "Filtered changes",
+                        true,
+                        None,
+                    ),
                     rule_list: rules::RuleList::new(files, rule_file),
                     rules,
                     current_tab: Tab::ChangeList,
