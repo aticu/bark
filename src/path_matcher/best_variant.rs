@@ -134,11 +134,15 @@ fn find_replacements(path: &str) -> Vec<Vec<PathMatcherPart>> {
     let username = if let Some(maybe_user) = path.strip_prefix("/Users/") {
         let username: InlinableString = maybe_user.split('/').next().unwrap().into();
 
-        replacements.push(vec![PathMatcherPart::Literal("/Users/".into())]);
-        replacements.push(vec![PathMatcherPart::Username]);
-        i += "/Users/".len() + username.len();
+        if PathMatcher::from("<username>").matches_path(&username) {
+            replacements.push(vec![PathMatcherPart::Literal("/Users/".into())]);
+            replacements.push(vec![PathMatcherPart::Username]);
+            i += "/Users/".len() + username.len();
 
-        Some(username)
+            Some(username)
+        } else {
+            None
+        }
     } else {
         None
     };
@@ -191,7 +195,7 @@ fn find_replacements(path: &str) -> Vec<Vec<PathMatcherPart>> {
             .filter(|(_, part_len)| *part_len == len)
             .filter(|(part, len)| {
                 // a 2-letter locale that is bordered by other alphabetic characters is very likely not a locale
-                !(bordered_by_alpha && matches!(part, PathMatcherPart::Locale) && *len == 2)
+                !(bordered_by_alpha && matches!(part, PathMatcherPart::Locale(_)) && *len == 2)
             })
             .filter(|(part, _)| {
                 // hex digits bordered by other alphabetic characters are likely not hex digits
@@ -326,7 +330,9 @@ pub(crate) fn possible_replacements(
     username: &Option<InlinableString>,
 ) -> Vec<(PathMatcherPart, usize)> {
     let mut possible_parts = vec![
-        PathMatcherPart::Locale,
+        PathMatcherPart::Locale(Case::Mixed),
+        PathMatcherPart::Locale(Case::Lower),
+        PathMatcherPart::Locale(Case::Upper),
         PathMatcherPart::AssemblyVersion,
         PathMatcherPart::Uuid(Case::Upper),
         PathMatcherPart::Uuid(Case::Lower),

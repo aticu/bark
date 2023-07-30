@@ -145,7 +145,12 @@ impl From<&str> for PathMatcher {
             } else if pattern.eq_ignore_ascii_case("assemblyver") {
                 Some((PathMatcherPart::AssemblyVersion, after_pattern))
             } else if pattern.eq_ignore_ascii_case("locale") {
-                Some((PathMatcherPart::Locale, after_pattern))
+                let case = pattern
+                    .chars()
+                    .map(|c| Case::try_from(c).unwrap())
+                    .reduce(|case1, case2| case1 + case2)
+                    .unwrap();
+                Some((PathMatcherPart::Locale(case), after_pattern))
             } else if pattern.eq_ignore_ascii_case("username") {
                 Some((PathMatcherPart::Username, after_pattern))
             } else {
@@ -205,13 +210,6 @@ impl From<PathMatcher> for String {
 }
 
 impl PathMatcher {
-    /// Creates a path matcher from a literal path.
-    pub(crate) fn from_literal_path(path: &str) -> Self {
-        Self {
-            parts: smallvec::smallvec![PathMatcherPart::Literal(path.into())],
-        }
-    }
-
     /// Determines how many characters of the given path are matched by this matcher.
     pub(crate) fn match_len(&self, path: &str) -> Option<usize> {
         let mut iter = path.chars().peekable();
@@ -330,8 +328,13 @@ pub(crate) enum PathMatcherPart {
     Uuid(Case),
     /// The path part matches a locale specification.
     ///
-    /// Examples of this are `en-US`, `de-DE` or `it`.
-    Locale,
+    /// Note that the case here is not as flexible as for other matcher parts.
+    ///
+    /// Examples of
+    /// - mixed case are `en-US`, `de-DE` or `it`
+    /// - lower case are `en-us`, `de-de` or `it`
+    /// - upper case are `EN-US`, `DE-DE` or `IT`
+    Locale(Case),
     /// The path matches an assembly version.
     ///
     /// An example of this would be `1.5.1254.0`.
@@ -411,7 +414,15 @@ impl fmt::Display for PathMatcherPart {
                     Case::Mixed => "Uuid",
                 }
             ),
-            PathMatcherPart::Locale => write!(f, "<locale>"),
+            PathMatcherPart::Locale(case) => write!(
+                f,
+                "<{}>",
+                match case {
+                    Case::Upper => "LOCALE",
+                    Case::Lower => "locale",
+                    Case::Mixed => "Locale",
+                }
+            ),
             PathMatcherPart::AssemblyVersion => write!(f, "<assemblyver>"),
             PathMatcherPart::Digit { min_len, max_len } => {
                 write!(f, "<digit")?;
@@ -492,13 +503,15 @@ impl PathMatcherPart {
 
                 true
             }
-            PathMatcherPart::Locale => {
+            PathMatcherPart::Locale(case) => {
                 let mut len = 0;
 
                 for c in iter.take(2) {
                     len += 1;
-                    if !c.is_ascii_lowercase() {
-                        return false;
+                    match case {
+                        Case::Lower | Case::Mixed if !c.is_ascii_lowercase() => return false,
+                        Case::Upper if !c.is_ascii_uppercase() => return false,
+                        _ => (),
                     }
                 }
                 if len != 2 {
@@ -511,8 +524,10 @@ impl PathMatcherPart {
 
                     for c in iter.take(2) {
                         len += 1;
-                        if !c.is_ascii_uppercase() {
-                            return false;
+                        match case {
+                            Case::Upper | Case::Mixed if !c.is_ascii_uppercase() => return false,
+                            Case::Lower if !c.is_ascii_lowercase() => return false,
+                            _ => (),
                         }
                     }
                     if len != 5 {
@@ -667,7 +682,7 @@ impl PathMatcherPart {
                     results.push(self.clone());
                 }
             }
-            PathMatcherPart::Locale => {
+            PathMatcherPart::Locale(_) => {
                 if len == 2 || len == 5 {
                     results.push(self.clone());
                 }
@@ -781,7 +796,7 @@ impl PathMatcherPart {
             match self {
                 PathMatcherPart::Literal(_) => add_flag!("lit"),
                 PathMatcherPart::Uuid(_) => add_flag!("uuid"),
-                PathMatcherPart::Locale => add_flag!("locale"),
+                PathMatcherPart::Locale(_) => add_flag!("locale"),
                 PathMatcherPart::AssemblyVersion => add_flag!("assemblyver"),
                 PathMatcherPart::Digit { .. } => add_flag!("digit"),
                 PathMatcherPart::HexDigit { .. } => add_flag!("hexdigit"),
@@ -816,7 +831,7 @@ impl PathMatcherPart {
         let has_len_component = match self {
             PathMatcherPart::Literal(_)
             | PathMatcherPart::Uuid(_)
-            | PathMatcherPart::Locale
+            | PathMatcherPart::Locale(_)
             | PathMatcherPart::AssemblyVersion
             | PathMatcherPart::Username => false,
             PathMatcherPart::Digit { .. }
@@ -830,7 +845,9 @@ impl PathMatcherPart {
 
         let mixed_case = match self {
             PathMatcherPart::Literal(_)
-            | PathMatcherPart::Locale
+            // Note that the locale has a case component, but there "mixed" just specifies a
+            // different fixed case configuration, so we return `false` here
+            | PathMatcherPart::Locale(_)
             | PathMatcherPart::AssemblyVersion
             | PathMatcherPart::Digit { .. }
             | PathMatcherPart::Username => false,
@@ -985,15 +1002,44 @@ mod tests {
 
     #[test]
     fn path_matcher_locale() {
-        let matcher = PathMatcherPart::Locale;
+        let matcher = PathMatcherPart::Locale(Case::Mixed);
 
         test(&matcher, "en-US", Some(""));
+        test(&matcher, "en-us", None);
+        test(&matcher, "EN-US", None);
         test(&matcher, "de-DE", Some(""));
         test(&matcher, "it", Some(""));
         test(&matcher, "en-US.", Some("."));
         test(&matcher, "enUS", Some("US"));
         test(&matcher, "it.", Some("."));
+        test(&matcher, "i", None);
+        test(&matcher, "en-U", None);
+        test(&matcher, "en-", None);
 
+        let matcher = PathMatcherPart::Locale(Case::Lower);
+
+        test(&matcher, "en-US", None);
+        test(&matcher, "en-us", Some(""));
+        test(&matcher, "EN-US", None);
+        test(&matcher, "de-DE", None);
+        test(&matcher, "it", Some(""));
+        test(&matcher, "en-US.", None);
+        test(&matcher, "enUS", Some("US"));
+        test(&matcher, "it.", Some("."));
+        test(&matcher, "i", None);
+        test(&matcher, "en-U", None);
+        test(&matcher, "en-", None);
+
+        let matcher = PathMatcherPart::Locale(Case::Upper);
+
+        test(&matcher, "en-US", None);
+        test(&matcher, "en-us", None);
+        test(&matcher, "EN-US", Some(""));
+        test(&matcher, "de-DE", None);
+        test(&matcher, "it", None);
+        test(&matcher, "en-US.", None);
+        test(&matcher, "enUS", None);
+        test(&matcher, "it.", None);
         test(&matcher, "i", None);
         test(&matcher, "en-U", None);
         test(&matcher, "en-", None);
@@ -1197,7 +1243,7 @@ mod tests {
                 PathMatcherPart::Username,
                 PathMatcherPart::Literal("/".into()),
                 PathMatcherPart::Uuid(Case::Lower),
-                PathMatcherPart::Locale,
+                PathMatcherPart::Locale(Case::Mixed),
                 PathMatcherPart::AssemblyVersion,
                 PathMatcherPart::Digit {
                     min_len: Some(1),
@@ -1255,7 +1301,7 @@ mod tests {
 
         let displayed = format!("{matcher}");
 
-        assert_eq!(displayed, "/<username>/<uuid><locale><assemblyver><digit+><digit1-3><digit*><digit2-><digit-2><digit><digit2><HEX2><alpha><alphanum><Alphanum5>");
+        assert_eq!(displayed, "/<username>/<uuid><Locale><assemblyver><digit+><digit1-3><digit*><digit2-><digit-2><digit><digit2><HEX2><alpha><alphanum><Alphanum5>");
 
         let parsed = PathMatcher::from(displayed.as_str());
         assert_eq!(matcher, parsed);
@@ -1330,7 +1376,7 @@ mod tests {
         let parts = [
             PathMatcherPart::Literal("".into()),
             PathMatcherPart::Username,
-            PathMatcherPart::Locale,
+            PathMatcherPart::Locale(Case::Mixed),
             PathMatcherPart::Uuid(Case::Lower),
             PathMatcherPart::Uuid(Case::Upper),
             PathMatcherPart::Uuid(Case::Mixed),

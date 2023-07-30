@@ -68,7 +68,7 @@ impl RuleWriter {
                 files,
                 "Files matching the rule",
                 false,
-                Some(crate::file::FileOrder::Alphabetical),
+                Some(crate::file::FileOrder::Chronological),
             ),
         };
 
@@ -211,7 +211,7 @@ impl RuleWriter {
 
                 let mut storage = RuleStorage::new();
                 if let Some(rule) = rule {
-                    rule.show(ui, 12.0, None, false, None);
+                    rule.show(ui, false);
 
                     storage.insert(rule);
                 }

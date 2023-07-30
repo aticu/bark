@@ -9,21 +9,13 @@ use sniff::MetaEntryDiff;
 use crate::{future_value::ComputableValue, input, path_matcher::PathMatcher, rules::RuleStorage};
 
 /// Information about timestamp changes for a single file.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq, Eq, Hash)]
 pub(crate) struct ChangeTime {
     /// The average timestamp since the boot.
     pub(crate) avg: time::Duration,
     /// The standard deviation of the change time since boot, if calculation requested.
     pub(crate) std_dev: time::Duration,
 }
-
-impl PartialEq for ChangeTime {
-    fn eq(&self, other: &Self) -> bool {
-        self.avg.eq(&other.avg)
-    }
-}
-
-impl Eq for ChangeTime {}
 
 impl PartialOrd for ChangeTime {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
@@ -66,7 +58,7 @@ impl fmt::Display for ChangeTime {
 }
 
 /// Represents a single file and its changes across possibly multiple runs.
-#[derive(Debug)]
+#[derive(Debug, Hash)]
 pub(crate) struct File {
     /// The paths that point to this file.
     ///
@@ -161,6 +153,10 @@ pub(crate) struct Files {
     path_trie: Trie<String, ()>,
     /// The number of changes contained within each file.
     width: usize,
+    /// The ID of this data source.
+    ///
+    /// With a very high probability this will be different for each data source.
+    datasource_id: u64,
 }
 
 impl Files {
@@ -224,12 +220,17 @@ impl Files {
 
         let width = files.get(0).map(|file| file.changes.len()).unwrap_or(0);
 
+        let mut hasher = hashers::fnv::FNV1aHasher64::default();
+        std::hash::Hash::hash(&files, &mut hasher);
+        let datasource_id = std::hash::Hasher::finish(&hasher);
+
         Files {
             files,
             alphabetical_order,
             chronological_order,
             path_trie,
             width,
+            datasource_id,
         }
     }
 
@@ -241,6 +242,13 @@ impl Files {
     /// Returns the file for the given `id`.
     pub(crate) fn get(&self, id: FileId) -> Option<&File> {
         self.files.get(id.index)
+    }
+
+    /// The ID of this data source.
+    ///
+    /// With a very high probability this will be different for each data source.
+    pub(crate) fn datasource_id(&self) -> u64 {
+        self.datasource_id
     }
 
     /// Iterates over the files in chronological order.

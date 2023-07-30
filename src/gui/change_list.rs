@@ -5,11 +5,11 @@ use std::hash::Hash;
 use eframe::{egui, epaint::Color32};
 
 use crate::{
+    change_event::{ChangeDistribution, ChangeEvent},
     file::{File, FileId, FileOrder, FileScoreCache, Files},
     fs_tree::{self, FsTree, FsTreeIter},
     future_value::FutureValue,
-    path_matcher::PathMatcher,
-    rules::{Rule, RuleStorage},
+    rules::RuleStorage,
 };
 
 /// The font used for normal text such as the time and the path.
@@ -17,12 +17,6 @@ const TEXT_FONT: egui::FontId = egui::FontId {
     size: 13.0,
     family: egui::FontFamily::Proportional,
 };
-
-/// The background color that a hovered row is highlighted with.
-const HOVERED_HIGHLIGHT_COLOR: Color32 = Color32::WHITE;
-
-/// How close to the highlight color the hovered entry should get.
-const HOVERED_HIGHLIGHT_PERCENT: f64 = 0.1;
 
 /// The type of threshhold to apply.
 #[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
@@ -357,6 +351,8 @@ impl ChangeList {
     /// Draws a directory tree in the change list.
     fn draw_tree(&mut self, ui: &mut egui::Ui, draw_ctx: &mut DrawCtx, size: &mut egui::Vec2) {
         let start_pos = draw_ctx.current_pos;
+        let row_height = self.row_height(draw_ctx);
+
         let mut y = 0;
         let mut iter = FsTreeIter::new();
         let mut tree =
@@ -396,30 +392,33 @@ impl ChangeList {
                 self.shown_files += 1;
             }
 
-            let file = file_id.and_then(|file_id| self.files.get(file_id));
-            let match_score = file_id
-                .and_then(|file_id| self.file_score_cache.get().unwrap().get_score(file_id))
-                .flatten();
-            self.draw_changes(ui, draw_ctx, y, file, match_score);
+            if self.row_needs_drawing(ui, row_height, draw_ctx) {
+                let file = file_id.and_then(|file_id| self.files.get(file_id));
+                let match_score = file_id
+                    .and_then(|file_id| self.file_score_cache.get().unwrap().get_score(file_id))
+                    .flatten();
 
-            if result.name != "/" {
-                let mut collapsed = result.value.1;
-                self.draw_dir_markers(
-                    ui,
-                    draw_ctx,
-                    result.parents,
-                    result.has_children || result.value.1,
-                    &mut collapsed,
-                );
+                self.draw_changes(ui, draw_ctx, y, file, match_score);
 
-                if collapsed != result.value.1 {
-                    self.file_tree.get_mut(&result.path()).unwrap().val_mut().1 = collapsed;
+                if result.name != "/" {
+                    let mut collapsed = result.value.1;
+                    self.draw_dir_markers(
+                        ui,
+                        draw_ctx,
+                        result.parents,
+                        result.has_children || result.value.1,
+                        &mut collapsed,
+                    );
+
+                    if collapsed != result.value.1 {
+                        self.file_tree.get_mut(&result.path()).unwrap().val_mut().1 = collapsed;
+                    }
                 }
-            }
-            self.draw_path(ui, draw_ctx, file, &result.name, y);
+                self.draw_path(ui, draw_ctx, file, &result.name, y);
 
-            size.x = (draw_ctx.current_pos.x - start_pos.x).max(size.x);
-            size.y += draw_ctx.time_dimensions.y;
+                size.x = (draw_ctx.current_pos.x - start_pos.x).max(size.x);
+                size.y += draw_ctx.time_dimensions.y;
+            }
 
             draw_ctx.current_pos.x = start_pos.x;
             draw_ctx.current_pos.y += draw_ctx.time_dimensions.y;
@@ -437,6 +436,8 @@ impl ChangeList {
         order: FileOrder,
     ) {
         let start_pos = draw_ctx.current_pos;
+        let row_height = self.row_height(draw_ctx);
+
         for (y, file) in self.files.iter(order).enumerate() {
             let match_score = self
                 .file_score_cache
@@ -453,15 +454,36 @@ impl ChangeList {
             }
             self.shown_files += 1;
 
-            self.draw_changes(ui, draw_ctx, y, Some(file.file), match_score);
-            self.draw_path(ui, draw_ctx, Some(file.file), file.path, y);
+            if self.row_needs_drawing(ui, row_height, draw_ctx) {
+                self.draw_changes(ui, draw_ctx, y, Some(file.file), match_score);
+                self.draw_path(ui, draw_ctx, Some(file.file), file.path, y);
 
-            size.x = (draw_ctx.current_pos.x - start_pos.x).max(size.x);
-            size.y += draw_ctx.time_dimensions.y;
+                size.x = (draw_ctx.current_pos.x - start_pos.x).max(size.x);
+                size.y += draw_ctx.time_dimensions.y;
+            }
 
             draw_ctx.current_pos.x = start_pos.x;
             draw_ctx.current_pos.y += draw_ctx.time_dimensions.y;
         }
+    }
+
+    /// Determines the row height for a single drawing.
+    fn row_height(&self, draw_ctx: &DrawCtx) -> f32 {
+        draw_ctx
+            .time_dimensions
+            .y
+            .max(draw_ctx.match_score_dimensions.y)
+            .max(self.change_height)
+            .max(TEXT_FONT.size)
+    }
+
+    /// Determines if the current row needs to be drawn.
+    fn row_needs_drawing(&self, ui: &egui::Ui, row_height: f32, draw_ctx: &DrawCtx) -> bool {
+        let row_rect =
+            egui::Rect::from_min_size(draw_ctx.current_pos, egui::vec2(f32::INFINITY, row_height));
+
+        // we've already laid everything out, no need to redo the work
+        ui.is_rect_visible(row_rect) || self.last_frame_size.is_none()
     }
 
     /// Draws the changes in the change list.
@@ -474,22 +496,7 @@ impl ChangeList {
         y: usize,
         file: Option<&File>,
         match_score: Option<f64>,
-    ) -> bool {
-        let row_height = draw_ctx
-            .time_dimensions
-            .y
-            .max(draw_ctx.match_score_dimensions.y)
-            .max(self.change_height)
-            .max(TEXT_FONT.size);
-
-        let row_rect =
-            egui::Rect::from_min_size(draw_ctx.current_pos, egui::vec2(f32::INFINITY, row_height));
-
-        if !ui.is_rect_visible(row_rect) && self.last_frame_size.is_some() {
-            // we've already laid everything out, no need to redo the work
-            return false;
-        }
-
+    ) {
         if let Some(file) = file {
             {
                 self.draw_time(ui, draw_ctx, file, y);
@@ -502,32 +509,7 @@ impl ChangeList {
             }
 
             for (x, change) in file.changes.iter().enumerate() {
-                let is_highlighted = if let Some(hovered) = self.hovered {
-                    if hovered.row == y {
-                        true
-                    } else if let ChangeListElementType::Change { column } = hovered.element_type {
-                        column == x
-                    } else {
-                        false
-                    }
-                } else {
-                    false
-                };
-
-                let change_response = self.draw_single_change(
-                    ui,
-                    &mut draw_ctx.current_pos,
-                    x,
-                    is_highlighted,
-                    change,
-                );
-                if ui.rect_contains_pointer(change_response.rect) && !draw_ctx.any_hovered {
-                    self.hovered = Some(ChangeListElement {
-                        row: y,
-                        element_type: ChangeListElementType::Change { column: x },
-                    });
-                    draw_ctx.any_hovered = true;
-                }
+                self.draw_single_change(change, ui, draw_ctx, x, y);
             }
 
             draw_ctx.current_pos.x += ui.style().spacing.item_spacing.x;
@@ -537,8 +519,6 @@ impl ChangeList {
                 + draw_ctx.match_score_dimensions.x
                 + self.files.width() as f32 * self.change_height / 2.0;
         }
-
-        ui.is_rect_visible(row_rect)
     }
 
     /// Draws a component of known size in a row.
@@ -667,20 +647,19 @@ impl ChangeList {
         );
         if score_response.hovered() {
             let mut iter = draw_ctx.rules.rules_matching(file).peekable();
+            let change_events = ChangeDistribution::from_files(std::iter::once(file));
 
-            if iter.peek().is_some() {
+            if iter.peek().is_some() || change_events.is_some() {
                 egui::show_tooltip_at_pointer(ui.ctx(), "rule_display_tooltip".into(), |ui| {
                     for rule in iter {
-                        rule.show(
-                            ui,
-                            9.0,
-                            Some(3),
-                            true,
-                            Rule::from_matcher(
-                                PathMatcher::from_literal_path(file.path()),
-                                self.files,
-                            ),
-                        );
+                        rule.show(ui, true);
+                    }
+
+                    if let Some(change_events) = change_events {
+                        ui.horizontal(|ui| {
+                            ui.label("Found:");
+                            change_events.show(ui);
+                        });
                     }
                 });
             }
@@ -818,119 +797,65 @@ impl ChangeList {
         }
     }
 
-    /// Draws a single change.
+    /// Draws a single change event.
     fn draw_single_change(
-        &self,
-        ui: &mut egui::Ui,
-        pos: &mut egui::Pos2,
-        x: usize,
-        is_highlighted: bool,
+        &mut self,
         change: &Option<sniff::MetaEntryDiff<time::Duration>>,
-    ) -> egui::Response {
+        ui: &mut egui::Ui,
+        draw_ctx: &mut DrawCtx,
+        x: usize,
+        y: usize,
+    ) {
+        let is_highlighted = if let Some(hovered) = self.hovered {
+            if hovered.row == y {
+                true
+            } else if let ChangeListElementType::Change { column } = hovered.element_type {
+                column == x
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+
+        const COLOR_TABLE: [Color32; 2] = [Color32::from_gray(40), Color32::from_gray(45)];
+        let default_bg = COLOR_TABLE[x % COLOR_TABLE.len()];
         let rect = egui::Rect::from_min_size(
-            *pos,
+            draw_ctx.current_pos,
             egui::vec2(self.change_height / 2.0, self.change_height),
         );
-        pos.x += rect.width();
-
-        let response = ui.allocate_rect(rect, egui::Sense::hover());
-        if !ui.is_rect_visible(rect) {
-            return response;
-        }
-
-        let (fg, bg) = change_colors(change, ui.style().noninteractive().text_color(), x);
-
-        let painter = ui.painter().with_clip_rect(rect);
-        painter.rect_filled(
+        let change_response = super::change_event::draw(
+            ChangeEvent::measure(change),
+            ui,
             rect,
-            0.0,
-            if is_highlighted {
-                super::lerp_color(bg, HOVERED_HIGHLIGHT_COLOR, HOVERED_HIGHLIGHT_PERCENT)
-            } else {
-                bg
-            },
+            default_bg,
+            is_highlighted,
+            change.as_ref().and_then(|changes| {
+                changes
+                    .meta_info()
+                    .changes
+                    .iter()
+                    .find_map(|change| match change {
+                        sniff::MetadataChange::Size(change) => Some(change),
+                        _ => None,
+                    })
+                    .cloned()
+            }),
         );
 
-        if ui.rect_contains_pointer(response.rect) {
+        draw_ctx.current_pos.x += rect.width();
+
+        if ui.rect_contains_pointer(change_response.rect) && !draw_ctx.any_hovered {
             if let Some(summary) = change_summary(change) {
                 egui::show_tooltip_at_pointer(ui.ctx(), "hover_tooltip".into(), |ui| {
                     ui.label(summary)
                 });
             }
-        }
-
-        let Some(change) = change else { return response };
-
-        self.draw_change_grid(painter, rect, fg, change.meta_info());
-
-        response
-    }
-
-    /// Draws a grid of the changes that occurred in the given metadata.
-    fn draw_change_grid(
-        &self,
-        painter: egui::Painter,
-        rect: egui::Rect,
-        text_color: Color32,
-        meta: &sniff::MetadataInfo<time::Duration>,
-    ) {
-        /// The width of the grid of changes.
-        const GRID_WIDTH: usize = 2;
-
-        /// The height of the grid of changes.
-        const GRID_HEIGHT: usize = 3;
-
-        let grid_entries = [
-            ("A", meta.accessed.is_changed()),
-            ("M", meta.modified.is_changed()),
-            ("C", meta.created.is_changed()),
-            ("m", meta.inode_modified.is_changed()),
-            (
-                meta.changes
-                    .iter()
-                    .find(|c| matches!(c, sniff::MetadataChange::Size(_)))
-                    .map(|c| match c {
-                        sniff::MetadataChange::Size(change) if change.cmp().is_lt() => "G",
-                        sniff::MetadataChange::Size(change) if change.cmp().is_gt() => "s",
-                        _ => "S",
-                    })
-                    .unwrap_or("S"),
-                meta.changes
-                    .iter()
-                    .any(|c| matches!(c, sniff::MetadataChange::Size(_))),
-            ),
-            ("I", meta.inode.is_changed()),
-        ];
-        assert!(grid_entries.len() <= GRID_HEIGHT * GRID_WIDTH);
-
-        let mut grid_x = 0;
-        let mut grid_y = 0;
-        let x_step: f32 = self.change_height / 2.0 / GRID_WIDTH as f32;
-        let y_step: f32 = self.change_height / GRID_HEIGHT as f32;
-
-        for (text, should_display) in grid_entries {
-            if should_display {
-                painter.text(
-                    rect.left_top() + egui::vec2(grid_x as f32 * x_step, grid_y as f32 * y_step),
-                    eframe::emath::Align2::LEFT_TOP,
-                    text,
-                    egui::FontId {
-                        size: self.change_height / GRID_HEIGHT as f32,
-                        family: egui::FontFamily::Monospace,
-                    },
-                    text_color,
-                );
-            }
-
-            grid_x = (grid_x + 1) % GRID_WIDTH;
-            if grid_x == 0 {
-                // we wrapped x
-                grid_y += 1;
-            }
-            if grid_y == GRID_HEIGHT {
-                // we're at the end and cannot display any more entries
-                break;
-            }
+            self.hovered = Some(ChangeListElement {
+                row: y,
+                element_type: ChangeListElementType::Change { column: x },
+            });
+            draw_ctx.any_hovered = true;
         }
     }
 
@@ -950,73 +875,6 @@ impl ChangeList {
         self.search_text.hash(&mut hasher);
         self.file_tree.hash(&mut hasher);
         hasher.finish()
-    }
-}
-
-/// Computes the colors for a single change.
-fn change_colors(
-    change: &Option<sniff::MetaEntryDiff<time::Duration>>,
-    default_fg: Color32,
-    x: usize,
-) -> (Color32, Color32) {
-    const COLOR_TABLE: [Color32; 2] = [Color32::from_gray(40), Color32::from_gray(45)];
-    let default_bg = COLOR_TABLE[x % COLOR_TABLE.len()];
-
-    if let Some(change) = change {
-        let meta = change.meta_info();
-
-        if meta
-            .changes
-            .iter()
-            .any(|c| !matches!(c, sniff::MetadataChange::Size(_)))
-        {
-            (Color32::BLACK, Color32::from_rgb(255, 0, 255))
-        } else {
-            use sniff::{
-                EntryDiff::*,
-                MetaEntryDiff::{Added, Deleted, EntryChange},
-            };
-            match change {
-                Added(_) => (Color32::BLACK, Color32::GREEN),
-                Deleted(_) => (Color32::BLACK, Color32::RED),
-                EntryChange(FileChanged { .. }, meta) => {
-                    if let Some(sniff::MetadataChange::Size(change)) = meta
-                        .changes
-                        .iter()
-                        .find(|c| matches!(c, sniff::MetadataChange::Size(_)))
-                    {
-                        match change.cmp() {
-                            std::cmp::Ordering::Less => (
-                                Color32::BLACK,
-                                super::lerp_color(
-                                    Color32::from_rgb(100, 255, 0),
-                                    Color32::from_rgb(220, 255, 0),
-                                    change.from as f64 / change.to as f64,
-                                ),
-                            ),
-                            std::cmp::Ordering::Equal => (Color32::BLACK, Color32::YELLOW),
-                            std::cmp::Ordering::Greater => (
-                                Color32::BLACK,
-                                super::lerp_color(
-                                    Color32::from_rgb(255, 100, 0),
-                                    Color32::from_rgb(255, 220, 0),
-                                    change.to as f64 / change.from as f64,
-                                ),
-                            ),
-                        }
-                    } else {
-                        (Color32::BLACK, Color32::YELLOW)
-                    }
-                }
-                EntryChange(SymlinkChanged { .. }, _) => (Color32::BLACK, Color32::LIGHT_YELLOW),
-                EntryChange(TypeChange(_) | OtherChange, _) => {
-                    (Color32::BLACK, Color32::from_rgb(0, 255, 255))
-                }
-                _ => (default_fg, default_bg),
-            }
-        }
-    } else {
-        (default_fg, default_bg)
     }
 }
 

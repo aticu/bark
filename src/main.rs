@@ -1,5 +1,6 @@
 #![feature(let_chains)]
 
+mod change_event;
 mod file;
 mod fs_tree;
 mod future_value;
