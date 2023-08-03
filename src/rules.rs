@@ -97,6 +97,6 @@ impl Rule {
         let Some(change_events) = ChangeDistribution::from_files(std::iter::once(file)) else { return 0.0 };
 
         self.change_events
-            .same_distribution_probabilitity(change_events)
+            .same_distribution_probability(change_events)
     }
 }

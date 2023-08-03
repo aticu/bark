@@ -268,14 +268,24 @@ impl ChangeDistribution {
         Some(ChangeDistribution { changes })
     }
 
-    /// Returns the probability that the given other events come from the same distribution as
-    /// this.
-    pub(crate) fn same_distribution_probabilitity(&self, mut other: Self) -> f64 {
-        let total_rule_events = self.changes.values().sum::<u32>() as f64;
-        let total_observed_events = other.changes.values().sum::<u32>() as f64;
-        let expected_factor = total_observed_events / total_rule_events;
+    /// Returns the probability that the given other distribution is the same as this one.
+    ///
+    /// This function uses the G test to determine if the samples are from the same
+    /// distribution.
+    /// `self` is used as the reference distribution.
+    pub(crate) fn same_distribution_probability(&self, mut other: Self) -> f64 {
+        // the G test doesn't make sense if the table only has one entry
+        if self.changes.len() == 1 {
+            let same_events = self.changes.keys().eq(other.changes.keys());
 
-        // compute the test statistic for the G test
+            return if same_events { 1.0 } else { 0.0 };
+        }
+
+        let total_self = self.changes.values().sum::<u32>();
+        let total_other = other.changes.values().sum::<u32>();
+        let expected_factor = total_other as f64 / total_self as f64;
+
+        // computes the test statistic for the G test
         let statistic = 2.0
             * self
                 .changes
@@ -296,9 +306,13 @@ impl ChangeDistribution {
             return 0.0;
         }
 
+        // since the contingency table is one-dimensional, the degrees of freedom is the number
+        // of total events - 1
         let chi_squared =
-            statrs::distribution::ChiSquared::new((ChangeEvent::NUM_FIELDS - 1) as f64).unwrap();
+            statrs::distribution::ChiSquared::new((self.changes.len() - 1) as f64).unwrap();
 
+        // the p value is the probability that the test statistic is greater than the chi squared
+        // distribution with the above described degrees of freedom
         1.0 - statrs::distribution::ContinuousCDF::cdf(&chi_squared, statistic)
     }
 }
