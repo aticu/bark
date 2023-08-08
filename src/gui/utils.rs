@@ -2,6 +2,33 @@
 
 use eframe::egui::{self, Color32};
 
+/// A table of colors that are supposed to be useful for categorical data differentiation.
+///
+/// Slightly modified from
+/// [https://sashamaps.net/docs/resources/20-colors/](https://sashamaps.net/docs/resources/20-colors/).
+const COLOR_TABLE: &[Color32] = &[
+    egui::Color32::from_rgb(0, 130, 200),
+    egui::Color32::from_rgb(128, 0, 0),
+    egui::Color32::from_rgb(145, 30, 180),
+    egui::Color32::from_rgb(70, 240, 240),
+    egui::Color32::from_rgb(240, 50, 230),
+    egui::Color32::from_rgb(210, 245, 60),
+    egui::Color32::from_rgb(250, 190, 212),
+    egui::Color32::from_rgb(0, 128, 128),
+    egui::Color32::from_rgb(220, 190, 255),
+    egui::Color32::from_rgb(245, 130, 48),
+    egui::Color32::from_rgb(170, 110, 40),
+    egui::Color32::from_rgb(255, 250, 200),
+    egui::Color32::from_rgb(170, 255, 195),
+    egui::Color32::from_rgb(128, 128, 0),
+    egui::Color32::from_rgb(255, 215, 180),
+];
+
+/// Returns a color to represent categorical data for the given index.
+pub(crate) fn categorical_color(index: usize) -> Color32 {
+    COLOR_TABLE[index % COLOR_TABLE.len()]
+}
+
 /// Linearly interpolates between the two given colors.
 ///
 /// If `between` is `0.0`, the result will be `color1` and if it is `1.0`, the result will be

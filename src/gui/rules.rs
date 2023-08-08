@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use eframe::egui::{self, Color32};
 
 use crate::{
-    file::Files,
+    file::{File, Files},
     future_value::FutureValue,
     rules::{MatchCountCache, Rule, RuleStorage},
 };
@@ -125,10 +125,7 @@ impl RuleList {
                             if show {
                                 ui.horizontal(|ui| {
                                     ui.add_sized(
-                                        egui::vec2(
-                                            20.0,
-                                            ui.style().text_styles[&egui::TextStyle::Body].size,
-                                        ),
+                                        [20.0, ui.style().text_styles[&egui::TextStyle::Body].size],
                                         egui::Label::new(format!("{match_count}")),
                                     );
                                     rule.show(ui, true);
@@ -178,34 +175,61 @@ impl RuleList {
 impl Rule {
     /// Displays a summary of the rule.
     pub(crate) fn show(&self, ui: &mut egui::Ui, show_glob: bool) {
-        ui.horizontal(|ui| {
-            self.change_events.show(ui);
+        let sample_count = self.sample_count();
+        ui.add_sized(
+            [70.0, ui.style().text_styles[&egui::TextStyle::Body].size],
+            egui::Label::new(format!(
+                "{} sample{}",
+                sample_count,
+                if sample_count != 1 { "s" } else { "" }
+            )),
+        );
 
-            for tag in &self.tags {
-                const TAG_FONT: egui::FontId = egui::FontId::proportional(12.0);
+        for distribution in self.distributions() {
+            distribution.distribution.show(ui);
+        }
 
-                let tag_layout = ui.painter().layout_no_wrap(
-                    String::from(&**tag),
-                    TAG_FONT,
-                    ui.style().noninteractive().text_color(),
-                );
+        for tag in self.tags() {
+            const TAG_FONT: egui::FontId = egui::FontId::proportional(12.0);
 
-                let (rect, _) =
-                    ui.allocate_exact_size(tag_layout.rect.size(), egui::Sense::hover());
-                let rect = rect.expand(2.0);
-                ui.painter().rect_filled(rect, 5.0, Color32::LIGHT_BLUE);
-                ui.painter().text(
-                    rect.center(),
-                    egui::Align2::CENTER_CENTER,
-                    &**tag,
-                    TAG_FONT,
-                    Color32::BLACK,
-                );
+            let tag_layout = ui.painter().layout_no_wrap(
+                String::from(&**tag),
+                TAG_FONT,
+                ui.style().noninteractive().text_color(),
+            );
+
+            let (rect, _) = ui.allocate_exact_size(tag_layout.rect.size(), egui::Sense::hover());
+            let rect = rect.expand(2.0);
+            ui.painter().rect_filled(rect, 5.0, Color32::LIGHT_BLUE);
+            ui.painter().text(
+                rect.center(),
+                egui::Align2::CENTER_CENTER,
+                &**tag,
+                TAG_FONT,
+                Color32::BLACK,
+            );
+        }
+
+        if show_glob {
+            ui.label(format!("{}", self.path_matcher()));
+        }
+    }
+
+    /// Displays the match information for the given file.
+    pub(crate) fn display_file_match(&self, ui: &mut egui::Ui, file: &File) {
+        if let Some((distribution, _)) = self.best_matching_distribution(file) {
+            if self.distributions().len() > 1 {
+                ui.label(format!(
+                    "Best match (out of {}):",
+                    self.distributions().len()
+                ));
+            } else {
+                ui.label("Best match:");
             }
-
-            if show_glob {
-                ui.label(format!("{}", self.path_matcher()));
-            }
-        });
+            distribution.distribution.show(ui);
+            distribution.distribution.show_legend(ui);
+        } else {
+            ui.label("No matching distribution found");
+        }
     }
 }

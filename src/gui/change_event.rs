@@ -2,7 +2,7 @@
 
 use eframe::{egui, epaint::Color32};
 
-use crate::change_event::{ChangeDistribution, ChangeEvent};
+use crate::{change_distribution::ChangeDistribution, change_event::ChangeEvent};
 
 /// The background color that a hovered row is highlighted with.
 const HOVERED_HIGHLIGHT_COLOR: Color32 = Color32::WHITE;
@@ -17,14 +17,9 @@ pub(crate) fn draw(
     rect: egui::Rect,
     default_bg: Color32,
     is_highlighted: bool,
-    sizes: Option<sniff::Change<u64>>,
-) -> egui::Response {
-    let response = ui.allocate_rect(rect, egui::Sense::hover());
-    if !ui.is_rect_visible(rect) {
-        return response;
-    }
-
-    let size_change = if let Some(sizes) = sizes {
+    file_sizes: Option<sniff::Change<u64>>,
+) {
+    let size_change = if let Some(sizes) = file_sizes {
         (sizes.from, sizes.to)
     } else if let Some(change) = change {
         if change.size_increased() {
@@ -56,15 +51,13 @@ pub(crate) fn draw(
         },
     );
 
-    let Some(change) = change else { return response };
+    let Some(change) = change else { return };
 
     if change.is_empty() {
-        return response;
+        return;
     }
 
     draw_change_grid(painter, rect, fg, change);
-
-    response
 }
 
 /// Draws a grid of the changes that occurred in the given metadata.
@@ -95,7 +88,7 @@ fn draw_change_grid(
 
     let mut grid_x = 0;
     let mut grid_y = 0;
-    let x_step: f32 = rect.width() / GRID_WIDTH as f32;
+    let x_step: f32 = rect.height() / 2.0 / GRID_WIDTH as f32;
     let y_step: f32 = rect.height() / GRID_HEIGHT as f32;
 
     for (text, should_display) in grid_entries {
@@ -165,26 +158,190 @@ fn change_colors(
     }
 }
 
+/// The width of a single distribution graph.
+const DISTRIBUTION_GRAPH_WIDTH: f32 = 150.0;
+
+/// The horizontal space taken up to signify a single addition and/or deletion.
+const DISTRIBUTION_ADD_DELETE_SPACE: f32 = 6.0;
+
+/// The height of a change in the change distribution graph.
+const DISTRIBUTION_HEIGHT: f32 = 24.0;
+
+/// The height of the legend bar in the change distribution graph.
+const DISTRIBUTION_BAR_HEIGHT: f32 = 3.0;
+
 impl ChangeDistribution {
-    /// Shows these change events in the GUI.
+    /// Shows this change distribution in the GUI.
     pub(crate) fn show(&self, ui: &mut egui::Ui) {
-        let height = 24.0;
+        let total = self.changes.values().sum::<u32>();
+
+        let (all_rect, _) = ui.allocate_exact_size(
+            egui::vec2(
+                DISTRIBUTION_GRAPH_WIDTH,
+                DISTRIBUTION_HEIGHT + DISTRIBUTION_BAR_HEIGHT,
+            ),
+            egui::Sense::hover(),
+        );
+
+        let draw_front_rect = |ui: &mut egui::Ui, change, rect| {
+            draw(
+                Some(change),
+                ui,
+                rect,
+                egui::Color32::from_gray(40),
+                false,
+                None,
+            );
+
+            if ui.rect_contains_pointer(rect) {
+                egui::show_tooltip_at_pointer(
+                    ui.ctx(),
+                    "change_distribution_graph_tooltip".into(),
+                    |ui| {
+                        ui.label("one per sample");
+                    },
+                );
+            }
+        };
+
+        let front_rect = egui::Rect::from_min_size(
+            all_rect.min,
+            egui::vec2(
+                DISTRIBUTION_ADD_DELETE_SPACE,
+                DISTRIBUTION_HEIGHT + DISTRIBUTION_BAR_HEIGHT,
+            ),
+        );
+        match (self.has_single_addition, self.has_single_deletion) {
+            (true, true) => {
+                draw_front_rect(
+                    ui,
+                    ChangeEvent::DELETED,
+                    egui::Rect::from_min_max(front_rect.left_center(), front_rect.right_bottom()),
+                );
+                draw_front_rect(
+                    ui,
+                    ChangeEvent::ADDED,
+                    egui::Rect::from_min_max(front_rect.left_top(), front_rect.right_center()),
+                );
+            }
+            (true, false) => {
+                draw_front_rect(ui, ChangeEvent::ADDED, front_rect);
+            }
+            (false, true) => {
+                draw_front_rect(ui, ChangeEvent::DELETED, front_rect);
+            }
+            (false, false) => (),
+        };
+
+        let mut current_offset = if self.has_single_addition || self.has_single_deletion {
+            front_rect.width()
+        } else {
+            0.0
+        };
+
+        let total_width = DISTRIBUTION_GRAPH_WIDTH - current_offset;
+
+        for (i, (&event, &num)) in self.changes.iter().enumerate() {
+            let percent = num as f32 / total as f32;
+            let rect = egui::Rect::from_min_size(
+                all_rect.min + egui::vec2(current_offset, 0.0),
+                egui::vec2(
+                    percent * total_width,
+                    DISTRIBUTION_HEIGHT + DISTRIBUTION_BAR_HEIGHT,
+                ),
+            );
+            current_offset += rect.width();
+
+            let mut change_rect = rect;
+            change_rect.set_height(DISTRIBUTION_HEIGHT);
+            let bar_rect = egui::Rect::from_min_max(change_rect.left_bottom(), rect.right_bottom());
+
+            draw(
+                Some(event),
+                ui,
+                change_rect,
+                egui::Color32::from_gray(40),
+                false,
+                None,
+            );
+            ui.painter()
+                .rect_filled(bar_rect, 0.0, crate::gui::utils::categorical_color(i));
+
+            if ui.rect_contains_pointer(rect) {
+                egui::show_tooltip_at_pointer(
+                    ui.ctx(),
+                    "change_distribution_graph_tooltip".into(),
+                    |ui| {
+                        ui.horizontal(|ui| {
+                            let (rect, _) = ui.allocate_exact_size(
+                                egui::vec2(DISTRIBUTION_HEIGHT / 2.0, DISTRIBUTION_HEIGHT),
+                                egui::Sense::hover(),
+                            );
+                            draw(
+                                Some(event),
+                                ui,
+                                rect,
+                                egui::Color32::from_gray(40),
+                                false,
+                                None,
+                            );
+
+                            if total != 100 {
+                                ui.vertical(|ui| {
+                                    ui.style_mut().spacing.item_spacing.y /= 2.0;
+
+                                    ui.label(format!("{:.0}%", num as f32 / total as f32 * 100.0));
+                                    ui.label(format!("{}", num));
+                                });
+                            } else {
+                                ui.label(format!("{:.0}%", num as f32 / total as f32 * 100.0));
+                            }
+                        });
+                    },
+                );
+            }
+        }
+    }
+
+    /// Shows the legend for shown distribution graph.
+    pub(crate) fn show_legend(&self, ui: &mut egui::Ui) {
+        let total = self.changes.values().sum::<u32>();
 
         ui.horizontal(|ui| {
-            for (&change_event, &count) in &self.changes {
-                let (rect, _) =
-                    ui.allocate_exact_size(egui::vec2(height / 2.0, height), egui::Sense::hover());
+            for (i, (&event, &num)) in self.changes.iter().enumerate() {
+                let (rect, _) = ui.allocate_exact_size(
+                    egui::vec2(
+                        DISTRIBUTION_HEIGHT / 2.0,
+                        DISTRIBUTION_HEIGHT + DISTRIBUTION_BAR_HEIGHT,
+                    ),
+                    egui::Sense::hover(),
+                );
+                let mut change_rect = rect;
+                change_rect.set_height(DISTRIBUTION_HEIGHT);
+                let bar_rect =
+                    egui::Rect::from_min_max(change_rect.left_bottom(), rect.right_bottom());
 
-                super::change_event::draw(
-                    Some(change_event),
+                draw(
+                    Some(event),
                     ui,
-                    rect,
-                    Color32::from_gray(40),
+                    change_rect,
+                    egui::Color32::from_gray(40),
                     false,
                     None,
                 );
+                ui.painter()
+                    .rect_filled(bar_rect, 0.0, crate::gui::utils::categorical_color(i));
 
-                ui.label(format!("x{count}"));
+                if total != 100 {
+                    ui.vertical(|ui| {
+                        ui.style_mut().spacing.item_spacing.y /= 2.0;
+
+                        ui.label(format!("{:.0}%", num as f32 / total as f32 * 100.0));
+                        ui.label(format!("{}", num));
+                    });
+                } else {
+                    ui.label(format!("{:.0}%", num as f32 / total as f32 * 100.0));
+                }
             }
         });
     }

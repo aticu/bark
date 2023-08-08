@@ -28,3 +28,4 @@ radix_trie = "0.2.1"
 smallvec = { version = "1.10.0", features = ["serde"] }
 inlinable_string = { version = "0.1.15", features = ["serde"] }
 tempfile = "3.6.0"
+rand = { version = "0.8.5", features = ["small_rng"] }

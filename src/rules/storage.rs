@@ -53,16 +53,23 @@ impl RuleStorage {
     }
 
     /// Returns an iterator over all matching rules for the given file.
-    pub(crate) fn rules_matching<'trie>(
-        &'trie self,
-        file: &'trie File,
-    ) -> impl Iterator<Item = &'trie Rule> {
+    fn rules_matching<'trie>(&'trie self, file: &'trie File) -> impl Iterator<Item = &'trie Rule> {
         file.paths.iter().flat_map(|path| self.rules_for_path(path))
     }
 
     /// Returns `true` if there is any rule matching the given file.
     pub(crate) fn is_matched(&self, file: &File) -> bool {
         self.rules_matching(file).next().is_some()
+    }
+
+    /// Returns the rule that best matches the given file.
+    pub(crate) fn best_matching_rule<'this>(&'this self, file: &'this File) -> Option<&'this Rule> {
+        self.rules_matching(file).max_by(|&rule1, &rule2| {
+            rule1
+                .match_score(file)
+                .partial_cmp(&rule2.match_score(file))
+                .unwrap() // the scores are always between 0 and 1
+        })
     }
 
     /// Returns the highest match score for a file, if there are any matching rules.
@@ -258,8 +265,9 @@ impl<'de> serde::Deserialize<'de> for RuleStorage {
             {
                 let mut storage = RuleStorage::new();
 
-                while let Some(rule) = seq.next_element()? {
-                    storage.insert(rule)
+                while let Some(mut rule) = seq.next_element::<Rule>()? {
+                    rule.ensure_consistency();
+                    storage.insert(rule);
                 }
 
                 Ok(storage)

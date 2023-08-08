@@ -2,6 +2,7 @@
 
 use std::{collections::HashMap, fmt};
 
+use inlinable_string::InlinableString;
 use radix_trie::{Trie, TrieCommon};
 use smallvec::SmallVec;
 use sniff::MetaEntryDiff;
@@ -156,7 +157,7 @@ pub(crate) struct Files {
     /// The ID of this data source.
     ///
     /// With a very high probability this will be different for each data source.
-    datasource_id: u64,
+    datasource_id: DatasourceId,
 }
 
 impl Files {
@@ -222,7 +223,7 @@ impl Files {
 
         let mut hasher = hashers::fnv::FNV1aHasher64::default();
         std::hash::Hash::hash(&files, &mut hasher);
-        let datasource_id = std::hash::Hasher::finish(&hasher);
+        let datasource_id = DatasourceId(std::hash::Hasher::finish(&hasher));
 
         Files {
             files,
@@ -247,7 +248,7 @@ impl Files {
     /// The ID of this data source.
     ///
     /// With a very high probability this will be different for each data source.
-    pub(crate) fn datasource_id(&self) -> u64 {
+    pub(crate) fn datasource_id(&self) -> DatasourceId {
         self.datasource_id
     }
 
@@ -420,4 +421,32 @@ pub(crate) struct IteratedFile<'files> {
     pub(crate) path: &'files str,
     /// The file itself.
     pub(crate) file: &'files File,
+}
+
+/// The ID of a data source.
+#[derive(
+    Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, serde::Serialize, serde::Deserialize,
+)]
+#[serde(try_from = "InlinableString")]
+#[serde(into = "InlinableString")]
+pub(crate) struct DatasourceId(u64);
+
+impl fmt::Display for DatasourceId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:08x}", self.0)
+    }
+}
+
+impl TryFrom<InlinableString> for DatasourceId {
+    type Error = std::num::ParseIntError;
+
+    fn try_from(value: InlinableString) -> Result<Self, Self::Error> {
+        u64::from_str_radix(&value, 16).map(DatasourceId)
+    }
+}
+
+impl From<DatasourceId> for InlinableString {
+    fn from(value: DatasourceId) -> Self {
+        format!("{value}").into()
+    }
 }

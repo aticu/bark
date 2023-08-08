@@ -211,7 +211,9 @@ impl RuleWriter {
 
                 let mut storage = RuleStorage::new();
                 if let Some(rule) = rule {
-                    rule.show(ui, false);
+                    ui.horizontal(|ui| {
+                        rule.show(ui, false);
+                    });
 
                     storage.insert(rule);
                 }

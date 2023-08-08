@@ -5,7 +5,8 @@ use std::hash::Hash;
 use eframe::{egui, epaint::Color32};
 
 use crate::{
-    change_event::{ChangeDistribution, ChangeEvent},
+    change_distribution::ChangeDistribution,
+    change_event::ChangeEvent,
     file::{File, FileId, FileOrder, FileScoreCache, Files},
     fs_tree::{self, FsTree, FsTreeIter},
     future_value::FutureValue,
@@ -97,7 +98,11 @@ impl Threshholder {
         }
 
         if matches!(self.ty, ThreshholdType::Smaller | ThreshholdType::Greater) {
-            ui.add(egui::Slider::new(&mut self.val, 0.0..=100.0).text("Score"));
+            ui.add(
+                egui::Slider::new(&mut self.val, 0.0..=100.0)
+                    .logarithmic(true)
+                    .smallest_positive(1e-2),
+            );
         }
     }
 
@@ -105,8 +110,8 @@ impl Threshholder {
     fn should_include_file(&self, match_score: Option<f64>) -> bool {
         match match_score {
             Some(score) => match (self.ty, self.val) {
-                (ThreshholdType::Greater, thresh) => score > thresh / 100.0,
-                (ThreshholdType::Smaller, thresh) => score < thresh / 100.0,
+                (ThreshholdType::Greater, thresh) => score >= thresh / 100.0,
+                (ThreshholdType::Smaller, thresh) => score <= thresh / 100.0,
                 (ThreshholdType::None, _) => !self.include_unmatched,
                 (_, _) => true,
             },
@@ -147,7 +152,7 @@ impl<'draw> DrawCtx<'draw> {
         let mut match_score_dimensions = ui
             .painter()
             .layout_no_wrap(
-                String::from("100"),
+                String::from(".999"),
                 TEXT_FONT,
                 ui.style().noninteractive().text_color(),
             )
@@ -232,7 +237,7 @@ impl ChangeList {
             hovered: None,
             threshhold: Threshholder {
                 include_unmatched,
-                val: 50.0,
+                val: 5.0,
                 ty: ThreshholdType::None,
             },
             change_height: 24.0,
@@ -360,23 +365,10 @@ impl ChangeList {
                 .copy_filtered(|(file_id, collapsed)| match (file_id, collapsed) {
                     (_, true) => fs_tree::FilterResult::DiscardChildren,
                     (Some(file_id), false) => {
-                        let file = self.files.get(*file_id).unwrap();
-                        let match_score = self
-                            .file_score_cache
-                            .get()
-                            .unwrap()
-                            .get_score(*file_id)
-                            .flatten();
-
-                        if self.threshhold.should_include_file(match_score)
-                            && (self.search_text.is_empty()
-                                || file
-                                    .paths
-                                    .iter()
-                                    .any(|path| path.contains(&self.search_text)))
-                        {
+                        if self.should_show_file(*file_id) {
                             fs_tree::FilterResult::Keep
                         } else {
+                            // don't discard the children, since they may need to be shown
                             fs_tree::FilterResult::Discard
                         }
                     }
@@ -386,7 +378,14 @@ impl ChangeList {
         while let Some(result) = iter.next(&mut tree) {
             y += 1;
             let y = y - 1;
-            let file_id = result.value.0;
+            let mut file_id = result.value.0;
+
+            if file_id
+                .map(|file_id| !self.should_show_file(file_id))
+                .unwrap_or(false)
+            {
+                file_id = None;
+            }
 
             if file_id.is_some() {
                 self.shown_files += 1;
@@ -465,6 +464,25 @@ impl ChangeList {
             draw_ctx.current_pos.x = start_pos.x;
             draw_ctx.current_pos.y += draw_ctx.time_dimensions.y;
         }
+    }
+
+    /// Determine whether or not the file needs to be shown.
+    fn should_show_file(&self, file_id: FileId) -> bool {
+        let Some(file) = self.files.get(file_id) else { return false };
+        let match_score = self
+            .file_score_cache
+            .get()
+            .unwrap()
+            .get_score(file_id)
+            .flatten();
+
+        let search_matches_path = self.search_text.is_empty()
+            || file
+                .paths
+                .iter()
+                .any(|path| path.contains(&self.search_text));
+
+        self.threshhold.should_include_file(match_score) && search_matches_path
     }
 
     /// Determines the row height for a single drawing.
@@ -620,15 +638,31 @@ impl ChangeList {
             ChangeListElementType::MatchScore,
             |ui, rect| match match_score {
                 Some(score) => {
+                    // re-scale the score color such that the middle point (0.5) between the colors
+                    // is at 0.05
+                    // this is computed by 0.5_f64.ln() / 0.05_f64.ln()
+                    const POWER: f64 = 0.23137821315975918;
                     ui.painter().rect_filled(
                         rect,
                         0.0,
-                        super::lerp_color(Color32::RED, Color32::GREEN, score),
+                        super::lerp_color(Color32::RED, Color32::GREEN, score.powf(POWER)),
                     );
+
+                    let text = if score >= 0.995 {
+                        String::from("100")
+                    } else if score >= 0.1 {
+                        format!("{:.1}", score * 100.0)
+                    } else if score >= 0.01 {
+                        format!("{:.2}", score * 100.0)
+                    } else {
+                        let mut text = format!("{:.3}", score * 100.0);
+                        text.remove(0);
+                        text
+                    };
                     ui.painter().text(
                         rect.center(),
                         egui::Align2::CENTER_CENTER,
-                        format!("{:.0}", score * 100.0),
+                        text,
                         TEXT_FONT,
                         Color32::BLACK,
                     );
@@ -646,20 +680,19 @@ impl ChangeList {
             },
         );
         if score_response.hovered() {
-            let mut iter = draw_ctx.rules.rules_matching(file).peekable();
-            let change_events = ChangeDistribution::from_files(std::iter::once(file));
+            let rule = draw_ctx.rules.best_matching_rule(file);
+            let measured_distribution = ChangeDistribution::from_file(file);
 
-            if iter.peek().is_some() || change_events.is_some() {
+            if rule.is_some() || measured_distribution.is_some() {
                 egui::show_tooltip_at_pointer(ui.ctx(), "rule_display_tooltip".into(), |ui| {
-                    for rule in iter {
-                        rule.show(ui, true);
+                    if let Some(measured_distribution) = measured_distribution {
+                        ui.label("Found:");
+                        measured_distribution.show(ui);
+                        measured_distribution.show_legend(ui);
                     }
 
-                    if let Some(change_events) = change_events {
-                        ui.horizontal(|ui| {
-                            ui.label("Found:");
-                            change_events.show(ui);
-                        });
+                    if let Some(rule) = rule {
+                        rule.display_file_match(ui, file);
                     }
                 });
             }
@@ -824,24 +857,27 @@ impl ChangeList {
             draw_ctx.current_pos,
             egui::vec2(self.change_height / 2.0, self.change_height),
         );
-        let change_response = super::change_event::draw(
-            ChangeEvent::measure(change),
-            ui,
-            rect,
-            default_bg,
-            is_highlighted,
-            change.as_ref().and_then(|changes| {
-                changes
-                    .meta_info()
-                    .changes
-                    .iter()
-                    .find_map(|change| match change {
-                        sniff::MetadataChange::Size(change) => Some(change),
-                        _ => None,
-                    })
-                    .cloned()
-            }),
-        );
+        let change_response = ui.allocate_rect(rect, egui::Sense::hover());
+        if ui.is_rect_visible(rect) {
+            super::change_event::draw(
+                ChangeEvent::measure(change),
+                ui,
+                rect,
+                default_bg,
+                is_highlighted,
+                change.as_ref().and_then(|changes| {
+                    changes
+                        .meta_info()
+                        .changes
+                        .iter()
+                        .find_map(|change| match change {
+                            sniff::MetadataChange::Size(change) => Some(change),
+                            _ => None,
+                        })
+                        .cloned()
+                }),
+            )
+        }
 
         draw_ctx.current_pos.x += rect.width();
 

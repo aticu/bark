@@ -1,11 +1,9 @@
 //! Defines the change event type, used to describe changes to a single file.
 
-use std::{collections::BTreeMap, fmt};
+use std::fmt;
 
 use inlinable_string::InlinableString;
 use sniff::MetaEntryDiff;
-
-use crate::file::File;
 
 bitflags::bitflags! {
     /// A description of a single difference between two instances of a file.
@@ -215,105 +213,6 @@ impl TryFrom<InlinableString> for ChangeEvent {
         }
 
         Ok(event)
-    }
-}
-
-/// Stores all the changes that occurred for a single file or multiple files.
-#[derive(Debug, Default, Clone, Hash, serde::Deserialize, serde::Serialize)]
-pub(crate) struct ChangeDistribution {
-    /// The different change events that occurred, together with the number of times they occurred.
-    #[serde(flatten)]
-    pub(crate) changes: BTreeMap<ChangeEvent, u32>,
-}
-
-impl ChangeDistribution {
-    /// Computes all the changes that occurred in the given files.
-    pub(crate) fn from_files<'a>(files: impl Iterator<Item = &'a File>) -> Option<Self> {
-        use sniff::MetaEntryDiff::*;
-
-        let mut changes = BTreeMap::new();
-
-        for file in files {
-            // to better handle deletions and additions, we track when the file existed
-            // if there are no additions or deletions, the file must have existed the whole time
-            let mut exists = if let Some(c) = file
-                .changes
-                .iter()
-                .find(|c| matches!(c, Some(Added(_)) | Some(Deleted(_))))
-            {
-                matches!(c, Some(Deleted(_)))
-            } else {
-                true
-            };
-
-            for change in &file.changes {
-                let existed_before = exists;
-
-                let event = ChangeEvent::measure(change)?;
-
-                exists |= event.contains(ChangeEvent::ADDED);
-                exists &= !event.contains(ChangeEvent::DELETED);
-
-                // we only count this change if the file exists now or existed before
-                if existed_before || exists {
-                    *changes.entry(event).or_default() += 1;
-                }
-            }
-        }
-
-        if changes.is_empty() {
-            return None;
-        }
-
-        Some(ChangeDistribution { changes })
-    }
-
-    /// Returns the probability that the given other distribution is the same as this one.
-    ///
-    /// This function uses the G test to determine if the samples are from the same
-    /// distribution.
-    /// `self` is used as the reference distribution.
-    pub(crate) fn same_distribution_probability(&self, mut other: Self) -> f64 {
-        // the G test doesn't make sense if the table only has one entry
-        if self.changes.len() == 1 {
-            let same_events = self.changes.keys().eq(other.changes.keys());
-
-            return if same_events { 1.0 } else { 0.0 };
-        }
-
-        let total_self = self.changes.values().sum::<u32>();
-        let total_other = other.changes.values().sum::<u32>();
-        let expected_factor = total_other as f64 / total_self as f64;
-
-        // computes the test statistic for the G test
-        let statistic = 2.0
-            * self
-                .changes
-                .iter()
-                .map(|(&event, &num)| {
-                    if let Some(observed) = other.changes.remove(&event) {
-                        let observed = observed as f64;
-                        let expected = num as f64 * expected_factor;
-
-                        observed * (observed / expected).ln()
-                    } else {
-                        0.0
-                    }
-                })
-                .sum::<f64>();
-
-        if !other.changes.is_empty() {
-            return 0.0;
-        }
-
-        // since the contingency table is one-dimensional, the degrees of freedom is the number
-        // of total events - 1
-        let chi_squared =
-            statrs::distribution::ChiSquared::new((self.changes.len() - 1) as f64).unwrap();
-
-        // the p value is the probability that the test statistic is greater than the chi squared
-        // distribution with the above described degrees of freedom
-        1.0 - statrs::distribution::ContinuousCDF::cdf(&chi_squared, statistic)
     }
 }
 

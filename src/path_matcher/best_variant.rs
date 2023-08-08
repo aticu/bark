@@ -2,7 +2,11 @@ use std::cmp::Ordering;
 
 use inlinable_string::{InlinableString, StringExt as _};
 
-use crate::{file::Files, input::PathList, rules::RuleStorage};
+use crate::{
+    file::Files,
+    input::PathList,
+    rules::{Rule, RuleStorage},
+};
 
 use super::{case::Case, PathMatcher, PathMatcherPart};
 
@@ -399,6 +403,7 @@ pub(crate) fn suggest_matcher(
         .alphabetical_order()
         .files()
         .filter(|file| !rules.is_matched(file))
-        .nth(skip)
         .map(|file| best_matcher_for_path(file.path(), files, selected_path_list, path_lists))
+        .filter(|(matcher, _)| Rule::from_matcher(matcher.clone(), files).is_some())
+        .nth(skip)
 }
