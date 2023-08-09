@@ -133,11 +133,8 @@ impl Rule {
 
     /// Computes the combined distributions for this rule.
     fn compute_combined_distributions(&mut self) {
-        //self.combined_distributions = self.distributions.clone();
-        //return;
-
         /// The threshhold at which two distributions are considered close enough to be the same.
-        const SAME_DISTRIBUTION_THRESHHOLD: f64 = 0.05;
+        const SAME_DISTRIBUTION_THRESHHOLD: f64 = 0.25;
 
         let mut families: Vec<(DistributionFamily, Vec<&ObservedDistribution>)> = Vec::new();
         for dist in &self.distributions {
