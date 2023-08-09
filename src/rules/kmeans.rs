@@ -30,9 +30,12 @@ pub(crate) fn kmeans(
         for (dist_idx, &distribution) in distributions.iter().enumerate() {
             // we have at least one distribution, so the closest center exists
             let (center_idx, _) = find_closest_center(distribution, &centers).unwrap();
-
             closest_center[dist_idx] = center_idx;
-            new_centers[center_idx] += distribution;
+
+            let distribution_prevalence = distribution.occurrences.values().sum::<u32>();
+            for _ in 0..distribution_prevalence {
+                new_centers[center_idx] += distribution;
+            }
         }
 
         if new_centers == centers {
