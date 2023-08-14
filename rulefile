@@ -110523,5 +110523,491 @@
       }
     ],
     "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.SkypeApp_<assemblyver>_neutral_split.scale-100_kzf8qxf38zg5c/resources.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.WindowsAlarms_<assemblyver>_neutral_split.scale-<digit3>_8wekyb3d8bbwe/resources.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.SkypeApp_<assemblyver>_x64__kzf8qxf38zg5c/microsoft.system.package.metadata/resources.<hex8>.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.WindowsAlarms_<assemblyver>_x64__8wekyb3d8bbwe/microsoft.system.package.metadata/resources.<hex8>.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.WindowsAlarms_<assemblyver>_x64__8wekyb3d8bbwe/resources.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows Defender/Scans/History/ReportLatency/Latency/<digit2>/<digit>",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".....Im.MA": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m.MA": 27,
+          ".....Im.MA": 73
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m.MA": 50,
+          ".....Im.MA": 50
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/AppRepository/Packages/Microsoft.LockApp_<assemblyver>_neutral__cw5n1h2txyewy/ActivationStore.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/AppRepository/Packages/Microsoft.LockApp_<assemblyver>_neutral__cw5n1h2txyewy/S-1-5-21-<digit+>-<digit+>-<digit+>-1001.pckgdep",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/SystemData",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/SystemData/S-1-5-21-<digit+>-<digit+>-<digit+>-1001",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/SystemData/S-1-5-21-<digit+>-<digit+>-<digit+>-1001/ReadOnly",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/SystemData/S-1-5-21-<digit+>-<digit+>-<digit+>-1001/ReadOnly/LockScreen_W/LockScreen___1024_0768_notdimmed.jpg",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.LockApp_cw5n1h2txyewy/Settings",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.LockApp_cw5n1h2txyewy/Settings/settings.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/BthAvctpSvc.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/LockAppBroker.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/LockController.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/LockScreenData.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/MtcModel.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/NPSMDesktopProvider.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.ApplicationModel.LockScreen.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.UI.Xaml.Resources.th.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WppRecorderUM.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/normidna.nls",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/Microsoft.LockApp_cw5n1h2txyewy",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/Microsoft.LockApp_cw5n1h2txyewy/LockApp.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/Microsoft.LockApp_cw5n1h2txyewy/pris",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/Microsoft.LockApp_cw5n1h2txyewy/pris/resources.<Locale>.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/Microsoft.LockApp_cw5n1h2txyewy/resources.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "68c3c33f24f2add8": 1
+        }
+      }
+    ],
+    "tags": []
   }
 ]
