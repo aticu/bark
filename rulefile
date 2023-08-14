@@ -111009,5 +111009,4350 @@
       }
     ],
     "tags": []
+  },
+  {
+    "path_matcher": "/$Extend/$RmMetadata/$TxfLog/$TxfLogContainer<digit20>",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..±...m.MA": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/Common Files/microsoft shared/ink/tiptsf.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/Internet Explorer/iexplore.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.NET.Native.Framework.<digit+>.<digit+>_<assemblyver>_x64__8wekyb3d8bbwe/SharedLibrary.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.NET.Native.Runtime.<digit+>.<digit+>_<assemblyver>_x64__8wekyb3d8bbwe/mrt100_app.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.UI.Xaml.<digit+>.<digit+>_<assemblyver>_x64__8wekyb3d8bbwe/Microsoft.UI.Xaml.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.UI.Xaml.<digit+>.<digit+>_<assemblyver>_x64__8wekyb3d8bbwe/resources.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.Windows.Photos_<assemblyver>_x64__8wekyb3d8bbwe/microsoft.system.package.metadata/resources.<hex8>.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.Windows.Photos_<assemblyver>_x64__8wekyb3d8bbwe/resources.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.XboxGamingOverlay_<assemblyver>_x64__8wekyb3d8bbwe/AppxMetadata/CodeIntegrity.cat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.XboxGamingOverlay_<assemblyver>_x64__8wekyb3d8bbwe/GameBarFTServer.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.XboxIdentityProvider_<assemblyver>_x64__8wekyb3d8bbwe/AppxMetadata/CodeIntegrity.cat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Program Files/WindowsApps/Microsoft.XboxIdentityProvider_<assemblyver>_x64__8wekyb3d8bbwe/resources.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/AppRepository/Packages/Microsoft.UI.Xaml.<digit+>.<digit+>_<assemblyver>_x64__8wekyb3d8bbwe/ActivationStore.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/AppRepository/Packages/Microsoft.Windows.Photos_<assemblyver>_x64__8wekyb3d8bbwe/S-1-5-21-<digit+>-<digit+>-<digit+>-1001.pckgdep",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/AppRepository/Packages/Microsoft.Windows.ShellExperienceHost_<assemblyver>_neutral_neutral_cw5n1h2txyewy/ActivationStore.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/AppRepository/Packages/Microsoft.Windows.ShellExperienceHost_<assemblyver>_neutral_neutral_cw5n1h2txyewy/S-1-5-21-<digit+>-<digit+>-<digit+>-1001.pckgdep",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/AppRepository/Packages/Microsoft.XboxIdentityProvider_<assemblyver>_x64__8wekyb3d8bbwe/ActivationStore.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/AppRepository/Packages/Microsoft.XboxIdentityProvider_<assemblyver>_x64__8wekyb3d8bbwe/S-1-5-21-<digit+>-<digit+>-<digit+>-1001.pckgdep",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/Models",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/Windows/WER/ReportArchive/Critical_<assemblyver>__<hex+>_00000000_<uuid>",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/XboxLive",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Microsoft/XboxLive/NSALCache",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/S-1-5-21-<digit+>-<digit+>-<digit+>-1001/SystemAppData/Helium",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/S-1-5-21-<digit+>-<digit+>-<digit+>-1001/SystemAppData/Helium/Cache",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/S-1-5-21-<digit+>-<digit+>-<digit+>-1001/SystemAppData/Helium/Cache/<hex+>.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/S-1-5-21-<digit+>-<digit+>-<digit+>-1001/SystemAppData/Helium/Cache/<hex+>_COM15.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/S-1-5-21-<digit+>-<digit+>-<digit+>-1001/SystemAppData/Helium/Cache/<hex+>_COM15.dat.LOG1",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/S-1-5-21-<digit+>-<digit+>-<digit+>-1001/SystemAppData/Helium/Cache/<hex+>_COM15.dat.LOG2",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/USOShared/Logs/User",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m.MA": 94,
+          "...G..m.MA": 6
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/ProgramData/USOShared/Logs/User/UpdateUx.<uuid>.<digit+>.etl",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 83
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 84
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 85
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 86
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 87
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 88
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 89
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 97
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 96
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 90
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 91
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 99
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 98
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 92
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 93
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 94
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 95
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 74
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 48
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 10
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 49
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 90
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 65
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 29
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 98
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 89
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 64
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 37
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 26
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 46
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 60
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 3
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 73
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 5
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 54
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 8
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 20
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 59
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 81
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 75
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 9
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 41
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 7
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 2
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 43
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 69
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 14
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 39
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 70
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 78
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 87
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 93
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 15
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 56
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 77
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 13
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 68
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 40
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 44
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 79
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 25
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 21
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 22
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 19
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 11
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 63
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 94
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 58
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 84
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 97
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 23
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 16
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 28
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 61
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 52
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 47
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 33
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 71
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 53
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 30
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 34
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 51
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 76
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 18
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 24
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 83
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 27
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 38
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 36
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 95
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 62
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 31
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 85
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 72
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 17
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 35
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 88
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 55
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 6
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 91
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 32
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 67
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 42
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 66
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 82
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 45
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 96
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 12
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 57
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 92
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 50
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 80
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 86
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 99
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/System Volume Information/{<uuid>}{3808876b-c176-4e48-b7ae-04046e6cc752}",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "..±G..m.MA": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/GameDVR",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "......m.MA": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/<assemblyver>/FileSyncFSCache.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 77,
+          ".........A": 23
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/<assemblyver>/FileSyncRNUWP.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 77,
+          ".........A": 23
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/<assemblyver>/Microsoft.ReactNative.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 78,
+          ".........A": 22
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/<assemblyver>/Microsoft.Toolkit.Win32.UI.XamlHost.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 77,
+          ".........A": 23
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/<assemblyver>/Microsoft.UI.Xaml.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 77,
+          ".........A": 23
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/<assemblyver>/msvcp140_app.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 77,
+          ".........A": 23
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/<assemblyver>/vcruntime140_1_app.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 77,
+          ".........A": 23
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/<assemblyver>/vcruntime140_app.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 77,
+          ".........A": 23
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/Update",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 77,
+          "......m.MA": 23
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/logs/Personal/telemetryCache.otc",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 81,
+          ".........A": 19
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/logs/Personal/telemetryCache.otc-shm",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 81,
+          "..±...m.MA": 19
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/OneDrive/logs/Personal/telemetryCache.otc-wal",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 81,
+          "..±G..m.MA": 19
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/Windows/Explorer",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/Windows/Explorer/ExplorerStartupLog_RunOnce.etl",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..±...m.MA": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/Windows/History/History.IE5/MSHist<digit18>/container.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "..........": 95
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/Windows/INetCache/IE/<ALPHANUM8>/<hex40>[<digit+>].xml",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 42
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 96
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 57
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 17
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 91
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 82
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 12
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 88
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 85
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 55
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 99
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 35
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 67
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 86
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 6
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 45
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 66
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 92
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 50
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 72
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 32
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 80
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/Windows/INetCache/IE/<ALPHANUM8>/settings-tipset[1].xml",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/INetCache/<ALPHANUM8>/<Alphanum[-_]27>[<digit+>].css",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 24,
+          ".........A": 6
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 5
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 12,
+          ".........A": 5
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 5
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGameOverlay_8wekyb3d8bbwe/LocalState",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "......m.MA": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/BackgroundTransferApi",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/INetCache",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "...G..m.MA": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/INetCache/<ALPHANUM8>",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 4
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/INetCache/container.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/INetCookies",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "......m.MA": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/INetCookies/ESE",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/INetCookies/ESE/container.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/INetHistory",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "......m.MA": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/INetHistory/BackgroundTransferApi",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/INetHistory/BackgroundTransferApi/container.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/INetHistory/BackgroundTransferApiGroup",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/Microsoft",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/Microsoft/CryptnetUrlCache",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/Microsoft/CryptnetUrlCache/Content",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/Microsoft/CryptnetUrlCache/Content/<HEX32>_<HEX32>",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/Microsoft/CryptnetUrlCache/MetaData",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/Microsoft/CryptnetUrlCache/MetaData/<HEX32>_<HEX32>",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/TokenBroker",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/TokenBroker/Cache",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/AC/TokenBroker/Cache/b649a1dfc48057a9418f139cabafc7d495971d5e.tbres",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalCache",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "......m.MA": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalCache/Local",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalCache/Local/Microsoft",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalCache/Roaming",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalCache/Roaming/Microsoft",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalCache/Roaming/Microsoft/Windows",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalCache/Roaming/Microsoft/Windows/Start Menu",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalCache/Roaming/Microsoft/Windows/Start Menu/Programs",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalState",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "......m.MA": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalState/DiagOutputDir",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalState/DiagOutputDir/XboxGamingOverlayTraces_FT_Server_<digit14>.txt",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalState/Logs",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/LocalState/Logs/Log-GameBarLoggingSession-1.etl",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/SystemAppData/Helium",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxGamingOverlay_8wekyb3d8bbwe/TempState",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxIdentityProvider_8wekyb3d8bbwe/Settings",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxIdentityProvider_8wekyb3d8bbwe/Settings/settings.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "..±.....MA": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.XboxIdentityProvider_8wekyb3d8bbwe/Settings/settings.dat.LOG1",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "..±.......": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/AppData/Roaming/Microsoft/Windows/Recent/ms-gamingoverlay---.lnk",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 4
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/Videos",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Users/<username>/Videos/Captures/desktop.ini",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Microsoft.NET/Framework",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Microsoft.NET/Framework/v<digit+>.<digit+>.<digit+>",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Microsoft.NET/Framework/v<digit+>.<digit+>.<digit+>/Config/machine.config",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Microsoft.NET/Framework/v<digit+>.<digit+>.<digit+>/NativeImages/mscorlib.ni.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Microsoft.NET/Framework/v<digit+>.<digit+>.<digit+>/WPF/PenIMC_v0400.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Microsoft.NET/Framework/v<digit+>.<digit+>.<digit+>/clr.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Microsoft.NET/Framework/v<digit+>.<digit+>.<digit+>/clrjit.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Microsoft.NET/Framework/v<digit+>.<digit+>.<digit+>/mscoreei.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/<assemblyver>_<assemblyver>-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/AM_DELTA_PATCH_<assemblyver>.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 2
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/BGAUPDATE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/CONTROL.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/CTFMON.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/EXPLORER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MICROSOFTEDGEUPDATESETUP_X86_-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MPCOPYACCELERATOR.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/PHONEEXPERIENCEHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/USERINIT.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ShellExperiences/QuickActions.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SoftwareDistribution/ReportingEvents.log",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..±G..m.MA": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SysWOW64/<Locale>/aeevts.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 98,
+          ".........A": 2
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SysWOW64/mscoree.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SysWOW64/ucrtbase_clr0400.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SysWOW64/vcruntime140_clr0400.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SysWOW64/wmp.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/BcastDVRClient.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/BcastDVRCommon.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/MRT.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/MpSigStub.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/MusUpdateHandlers.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/OneBackupHandler.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/ProductEnumerator.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/QuickActionsDataModel.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/SettingsHandlers_Flights.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/SvBannerBackground.png",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/SystemSettings.SettingsExtensibility.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/UNP/UpdateNotificationHelpers.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WaaSAssessment.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.Devices.Sensors.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.Storage.Compression.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/XblAuthManager.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/XblAuthManagerProxy.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/XblAuthTokenBrokerExt.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/bcastdvr.proxy.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/bcastdvruserservice.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/config/systemprofile/AppData/Local/Microsoft/Windows/Notifications/WPNPRMRY.tmp",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m.MA": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/config/systemprofile/AppData/Local/Microsoft/Windows/Notifications/wpndatabase.db",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 29,
+          "..±...m.MA": 70,
+          "..±G..m.MA": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/config/systemprofile/AppData/Local/Microsoft/Windows/Notifications/wpndatabase.db-shm",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..±...m.MA": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/config/systemprofile/AppData/Local/Microsoft/Windows/Notifications/wpndatabase.db-wal",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..±G..m.MA": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/configmanager2.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/control.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/dmenterprisediagnostics.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/dmoleaututils.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/efsutil.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/MusUpdateHandlers.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/NotificationController.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/Windows.Shell.StartLayoutPopulationEvents.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 98,
+          ".........A": 2
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/XblAuthManager.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/microsoft-windows-hal-events.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/runonce.exe.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/enterprisecsps.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/enterpriseresourcemanager.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/fhcfg.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/fhsettingsprovider.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/fhsvcctl.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/gamingtcui.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/ksuser.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/mfcore.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/mfreadwrite.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/mrt100.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/runonce.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/sdengin2.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/storewuauth.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wbem/<Locale>/WinMgmtR.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 98,
+          ".........A": 2
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wmp.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/ShellExperienceHost_cw5n1h2txyewy",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/ShellExperienceHost_cw5n1h2txyewy/ShellExperienceHost.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/ShellExperienceHost_cw5n1h2txyewy/Windows.UI.ActionCenter.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/ShellExperienceHost_cw5n1h2txyewy/pris",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/ShellExperienceHost_cw5n1h2txyewy/resources.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemResources/shell32.dll.mun",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Temp/MUBSTemp",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Temp/MUBSTemp/BGAUpsell.EXE",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/WinSxS/FileMaps/$$.cdf-ms",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/assembly/NativeImages_v<digit+>.<digit+>.<digit+>_32/mscorlib",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/assembly/NativeImages_v<digit+>.<digit+>.<digit+>_32/mscorlib/<hex32>/mscorlib.ni.dll.aux",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "6c83b14a0f18435d": 1
+        }
+      }
+    ],
+    "tags": []
   }
 ]
