@@ -16866,170 +16866,6 @@
     ]
   },
   {
-    "path_matcher": "/Windows/Prefetch/ReadyBoot/Trace1.fx",
-    "distributions": [
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": true,
-          "......m...": 77,
-          "......m..A": 5
-        },
-        "occurrences": {
-          "1b1d28c3f0087ad1": 1
-        }
-      },
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": false,
-          "......m...": 100
-        },
-        "occurrences": {
-          "381dc6ab9cd03ec6": 1,
-          "647481c3e0c62c18": 1,
-          "659dd77bc914aacd": 1,
-          "b651776dce9e5795": 1
-        }
-      }
-    ],
-    "tags": [
-      "os:win10",
-      "shutdown_button",
-      "shutdown_alt_f4",
-      "shutdown_menu",
-      "shutdown_button_10s"
-    ]
-  },
-  {
-    "path_matcher": "/Windows/Prefetch/ReadyBoot/Trace2.fx",
-    "distributions": [
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": true,
-          "......m...": 77,
-          "......m..A": 6
-        },
-        "occurrences": {
-          "1b1d28c3f0087ad1": 1
-        }
-      },
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": false,
-          "......m...": 100
-        },
-        "occurrences": {
-          "381dc6ab9cd03ec6": 1,
-          "647481c3e0c62c18": 1
-        }
-      }
-    ],
-    "tags": [
-      "os:win10",
-      "shutdown_button",
-      "shutdown_button_10s"
-    ]
-  },
-  {
-    "path_matcher": "/Windows/Prefetch/ReadyBoot/Trace3.fx",
-    "distributions": [
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": true,
-          "......m...": 77,
-          "......m..A": 7
-        },
-        "occurrences": {
-          "1b1d28c3f0087ad1": 1
-        }
-      },
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": false,
-          "......m...": 100
-        },
-        "occurrences": {
-          "381dc6ab9cd03ec6": 1,
-          "647481c3e0c62c18": 1
-        }
-      }
-    ],
-    "tags": [
-      "os:win10",
-      "shutdown_button",
-      "shutdown_button_10s"
-    ]
-  },
-  {
-    "path_matcher": "/Windows/Prefetch/ReadyBoot/Trace4.fx",
-    "distributions": [
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": false,
-          "......m...": 91,
-          "......m..A": 9
-        },
-        "occurrences": {
-          "1b1d28c3f0087ad1": 1
-        }
-      },
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": false,
-          "......m...": 100
-        },
-        "occurrences": {
-          "381dc6ab9cd03ec6": 1,
-          "647481c3e0c62c18": 1
-        }
-      }
-    ],
-    "tags": [
-      "os:win10",
-      "shutdown_button",
-      "shutdown_button_10s"
-    ]
-  },
-  {
-    "path_matcher": "/Windows/Prefetch/ReadyBoot/Trace5.fx",
-    "distributions": [
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": false,
-          "......m...": 91,
-          "......m..A": 9
-        },
-        "occurrences": {
-          "1b1d28c3f0087ad1": 1
-        }
-      },
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": false,
-          "......m...": 100
-        },
-        "occurrences": {
-          "381dc6ab9cd03ec6": 1,
-          "647481c3e0c62c18": 1
-        }
-      }
-    ],
-    "tags": [
-      "os:win10",
-      "shutdown_button",
-      "shutdown_button_10s"
-    ]
-  },
-  {
     "path_matcher": "/Windows/Prefetch/ReadyBoot/rblayout.xin",
     "distributions": [
       {
@@ -76341,100 +76177,6 @@
     ]
   },
   {
-    "path_matcher": "/Windows/Prefetch/ReadyBoot/Trace10.fx",
-    "distributions": [
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": false,
-          "......m...": 100
-        },
-        "occurrences": {
-          "659dd77bc914aacd": 1
-        }
-      }
-    ],
-    "tags": [
-      "shutdown_menu"
-    ]
-  },
-  {
-    "path_matcher": "/Windows/Prefetch/ReadyBoot/Trace7.fx",
-    "distributions": [
-      {
-        "distribution": {
-          "has_single_addition": true,
-          "has_single_deletion": false,
-          "......m...": 14,
-          "......m..A": 2
-        },
-        "occurrences": {
-          "1b1d28c3f0087ad1": 1
-        }
-      },
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": false,
-          "......m...": 100
-        },
-        "occurrences": {
-          "659dd77bc914aacd": 1
-        }
-      }
-    ],
-    "tags": [
-      "shutdown_menu"
-    ]
-  },
-  {
-    "path_matcher": "/Windows/Prefetch/ReadyBoot/Trace8.fx",
-    "distributions": [
-      {
-        "distribution": {
-          "has_single_addition": true,
-          "has_single_deletion": false,
-          "......m...": 14,
-          "......m..A": 1
-        },
-        "occurrences": {
-          "1b1d28c3f0087ad1": 1
-        }
-      },
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": false,
-          "......m...": 100
-        },
-        "occurrences": {
-          "659dd77bc914aacd": 1
-        }
-      }
-    ],
-    "tags": [
-      "shutdown_menu"
-    ]
-  },
-  {
-    "path_matcher": "/Windows/Prefetch/ReadyBoot/Trace9.fx",
-    "distributions": [
-      {
-        "distribution": {
-          "has_single_addition": false,
-          "has_single_deletion": false,
-          "......m...": 100
-        },
-        "occurrences": {
-          "659dd77bc914aacd": 1
-        }
-      }
-    ],
-    "tags": [
-      "shutdown_menu"
-    ]
-  },
-  {
     "path_matcher": "/Windows/ServiceProfiles/LocalService/AppData/Local/Microsoft/Credentials",
     "distributions": [
       {
@@ -104975,6 +104717,5805 @@
           "has_single_deletion": false,
           "..........": 92,
           ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/APPLICATIONFRAMEHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/AUDIODG.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/BACKGROUNDTASKHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 3
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/BYTECODEGENERATOR.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/CONHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/CSRSS.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/DLLHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 7
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/DRVINST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/DWM.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/FILESYNCCONFIG.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/FIRSTLOGONANIM.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/FONTDRVHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/FSQUIRT.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/LOGONUI.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/LPREMOVE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MICROSOFTEDGEUPDATE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MOBSYNC.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MOUSOCOREWORKER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MPCMDRUN.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MSCORSVW.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 2
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MSEDGE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/NGEN.EXE-AE594A6B.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/NISSRV.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/ONEDRIVE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/NGEN.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 2
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/ONEDRIVESETUP.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/OOBENETWORKCONNECTIONFLOW.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/Op-MSEDGE.EXE-<HEX8>-00000001.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/REGSVR32.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 2
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/RUNDLL32.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/RUNTIMEBROKER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 11
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 3
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SEARCHAPP.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SEARCHFILTERHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SEARCHINDEXER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SEARCHPROTOCOLHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SECURITYHEALTHSERVICE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SECURITYHEALTHSYSTRAY.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SETTINGSYNCHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SGRMBROKER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SHELLEXPERIENCEHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SIHCLIENT.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SIHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SLUI.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SMARTSCREEN.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SMSS.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SPPSVC.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 77,
+          "......m..A": 23
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/STARTMENUEXPERIENCEHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SVCHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 18
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 2
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/TASKHOSTW.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/TEXTINPUTHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 44,
+          "......m..A": 56
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/USEROOBEBROKER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/WERFAULT.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/WINLOGON.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/WLRMDR.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/WMIADAP.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/WMIPRVSE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/WWAHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "647481c3e0c62c18": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SPPEXTCOMOBJ.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "381dc6ab9cd03ec6": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/AM_BASE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/AM_DELTA.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/AM_DELTA_PATCH_<assemblyver>.E-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/AM_ENGINE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/BACKGROUNDTRANSFERHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 2
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/CMD.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/CONSENT.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/DISMHOST.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 3
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/EASEOFACCESSDIALOG.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/FILECOAUTH.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/GAMEBAR.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/IDENTITY_HELPER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/LOCALBRIDGE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MICROSOFTEDGE_X64_<digit+>.<digit+>.<digit+>.<digit*>-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 2
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MOFCOMP.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MPRECOVERY.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 2
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MPSIGSTUB.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 4
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MRT.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MSIEXEC.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MSMPENG.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 3
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MUSNOTIFICATIONUX.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/NGENTASK.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 2
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/POQEXEC.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SYSTEMSETTINGS.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/TASKKILL.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/TASKMGR.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/TIWORKER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 2
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/TRUSTEDINSTALLER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/UNIFIEDINSTALLER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/UPDATEPLATFORM.AMD64FRE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/UPDATEPLATFORM.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/USOCLIENT.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/UTILMAN.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/VSSVC.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/WERMGR.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 2
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/WEVTUTIL.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/WINDOWS-KB890830-X64-V5.<digit+>.E-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/WMIAPSRV.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/WUAUCLT.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "659dd77bc914aacd": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/<assemblyver>_CHROME_INSTALL-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/AgGlUAD_P_S-1-5-21-<digit+>-<digit+>-<digit+>-1001.db",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/AgGlUAD_S-1-5-21-<digit+>-<digit+>-<digit+>-1001.db",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/CHROME.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 94,
+          "..±G..m.MA": 1,
+          "..±.s.m.MA": 5
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 2
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 94,
+          "..±G..m.MA": 2,
+          "..±.s.m.MA": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 94,
+          "..±G..m.MA": 3,
+          "..±.s.m.MA": 3
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 93,
+          "..±G..m.MA": 4,
+          "..±.s.m.MA": 3
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/COMPPKGSRV.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 97,
+          "......m..A": 3
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/CREDENTIALENROLLMENTMANAGER.E-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/DEFRAG.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/ELEVATION_SERVICE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 96,
+          "..±G..m.MA": 2,
+          "..±.s.m.MA": 2
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/GOOGLEUPDATE.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 2
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 91,
+          "......m..A": 5,
+          "..±G..m.MA": 2,
+          "..±.s.m.MA": 2
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/GOOGLEUPDATECOMREGISTERSHELL6-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/GOOGLEUPDATEONDEMAND.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/GOOGLEUPDATESETUP.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/LOCKAPP.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/MICROSOFT.SHAREPOINT.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m..A": 90,
+          "..±G..m.MA": 7,
+          "..±.s.m.MA": 3
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/ReadyBoot/Trace<digit+>.fx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "......m...": 77,
+          "......m..A": 5
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "......m...": 77,
+          "......m..A": 6
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": true,
+          "......m...": 77,
+          "......m..A": 7
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 91,
+          "......m..A": 9
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 2
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "......m...": 14,
+          "......m..A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "......m...": 14,
+          "......m..A": 2
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "......m...": 14,
+          "......m..A": 3
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SETUP.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 3
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SRTASKS.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/SYSTEMSETTINGSBROKER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/Prefetch/USERACCOUNTBROKER.EXE-<HEX8>.pf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m...": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Local/Microsoft/Windows/DeliveryOptimization/Cache/<hex40>/content.phf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 11
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Local/Microsoft/Windows/DeliveryOptimization/Logs",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          "......m.MA": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Local/Microsoft/Windows/DeliveryOptimization/Logs/dosvc.<digit8>_<digit6>_<digit3>.etl",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 56
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 22
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 16
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 15
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Local/Microsoft/Windows/DeliveryOptimization/State",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          "......m.MA": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Local/Microsoft/Windows/DeliveryOptimization/State/dosvcState.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          "..±.....MA": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Local/Microsoft/Windows/DeliveryOptimization/State/dosvcState.dat.LOG1",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          "..±.......": 2,
+          "..±G......": 1,
+          "..±.s.....": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Local/Microsoft/Windows/DeliveryOptimization/State/keyValueLKG.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          "......m.MA": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Local/Microsoft/Windows/DeliveryOptimization/State/migration.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          "..±...m.MA": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Local/Microsoft/Windows/DeliveryOptimization/State/migration.dat.LOG1",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          "..±...m.MA": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Local/Microsoft/Windows/DeliveryOptimization/State/migration.dat.LOG2",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          "..±...m.MA": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Roaming/Microsoft/SystemCertificates/My/CRLs",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Roaming/Microsoft/SystemCertificates/My/CTLs",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ServiceProfiles/NetworkService/AppData/Roaming/Microsoft/SystemCertificates/My/Certificates",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ShellComponents/TaskFlowUI.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 89,
+          ".........A": 11
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ShellComponents/WindowsInternal.ComposableShell.Experiences.Switcher.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 89,
+          ".........A": 11
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/ShellExperiences/TileControl.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 89,
+          ".........A": 11
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SysWOW64/cscapi.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SysWOW64/<Locale>/ActionCenter.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SysWOW64/<Locale>/WsmRes.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          ".........A": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SysWOW64/<Locale>/hcproviders.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SysWOW64/<Locale>/urlmon.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SysWOW64/msimg32.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/APHostClient.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/APHostService.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/ApplicationFrameHost.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/BackgroundTransferHost.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/BitsProxy.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          ".........A": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/CloudExperienceHostBroker.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/CompPkgSrv.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 97,
+          ".........A": 3
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/CryptoWinRT.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 91,
+          ".........A": 9
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/DolbyDecMFT.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 91,
+          ".........A": 9
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/drivers/processr.sys",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/FamilySafetyExt.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/InprocLogger.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/LogFiles/CloudFiles",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 89,
+          ".........A": 11
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/MCCSEngineShared.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/MCCSPal.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/MapConfiguration.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/MapsBtSvc.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Microsoft.LocalUserImageProvider.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/MicrosoftAccountTokenProvider.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/MosStorage.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/OpenSSH",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 24,
+          ".........A": 76
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/PerfStringBackup.INI",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "......m.MA": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Phoneutil.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/PhoneutilRes.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Pimstore.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/SecurityCenterBroker.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/SecurityCenterBrokerPS.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Sgrm/SgrmAssertions.bin",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Sgrm/SgrmAssertions.cat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/SgrmBroker.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/SgrmEnclave.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/StorSvc.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/StorageUsage.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/SyncController.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/SyncRes.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Tasks/Microsoft/Windows/SoftwareProtectionPlatform/SvcRestartTask",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 90,
+          "..±...m.MA": 10
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Tasks/Microsoft/Windows/WindowsUpdate/Scheduled Start",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 97,
+          "..±...m.MA": 3
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/UserDataLanguageUtil.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/UserDataPlatformHelperUtil.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/UserDataTypeHelperUtil.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/UserDeviceRegistration.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 91,
+          ".........A": 9
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WDI/BootPerformanceDiagnostics_SystemData.bin",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 94,
+          "..±G..m.MA": 6
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WDI/LogFiles/ShutdownPerfDiagLogger.etl",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 94,
+          "..±...m.MA": 3,
+          "..±G..m.MA": 1,
+          "..±.s.m.MA": 2
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WDI/LogFiles/StartupInfo",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 94,
+          "......m.MA": 6
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WDI/LogFiles/StartupInfo/S-1-5-21-<digit+>-<digit+>-<digit+>-1001_StartupInfo<digit+>.xml",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "..±.s.m.MA": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 3
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "..±...m.MA": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 98,
+          "..±G..m.MA": 1,
+          "..±.s.m.MA": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WDI/ShutdownPerformanceDiagnostics_SystemData.bin",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 98,
+          "..±G..m.MA": 2
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WDI/{86432a0b-3c7d-4ddf-a89c-172faa90485d}",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 94,
+          "......m.MA": 5,
+          "...G..m.MA": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WDI/{86432a0b-3c7d-4ddf-a89c-172faa90485d}/S-1-5-21-<digit+>-<digit+>-<digit+>-1001_UserData.bin",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 94,
+          "..±G..m.MA": 6
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WDI/{86432a0b-3c7d-4ddf-a89c-172faa90485d}/{<uuid>}",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 16
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 15
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 17
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 86
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 22
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 56
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WDI/{86432a0b-3c7d-4ddf-a89c-172faa90485d}/{<uuid>}/snapshot.etl",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 16
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 15
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 17
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 86
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 22
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": true,
+          "has_single_deletion": false,
+          "..........": 56
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WerFault.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 38,
+          ".........A": 62
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WiFiCloudStore.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.ApplicationModel.Background.TimeBroker.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 91,
+          ".........A": 9
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.Energy.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.Internal.System.UserProfile.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.Internal.Taskbar.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.Management.InprocObjects.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.Management.Workplace.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.Networking.BackgroundTransfer.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.Networking.HostName.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 91,
+          ".........A": 9
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.Networking.Sockets.PushEnabledApplication.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.System.Diagnostics.Telemetry.PlatformTelemetryClient.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.System.Profile.RetailInfo.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.System.UserProfile.DiagnosticsSettings.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 91,
+          ".........A": 9
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.UI.AppDefaults.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Windows.UI.Xaml.Resources.rs5.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 87,
+          ".........A": 13
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WindowsCodecsRaw.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 17,
+          ".........A": 83
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WindowsInternal.ComposableShell.DesktopHosting.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 89,
+          ".........A": 11
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WindowsPowerShell/v1.0",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 24,
+          ".........A": 76
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WordBreakers.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WorkFoldersShell.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 18,
+          ".........A": 82
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/Wpc.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WsmAuto.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          ".........A": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WsmRes.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          ".........A": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/WsmSvc.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          ".........A": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/accountaccessor.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/aeevts.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/appinfo.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/appinfoext.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/bcd.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/bitsigd.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          ".........A": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/bitsperf.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          ".........A": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/cemapi.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/colorui.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 18,
+          ".........A": 82
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/config/TxR/{53b39e3d-18c4-11ea-a811-000d3aa4692b}.TxR.<digit>.regtrans-ms",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 82,
+          ".........A": 5,
+          "..±...m.MA": 13
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 12,
+          "..±...m.MA": 88
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/config/systemprofile/AppData/LocalLow/Microsoft/CryptnetUrlCache/Content/7423F88C7F265F0DEFC08EA88C3BDE45_AA1E8580D4EBC816148CE81268683776",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 98,
+          ".........A": 2
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/config/systemprofile/AppData/LocalLow/Microsoft/CryptnetUrlCache/MetaData",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 98,
+          ".........A": 2
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/config/systemprofile/AppData/LocalLow/Microsoft/CryptnetUrlCache/MetaData/7423F88C7F265F0DEFC08EA88C3BDE45_AA1E8580D4EBC816148CE81268683776",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 98,
+          ".........A": 2
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/coreglobconfig.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 90,
+          ".........A": 10
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/credui.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/cryptext.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 18,
+          ".........A": 82
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/dmcfgutils.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/dmxmlhelputils.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/domgmt.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/dsclient.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/AppResolver.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/StartTileData.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/Windows.Security.Authentication.Web.Core.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 2,
+          ".........A": 98
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/d2d1.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/ieframe.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/jscript9.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/sppc.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 90,
+          ".........A": 10
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/tquery.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/vaultsvc.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/wlrmdr.exe.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 90,
+          ".........A": 10
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/wscapi.dll.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/<Locale>/wscui.cpl.mui",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/fcon.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/hcproviders.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/ieproxy.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/inetcomm.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 17,
+          ".........A": 83
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/jscript9.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/keepaliveprovider.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/loadperf.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/mf.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/mfh264enc.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 97,
+          ".........A": 3
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/mfperfhelper.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/moshost.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/msIso.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/msdart.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 98,
+          ".........A": 2
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/msmpeg2vdec.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/msvproc.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/networkhelper.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/oobe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/oobe/UserOOBE.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/oobe/UserOOBEBroker.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/pcwum.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          ".........A": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/perfc009.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "......m.MA": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/perfh009.dat",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "......m.MA": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/ploptin.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 90,
+          ".........A": 10
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/qmgr.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          ".........A": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/spool/drivers/color/sRGB Color Space Profile.icm",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/sqmapi.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/srmshell.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 18,
+          ".........A": 82
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/ssdpsrv.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          ".........A": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/syncutil.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/upnp.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          ".........A": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/vaultsvc.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/vbsapi.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wbem",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 24,
+          ".........A": 76
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wbem/NCProv.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 95,
+          ".........A": 5
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wbem/Performance",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          "......m.MA": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wbem/Performance/WmiApRpl.h",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".....Im.MA": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wbem/Performance/WmiApRpl.ini",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".....Im.MA": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wbem/WMIADAP.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wbem/wmiprov.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/webcheck.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 17,
+          ".........A": 83
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/werconcpl.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-Application-Experience%4Program-Compatibility-Troubleshooter.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-Application-Experience%4Program-Inventory.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-Application-Experience%4Program-Telemetry.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..±...m.MA": 99,
+          "..±G..m.MA": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-Application-Experience%4Steps-Recorder.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-Bits-Client%4Operational.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          "..±...m.MA": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-Diagnosis-Scheduled%4Operational.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-Diagnostics-Performance%4Operational.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 94,
+          "..±...m.MA": 6
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-FileHistory-Core%4WHC.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-ReadyBoost%4Operational.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 90,
+          "..±...m.MA": 10
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-Shell-ConnectedAccountState%4ActionCenter.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-StorageSpaces-ManagementAgent%4WHC.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-Storsvc%4Diagnostic.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          "..±...m.MA": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-UserPnp%4ActionCenter.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-WinRM%4Operational.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 86,
+          "..±...m.MA": 14
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-WindowsBackup%4ActionCenter.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/winevt/Logs/Microsoft-Windows-WorkFolders%4WHC.evtx",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wlrmdr.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 89,
+          ".........A": 11
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wpnprv.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wscinterop.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wscisvif.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wscproxystub.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wscsvc.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wscui.cpl",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/wshext.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 17,
+          ".........A": 83
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/System32/ztrace_maps.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 96,
+          ".........A": 4
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy/ContentDeliveryManager.Background.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 91,
+          ".........A": 9
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemApps/Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy/ContentManagementSDK.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemResources/Windows.UI.SettingsAppThreshold",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemResources/Windows.UI.SettingsAppThreshold/SystemSettings/Assets/Fonts/MemMDL2.2.2.ttf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemResources/Windows.UI.SettingsAppThreshold/SystemSettings/Assets/Fonts/SetMDL2.ttf",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemResources/Windows.UI.SettingsAppThreshold/Windows.UI.SettingsAppThreshold.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemResources/Windows.UI.SettingsAppThreshold/pris",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemResources/Windows.UI.SettingsAppThreshold/pris/Windows.UI.SettingsAppThreshold.<Locale>.pri",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 92,
+          ".........A": 8
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemResources/crypt32.dll.mun",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 99,
+          ".........A": 1
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemResources/edgehtml.dll.mun",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 26,
+          ".........A": 74
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/SystemTemp",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "......m.MA": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/WinSxS/FileMaps/_0000000000000000.cdf-ms",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/WinSxS/amd64_microsoft-windows-servicingstack_<hex16>_<assemblyver>_none_<hex16>/CbsCore.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/WinSxS/amd64_microsoft-windows-servicingstack_<hex16>_<assemblyver>_none_<hex16>/TiWorker.exe",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/WinSxS/amd64_microsoft-windows-servicingstack_<hex16>_<assemblyver>_none_<hex16>/dpx.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/WinSxS/amd64_microsoft-windows-servicingstack_<hex16>_<assemblyver>_none_<hex16>/drupdate.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/WinSxS/amd64_microsoft-windows-servicingstack_<hex16>_<assemblyver>_none_<hex16>/wcp.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/WinSxS/amd64_microsoft-windows-servicingstack_<hex16>_<assemblyver>_none_<hex16>/wdscore.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      }
+    ],
+    "tags": []
+  },
+  {
+    "path_matcher": "/Windows/WinSxS/amd64_microsoft.windows.common-controls_<hex16>_<assemblyver>_none_<hex16>/comctl32.dll",
+    "distributions": [
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          "..........": 98,
+          ".........A": 2
+        },
+        "occurrences": {
+          "1b1d28c3f0087ad1": 1
+        }
+      },
+      {
+        "distribution": {
+          "has_single_addition": false,
+          "has_single_deletion": false,
+          ".........A": 100
         },
         "occurrences": {
           "1b1d28c3f0087ad1": 1
