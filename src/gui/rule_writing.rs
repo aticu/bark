@@ -67,8 +67,7 @@ impl RuleWriter {
             matching_changes: super::change_list::ChangeList::new(
                 files,
                 "Files matching the rule",
-                false,
-                Some(crate::file::FileOrder::Chronological),
+                true,
             ),
         };
 

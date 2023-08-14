@@ -130,7 +130,7 @@ pub(crate) fn compute_change_time(
 ///
 /// The range is the substring of the path that comes after the corresponding matcher for this
 /// inner list matches.
-type InnerPathList = Vec<(String, RangeFrom<usize>)>;
+type InnerPathList = Vec<(Box<str>, RangeFrom<usize>)>;
 
 /// A list of paths.
 pub(crate) struct PathList {
@@ -146,7 +146,7 @@ pub(crate) struct PathList {
 
 impl PathList {
     /// Creates a new path list from the given list.
-    pub(crate) fn new(mut list: Vec<String>) -> Self {
+    pub(crate) fn new(mut list: Vec<Box<str>>) -> Self {
         list.sort();
 
         // Since the matchers are tried in order, it's important to order them from most specific
@@ -197,7 +197,7 @@ impl PathList {
             return list[range]
                 .iter()
                 .filter(move |(path, _)| matcher.matches_path(path))
-                .map(|(path, _)| path.as_str());
+                .map(|(path, _)| &**path);
         }
 
         unreachable!("there should always be the empty matcher in the list")

@@ -91,7 +91,7 @@ impl Rule {
             }
         }
 
-        self.compute_combined_distributions();
+        self.ensure_consistency();
     }
 
     /// Ensures that that the internal state of the rule is consistent.

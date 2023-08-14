@@ -197,6 +197,8 @@ pub(crate) struct ChangeList {
     threshhold: Threshholder,
     /// The height of a single change field.
     change_height: f32,
+    /// Include only one copy of each file.
+    include_only_one_copy: bool,
     /// The number of files filtered out.
     filtered_files: usize,
     /// The number of files shown.
@@ -213,12 +215,10 @@ pub(crate) struct ChangeList {
 
 impl ChangeList {
     /// Creates a new list of changes to display from the given files.
-    pub(crate) fn new(
-        files: &'static Files,
-        name: &'static str,
-        include_unmatched: bool,
-        order_type: Option<FileOrder>,
-    ) -> Self {
+    pub(crate) fn new(files: &'static Files, name: &'static str, rule_writing: bool) -> Self {
+        let include_unmatched = !rule_writing;
+        let include_only_one_copy = rule_writing;
+
         let mut file_tree = FsTree::new();
         for file in files.alphabetical_order() {
             file_tree.insert(file.path, (Some(file.file_id), false));
@@ -232,7 +232,7 @@ impl ChangeList {
                     .as_ref()
                     .map(|time| time.avg.as_seconds_f64())
             }),
-            order_type,
+            order_type: None,
             file_tree,
             hovered: None,
             threshhold: Threshholder {
@@ -241,6 +241,7 @@ impl ChangeList {
                 ty: ThreshholdType::None,
             },
             change_height: 24.0,
+            include_only_one_copy,
             filtered_files: 0,
             shown_files: 0,
             file_score_cache: Default::default(),
@@ -347,6 +348,19 @@ impl ChangeList {
             );
         });
 
+        if let Some(FileOrder::Alphabetical) | None = self.order_type {
+            ui.horizontal(|ui| {
+                ui.checkbox(
+                    &mut self.include_only_one_copy,
+                    "include only one path per file",
+                );
+                if self.order_type.is_none() && ui.button("uncollapse all folders").clicked() {
+                    self.file_tree
+                        .mutate_vals(|(_, collapsed)| *collapsed = false);
+                }
+            });
+        }
+
         ui.horizontal(|ui| {
             ui.label("Search:");
             ui.text_edit_singleline(&mut self.search_text);
@@ -360,20 +374,23 @@ impl ChangeList {
 
         let mut y = 0;
         let mut iter = FsTreeIter::new();
-        let mut tree =
-            self.file_tree
-                .copy_filtered(|(file_id, collapsed)| match (file_id, collapsed) {
-                    (_, true) => fs_tree::FilterResult::DiscardChildren,
-                    (Some(file_id), false) => {
-                        if self.should_show_file(*file_id) {
-                            fs_tree::FilterResult::Keep
-                        } else {
-                            // don't discard the children, since they may need to be shown
-                            fs_tree::FilterResult::Discard
-                        }
+        let mut tree = self.file_tree.clone_filtered(|(file_id, collapsed), path| {
+            match (file_id, collapsed) {
+                (_, true) => fs_tree::FilterResult::DiscardChildren,
+                (Some(file_id), false) => {
+                    if self.should_show_file(*file_id)
+                        && (!self.include_only_one_copy
+                            || self.files.get(*file_id).unwrap().path() == path)
+                    {
+                        fs_tree::FilterResult::Keep
+                    } else {
+                        // don't discard the children, since they may need to be shown
+                        fs_tree::FilterResult::Discard
                     }
-                    (None, false) => fs_tree::FilterResult::Discard,
-                });
+                }
+                (None, false) => fs_tree::FilterResult::Discard,
+            }
+        });
 
         while let Some(result) = iter.next(&mut tree) {
             y += 1;
@@ -447,6 +464,7 @@ impl ChangeList {
 
             if !self.threshhold.should_include_file(match_score)
                 || !file.path.contains(&self.search_text)
+                || (self.include_only_one_copy && file.path != file.file.path())
             {
                 self.filtered_files += 1;
                 continue;
@@ -648,16 +666,26 @@ impl ChangeList {
                         super::lerp_color(Color32::RED, Color32::GREEN, score.powf(POWER)),
                     );
 
-                    let text = if score >= 0.995 {
+                    let text = if score >= 0.995_f64 {
                         String::from("100")
                     } else if score >= 0.1 {
                         format!("{:.1}", score * 100.0)
                     } else if score >= 0.01 {
                         format!("{:.2}", score * 100.0)
-                    } else {
+                    } else if score >= 0.00001 {
                         let mut text = format!("{:.3}", score * 100.0);
                         text.remove(0);
                         text
+                    } else if score == 0.0 {
+                        String::from("0")
+                    } else {
+                        let log10 = score.log10().floor() + 2.0;
+
+                        if log10 > -10.0 {
+                            format!("e{}", log10)
+                        } else {
+                            format!("{}", log10)
+                        }
                     };
                     ui.painter().text(
                         rect.center(),
@@ -909,6 +937,7 @@ impl ChangeList {
         self.filtered_files.hash(&mut hasher);
         self.shown_files.hash(&mut hasher);
         self.search_text.hash(&mut hasher);
+        self.include_only_one_copy.hash(&mut hasher);
         self.file_tree.hash(&mut hasher);
         hasher.finish()
     }

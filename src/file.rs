@@ -64,7 +64,7 @@ pub(crate) struct File {
     /// The paths that point to this file.
     ///
     /// Two paths are considered the same if their diffs (including) inodes are all the same.
-    pub(crate) paths: SmallVec<[String; 1]>,
+    pub(crate) paths: SmallVec<[Box<str>; 1]>,
     /// All diffs recorded of this file.
     ///
     /// At least one of these will be `Some(_)`.
@@ -188,7 +188,7 @@ impl Files {
 
         for (path, changes) in path_changes {
             let idx = if let Some(&idx) = changes_to_file_idx.get(&changes) {
-                files[idx].paths.push(path.to_string());
+                files[idx].paths.push(path.into());
 
                 idx
             } else {
@@ -200,7 +200,7 @@ impl Files {
                 chronological_order.insert(chron_idx, idx);
 
                 files.push(File {
-                    paths: smallvec::smallvec![path.to_string()],
+                    paths: smallvec::smallvec![path.into()],
                     changes: changes.clone(),
                     change_time,
                 });
@@ -336,7 +336,7 @@ fn resolve_alphabetical_idx(idx: PathIdx, files: &Files) -> IteratedFile {
         file_id: FileId {
             index: idx.file_idx,
         },
-        path: file.paths[idx.path_idx].as_str(),
+        path: &file.paths[idx.path_idx],
         file,
     }
 }

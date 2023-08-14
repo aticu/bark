@@ -1,4 +1,4 @@
-use std::cmp::Ordering;
+use std::{cmp::Ordering, collections::BTreeSet};
 
 use inlinable_string::{InlinableString, StringExt as _};
 
@@ -356,11 +356,19 @@ pub(crate) fn possible_replacements(
         },
     ];
     if !automatic {
+        let extra_allowed_chars = path_part
+            .chars()
+            .filter(|c| !c.is_alphanumeric())
+            .collect::<BTreeSet<char>>()
+            .into_iter()
+            .collect::<Vec<char>>();
+
         for case in [Case::Upper, Case::Lower, Case::Mixed] {
             for contains_digits in [false, true] {
                 possible_parts.push(PathMatcherPart::AlphaOrAlphanumeric {
                     contains_digits,
                     case,
+                    extra_allowed_chars: extra_allowed_chars.clone(),
                     min_len: Some(1),
                     max_len: None,
                 });

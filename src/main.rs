@@ -45,7 +45,7 @@ fn main() -> anyhow::Result<()> {
                 match std::fs::read_to_string(&path) {
                     Ok(content) => {
                         let list = input::PathList::new(
-                            content.lines().map(String::from).collect::<Vec<_>>(),
+                            content.lines().map(Box::<str>::from).collect::<Vec<_>>(),
                         );
                         path_lists.insert(name, list);
                     }
