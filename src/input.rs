@@ -48,6 +48,11 @@ pub(crate) fn compute_time_of_first_change(changeset: &Changeset<Timestamp>) -> 
         .fold((time::Duration::ZERO, 0), |(sum, n), ts| {
             (sum + (*ts - *changeset.earliest_timestamp), n + 1)
         });
+
+    if n == 0 {
+        return None;
+    }
+
     let avg_diff: time::Duration = diff_sum / n;
     let hour_offset =
         (avg_diff.as_seconds_f64() / time::Duration::HOUR.as_seconds_f64()).round() as i32;

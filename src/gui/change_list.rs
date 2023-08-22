@@ -1081,10 +1081,13 @@ fn summarize_entry_diff(result: &mut String, diff: &sniff::EntryDiff) {
     let write_str = |result: &mut String, val: &String| {
         result.push_str(val);
     };
+    let write_hash = |result: &mut String, val: &sniff::Hash| {
+        result.push_str(&format!("{val:?}"));
+    };
     match diff {
         sniff::EntryDiff::FileChanged { hash_change } => {
             result.push_str("file content changed: ");
-            write_change(result, hash_change, write_str);
+            write_change(result, hash_change, write_hash);
             result.push('\n');
         }
         sniff::EntryDiff::SymlinkChanged { path_change } => {

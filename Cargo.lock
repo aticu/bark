@@ -2666,6 +2666,7 @@ dependencies = [
  "firestorm",
  "flate2",
  "font8x8",
+ "hex",
  "image",
  "md-5",
  "owo-colors",
