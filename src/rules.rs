@@ -55,8 +55,10 @@ impl Rule {
         }
     }
 
-    /// Adds the data from the given source to the rule
-    pub(crate) fn add_data_source(&mut self, files: &Files) {
+    /// Adds the data from the given source to the rule.
+    ///
+    /// Returns whether anything about the data changed.
+    pub(crate) fn add_data_source(&mut self, files: &Files) -> bool {
         let datasource_id = files.datasource_id();
 
         if self
@@ -64,8 +66,10 @@ impl Rule {
             .iter()
             .any(|dist| dist.occurrences.contains_key(&datasource_id))
         {
-            return;
+            return false;
         }
+
+        let mut updated = false;
 
         for file in files
             .chronological_order()
@@ -73,6 +77,7 @@ impl Rule {
             .filter(|file| self.path_matcher.matches_file(file))
         {
             if let Some(distribution) = ChangeDistribution::from_file(file) {
+                updated = true;
                 if let Some(dist) = self
                     .distributions
                     .iter_mut()
@@ -92,6 +97,8 @@ impl Rule {
         }
 
         self.ensure_consistency();
+
+        updated
     }
 
     /// Ensures that that the internal state of the rule is consistent.
