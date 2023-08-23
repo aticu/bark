@@ -21,6 +21,8 @@ pub(crate) fn kmeans(
 
     let mut centers = initialize_centers(k, distributions, &mut rng);
 
+    let mut iter_count = 0;
+
     // since the closest centers are only important after the loop, we can initialize them in a
     // wrong way here
     let mut closest_center = vec![0; distributions.len()];
@@ -38,7 +40,9 @@ pub(crate) fn kmeans(
             }
         }
 
-        if new_centers == centers {
+        iter_count += 1;
+
+        if new_centers == centers || iter_count >= 25 + k {
             break;
         } else {
             centers = new_centers;
@@ -68,16 +72,21 @@ fn initialize_centers(
             .collect();
 
         let dist_sum = dists_squared.iter().sum::<f64>();
-        let choice = rng.gen_range(0.0..dist_sum);
-        let mut current_sum = 0.0;
-        let next_center = 'choose_center: {
-            for (i, dist) in dists_squared.iter().enumerate() {
-                current_sum += dist;
-                if current_sum >= choice {
-                    break 'choose_center i;
+
+        let next_center = if dist_sum.is_finite() && dist_sum > 0.0 {
+            let choice = rng.gen_range(0.0..dist_sum);
+            let mut current_sum = 0.0;
+            'choose_center: {
+                for (i, dist) in dists_squared.iter().enumerate() {
+                    current_sum += dist;
+                    if current_sum >= choice {
+                        break 'choose_center i;
+                    }
                 }
+                dists_squared.len() - 1
             }
-            dists_squared.len() - 1
+        } else {
+            rng.gen_range(0..dists_squared.len())
         };
 
         centers.push(distributions[next_center].clone());
@@ -103,6 +112,10 @@ fn find_closest_center(
 
 /// Measures the euclidean distance between two distributions.
 fn distance(dist1: &ObservedDistribution, dist2: &ObservedDistribution) -> f64 {
+    if dist1.distribution.changes.is_empty() || dist2.distribution.changes.is_empty() {
+        return 0.0;
+    }
+
     if dist1.distribution.changes.len() != dist2.distribution.changes.len() {
         return f64::INFINITY;
     }

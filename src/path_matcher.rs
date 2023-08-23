@@ -17,7 +17,7 @@ pub(crate) use self::best_variant::{possible_replacements, suggest_matcher};
 pub(crate) use self::part::PathMatcherPart;
 
 /// A data structure that may either match a path or not.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(from = "String")]
 #[serde(into = "String")]
 pub(crate) struct PathMatcher {
@@ -32,6 +32,12 @@ impl fmt::Display for PathMatcher {
         }
 
         Ok(())
+    }
+}
+
+impl fmt::Debug for PathMatcher {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "\"{self}\"")
     }
 }
 
