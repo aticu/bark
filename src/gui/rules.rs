@@ -177,7 +177,7 @@ impl Rule {
     pub(crate) fn show(&self, ui: &mut egui::Ui, show_glob: bool) {
         let sample_count = self.sample_count();
         ui.add_sized(
-            [70.0, ui.style().text_styles[&egui::TextStyle::Body].size],
+            [80.0, ui.style().text_styles[&egui::TextStyle::Body].size],
             egui::Label::new(format!(
                 "{} sample{}",
                 sample_count,
@@ -186,7 +186,7 @@ impl Rule {
         );
 
         for distribution in self.distributions() {
-            distribution.distribution.show(ui);
+            distribution.show(ui, None);
         }
 
         for tag in self.tags() {
@@ -226,8 +226,8 @@ impl Rule {
             } else {
                 ui.label("Best match:");
             }
-            distribution.distribution.show(ui);
-            distribution.distribution.show_legend(ui);
+            distribution.show(ui, None);
+            distribution.show_legend(ui, None);
         } else {
             ui.label("No matching distribution found");
         }

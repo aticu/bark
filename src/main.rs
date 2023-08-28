@@ -2,14 +2,15 @@
 
 use std::io::Write as _;
 
-mod change_distribution;
-mod change_event;
 mod file;
+mod fs_change_distribution;
+mod fs_changes;
 mod fs_tree;
 mod future_value;
 mod gui;
 mod input;
 mod path_matcher;
+mod provenance;
 mod rules;
 
 /// allows learning normal system behavior and detecting anomalies

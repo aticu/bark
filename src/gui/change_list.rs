@@ -3,9 +3,9 @@
 use eframe::{egui, epaint::Color32};
 
 use crate::{
-    change_distribution::ChangeDistribution,
-    change_event::ChangeEvent,
     file::{File, FileId, FileOrder, FileScoreCache, Files},
+    fs_change_distribution::FsChangeDistribution,
+    fs_changes::{FsChangeCounts, FsChanges},
     fs_tree::{self, FsTree, FsTreeIter},
     future_value::FutureValue,
     rules::RuleStorage,
@@ -605,14 +605,16 @@ impl ChangeList {
         );
         if score_response.hovered() {
             let rule = draw_ctx.rules.best_matching_rule(file);
-            let measured_distribution = ChangeDistribution::from_file(file);
+            let measured_counts = FsChangeCounts::from_file(file);
 
-            if rule.is_some() || measured_distribution.is_some() {
+            if rule.is_some() || measured_counts.is_some() {
                 egui::show_tooltip_at_pointer(ui.ctx(), "rule_display_tooltip".into(), |ui| {
-                    if let Some(measured_distribution) = measured_distribution {
+                    if let Some(measured_counts) = measured_counts {
                         ui.label("Found:");
-                        measured_distribution.show(ui);
-                        measured_distribution.show_legend(ui);
+                        let counts_distribution =
+                            FsChangeDistribution::naive_from_counts(&measured_counts);
+                        counts_distribution.show(ui, Some(&measured_counts));
+                        counts_distribution.show_legend(ui, Some(&measured_counts));
                     }
 
                     if let Some(rule) = rule {
@@ -783,8 +785,8 @@ impl ChangeList {
         );
         let change_response = ui.allocate_rect(rect, egui::Sense::hover());
         if ui.is_rect_visible(rect) {
-            super::change_event::draw(
-                ChangeEvent::measure(change),
+            crate::fs_changes::gui::draw(
+                FsChanges::measure(change),
                 ui,
                 rect,
                 default_bg,

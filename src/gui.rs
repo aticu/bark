@@ -1,12 +1,10 @@
 //! Deals with graphical display and user interaction.
 
-mod change_distribution;
-mod change_event;
 mod change_list;
 mod file_filter;
 mod rule_writing;
 mod rules;
-mod utils;
+pub(crate) mod utils;
 
 use std::time::Duration;
 

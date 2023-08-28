@@ -2,7 +2,7 @@
 
 use eframe::{egui, epaint::Color32};
 
-use crate::change_event::ChangeEvent;
+use crate::{fs_changes::FsChanges, gui::lerp_color};
 
 /// The background color that a hovered row is highlighted with.
 const HOVERED_HIGHLIGHT_COLOR: Color32 = Color32::WHITE;
@@ -12,7 +12,7 @@ const HOVERED_HIGHLIGHT_PERCENT: f64 = 0.1;
 
 /// Draws a single change event.
 pub(crate) fn draw(
-    change: Option<ChangeEvent>,
+    change: Option<FsChanges>,
     ui: &mut egui::Ui,
     rect: egui::Rect,
     default_bg: Color32,
@@ -45,7 +45,7 @@ pub(crate) fn draw(
         rect,
         0.0,
         if is_highlighted {
-            super::lerp_color(bg, HOVERED_HIGHLIGHT_COLOR, HOVERED_HIGHLIGHT_PERCENT)
+            lerp_color(bg, HOVERED_HIGHLIGHT_COLOR, HOVERED_HIGHLIGHT_PERCENT)
         } else {
             bg
         },
@@ -65,7 +65,7 @@ fn draw_change_grid(
     painter: egui::Painter,
     rect: egui::Rect,
     text_color: Color32,
-    change: ChangeEvent,
+    change: FsChanges,
 ) {
     /// The width of the grid of changes.
     const GRID_WIDTH: usize = 2;
@@ -119,7 +119,7 @@ fn draw_change_grid(
 
 /// Computes the colors for a single change.
 fn change_colors(
-    change: Option<ChangeEvent>,
+    change: Option<FsChanges>,
     (old_size, new_size): (u64, u64),
     default_fg: Color32,
     default_bg: Color32,
@@ -137,7 +137,7 @@ fn change_colors(
         match old_size.cmp(&new_size) {
             std::cmp::Ordering::Less => (
                 Color32::BLACK,
-                super::lerp_color(
+                lerp_color(
                     Color32::from_rgb(100, 255, 0),
                     Color32::from_rgb(220, 255, 0),
                     old_size as f64 / new_size as f64,
@@ -146,7 +146,7 @@ fn change_colors(
             std::cmp::Ordering::Equal => (Color32::BLACK, Color32::YELLOW),
             std::cmp::Ordering::Greater => (
                 Color32::BLACK,
-                super::lerp_color(
+                lerp_color(
                     Color32::from_rgb(255, 100, 0),
                     Color32::from_rgb(255, 220, 0),
                     new_size as f64 / old_size as f64,
