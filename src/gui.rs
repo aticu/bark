@@ -3,6 +3,7 @@
 mod change_distribution;
 mod change_event;
 mod change_list;
+mod file_filter;
 mod rule_writing;
 mod rules;
 mod utils;

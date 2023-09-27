@@ -1,7 +1,5 @@
 //! Implements displaying of a list of changes.
 
-use std::hash::Hash;
-
 use eframe::{egui, epaint::Color32};
 
 use crate::{
@@ -13,112 +11,13 @@ use crate::{
     rules::RuleStorage,
 };
 
+use super::file_filter::FileFilter;
+
 /// The font used for normal text such as the time and the path.
 const TEXT_FONT: egui::FontId = egui::FontId {
     size: 13.0,
     family: egui::FontFamily::Proportional,
 };
-
-/// The type of threshhold to apply.
-#[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
-enum ThreshholdType {
-    /// Don't match anything when matching is requested.
-    None,
-    /// Match things with a match score that is smaller than the value.
-    Smaller,
-    /// Match things with a match score that is greater than the value.
-    Greater,
-    /// Match all the things.
-    All,
-}
-
-/// Determines the thresh hold for rule filtering.
-struct Threshholder {
-    /// Whether to include matched files or exclude them.
-    include_unmatched: bool,
-    /// The value of the threshhold.
-    val: f64,
-    /// The type of threshhold to apply.
-    ty: ThreshholdType,
-}
-
-impl Hash for Threshholder {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.include_unmatched.hash(state);
-        self.val.to_ne_bytes().hash(state);
-        self.ty.hash(state);
-    }
-}
-
-impl Threshholder {
-    /// Displays the threshholder into the `ui`.
-    fn display(&mut self, ui: &mut egui::Ui) {
-        ui.label("showing all files");
-
-        if ui
-            .button(if self.include_unmatched {
-                "including"
-            } else {
-                "excluding"
-            })
-            .clicked()
-        {
-            self.include_unmatched = !self.include_unmatched;
-        }
-
-        ui.label("files not matching a rule and include");
-
-        match self.ty {
-            ThreshholdType::None => {
-                if ui.button("nothing else").clicked() {
-                    self.ty = ThreshholdType::Smaller;
-                }
-            }
-            ThreshholdType::Smaller => {
-                if ui
-                    .button("matching files files with score smaller than")
-                    .clicked()
-                {
-                    self.ty = ThreshholdType::Greater;
-                }
-            }
-            ThreshholdType::Greater => {
-                if ui
-                    .button("matching files files with score greater than")
-                    .clicked()
-                {
-                    self.ty = ThreshholdType::All;
-                }
-            }
-            ThreshholdType::All => {
-                if ui.button("everything else").clicked() {
-                    self.ty = ThreshholdType::None;
-                }
-            }
-        }
-
-        if matches!(self.ty, ThreshholdType::Smaller | ThreshholdType::Greater) {
-            ui.add(
-                egui::Slider::new(&mut self.val, 0.0..=100.0)
-                    .logarithmic(true)
-                    .smallest_positive(1e-2),
-            );
-        }
-    }
-
-    /// Determines if the given file should be included.
-    fn should_include_file(&self, match_score: Option<f64>) -> bool {
-        match match_score {
-            Some(score) => match (self.ty, self.val) {
-                (ThreshholdType::Greater, thresh) => score >= thresh / 100.0,
-                (ThreshholdType::Smaller, thresh) => score <= thresh / 100.0,
-                (ThreshholdType::None, _) => !self.include_unmatched,
-                (_, _) => true,
-            },
-            None => self.ty == ThreshholdType::All || self.include_unmatched,
-        }
-    }
-}
 
 /// The context for a single drawing of the change list.
 struct DrawCtx<'draw> {
@@ -193,8 +92,8 @@ pub(crate) struct ChangeList {
     file_tree: FsTree<(Option<FileId>, bool)>,
     /// The currently hovered element.
     hovered: Option<ChangeListElement>,
-    /// The threshhold for rule filtering.
-    threshhold: Threshholder,
+    /// The filter filter to choose which files to show.
+    file_filter: Option<FileFilter>,
     /// The height of a single change field.
     change_height: f32,
     /// Include only one copy of each file.
@@ -216,7 +115,6 @@ pub(crate) struct ChangeList {
 impl ChangeList {
     /// Creates a new list of changes to display from the given files.
     pub(crate) fn new(files: &'static Files, name: &'static str, rule_writing: bool) -> Self {
-        let include_unmatched = !rule_writing;
         let include_only_one_copy = rule_writing;
 
         let mut file_tree = FsTree::new();
@@ -235,11 +133,7 @@ impl ChangeList {
             order_type: None,
             file_tree,
             hovered: None,
-            threshhold: Threshholder {
-                include_unmatched,
-                val: 5.0,
-                ty: ThreshholdType::None,
-            },
+            file_filter: (!rule_writing).then_some(FileFilter::new()),
             change_height: 24.0,
             include_only_one_copy,
             filtered_files: 0,
@@ -269,6 +163,12 @@ impl ChangeList {
             self.file_score_cache
                 .update((rules.clone(), self.files), move || ctx.request_repaint());
             self.last_frame_size = None;
+        }
+
+        if let Some(file_score_cache) = self.file_score_cache.get() {
+            if let Some(file_filter) = &mut self.file_filter {
+                file_filter.draw(ui, self.files, file_score_cache)
+            }
         }
 
         if self.file_score_cache.is_current(rules) {
@@ -334,8 +234,6 @@ impl ChangeList {
                 }
             }
 
-            self.threshhold.display(ui);
-
             ui.label(format!(
                 "(showing {}, filtered {})",
                 self.shown_files, self.filtered_files
@@ -378,7 +276,7 @@ impl ChangeList {
             match (file_id, collapsed) {
                 (_, true) => fs_tree::FilterResult::DiscardChildren,
                 (Some(file_id), false) => {
-                    if self.should_show_file(*file_id)
+                    if self.should_show_file(*file_id, Some(path))
                         && (!self.include_only_one_copy
                             || self.files.get(*file_id).unwrap().path() == path)
                     {
@@ -398,7 +296,7 @@ impl ChangeList {
             let mut file_id = result.value.0;
 
             if file_id
-                .map(|file_id| !self.should_show_file(file_id))
+                .map(|file_id| !self.should_show_file(file_id, None))
                 .unwrap_or(false)
             {
                 file_id = None;
@@ -462,10 +360,7 @@ impl ChangeList {
                 .get_score(file.file_id)
                 .flatten();
 
-            if !self.threshhold.should_include_file(match_score)
-                || !file.path.contains(&self.search_text)
-                || (self.include_only_one_copy && file.path != file.file.path())
-            {
+            if !self.should_show_file(file.file_id, Some(file.path)) {
                 self.filtered_files += 1;
                 continue;
             }
@@ -485,7 +380,7 @@ impl ChangeList {
     }
 
     /// Determine whether or not the file needs to be shown.
-    fn should_show_file(&self, file_id: FileId) -> bool {
+    fn should_show_file(&self, file_id: FileId, path: Option<&str>) -> bool {
         let Some(file) = self.files.get(file_id) else { return false };
         let match_score = self
             .file_score_cache
@@ -494,13 +389,23 @@ impl ChangeList {
             .get_score(file_id)
             .flatten();
 
+        let should_include_file = self
+            .file_filter
+            .as_ref()
+            .map(|file_filter| file_filter.should_include_file(match_score))
+            .unwrap_or(match_score.is_some());
+
         let search_matches_path = self.search_text.is_empty()
             || file
                 .paths
                 .iter()
                 .any(|path| path.contains(&self.search_text));
 
-        self.threshhold.should_include_file(match_score) && search_matches_path
+        let is_canonical_version = path.map(|path| path == file.path()).unwrap_or(true);
+
+        should_include_file
+            && search_matches_path
+            && (self.include_only_one_copy || is_canonical_version)
     }
 
     /// Determines the row height for a single drawing.
@@ -654,56 +559,50 @@ impl ChangeList {
             y,
             draw_ctx.match_score_dimensions,
             ChangeListElementType::MatchScore,
-            |ui, rect| match match_score {
-                Some(score) => {
-                    // re-scale the score color such that the middle point (0.5) between the colors
-                    // is at 0.05
-                    // this is computed by 0.5_f64.ln() / 0.05_f64.ln()
-                    const POWER: f64 = 0.23137821315975918;
-                    ui.painter().rect_filled(
-                        rect,
-                        0.0,
-                        super::lerp_color(Color32::RED, Color32::GREEN, score.powf(POWER)),
-                    );
+            |ui, rect| {
+                ui.painter()
+                    .rect_filled(rect, 0.0, super::utils::score_color(match_score));
 
-                    let text = if score >= 0.995_f64 {
-                        String::from("100")
-                    } else if score >= 0.1 {
-                        format!("{:.1}", score * 100.0)
-                    } else if score >= 0.01 {
-                        format!("{:.2}", score * 100.0)
-                    } else if score >= 0.00001 {
-                        let mut text = format!("{:.3}", score * 100.0);
-                        text.remove(0);
-                        text
-                    } else if score == 0.0 {
-                        String::from("0")
-                    } else {
-                        let log10 = score.log10().floor() + 2.0;
-
-                        if log10 > -10.0 {
-                            format!("e{}", log10)
+                match match_score {
+                    Some(score) => {
+                        let text = if score >= 0.995_f64 {
+                            String::from("100")
+                        } else if score >= 0.1 {
+                            format!("{:.1}", score * 100.0)
+                        } else if score >= 0.01 {
+                            format!("{:.2}", score * 100.0)
+                        } else if score >= 0.00001 {
+                            let mut text = format!("{:.3}", score * 100.0);
+                            text.remove(0);
+                            text
+                        } else if score == 0.0 {
+                            String::from("0")
                         } else {
-                            format!("{}", log10)
-                        }
-                    };
-                    ui.painter().text(
-                        rect.center(),
-                        egui::Align2::CENTER_CENTER,
-                        text,
-                        TEXT_FONT,
-                        Color32::BLACK,
-                    );
-                }
-                None => {
-                    ui.painter().rect_filled(rect, 0.0, Color32::BROWN);
-                    ui.painter().text(
-                        rect.center(),
-                        egui::Align2::CENTER_CENTER,
-                        "???",
-                        TEXT_FONT,
-                        Color32::BLACK,
-                    );
+                            let log10 = score.log10().floor() + 2.0;
+
+                            if log10 > -10.0 {
+                                format!("e{}", log10)
+                            } else {
+                                format!("{}", log10)
+                            }
+                        };
+                        ui.painter().text(
+                            rect.center(),
+                            egui::Align2::CENTER_CENTER,
+                            text,
+                            TEXT_FONT,
+                            Color32::BLACK,
+                        );
+                    }
+                    None => {
+                        ui.painter().text(
+                            rect.center(),
+                            egui::Align2::CENTER_CENTER,
+                            "???",
+                            TEXT_FONT,
+                            Color32::BLACK,
+                        );
+                    }
                 }
             },
         );
@@ -932,7 +831,7 @@ impl ChangeList {
 
         let mut hasher = DefaultHasher::new();
         self.order_type.hash(&mut hasher);
-        self.threshhold.hash(&mut hasher);
+        self.file_filter.hash(&mut hasher);
         self.change_height.to_bits().hash(&mut hasher);
         self.filtered_files.hash(&mut hasher);
         self.shown_files.hash(&mut hasher);

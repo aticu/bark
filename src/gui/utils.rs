@@ -50,6 +50,20 @@ pub(crate) fn lerp_color(color1: Color32, color2: Color32, mut between: f64) -> 
     )
 }
 
+/// Returns the color for a match score.
+pub(crate) fn score_color(score: Option<f64>) -> Color32 {
+    match score {
+        Some(score) => {
+            // re-scale the score color such that the middle point (0.5) between the colors
+            // is at 0.05
+            // this is computed by 0.5_f64.ln() / 0.05_f64.ln()
+            const POWER: f64 = 0.23137821315975918;
+            lerp_color(Color32::RED, Color32::GREEN, score.powf(POWER))
+        }
+        None => Color32::DARK_GRAY,
+    }
+}
+
 /*
 /// A button where the contents are determined dynamically.
 pub(crate) fn ui_button(
