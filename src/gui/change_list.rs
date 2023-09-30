@@ -276,10 +276,7 @@ impl ChangeList {
             match (file_id, collapsed) {
                 (_, true) => fs_tree::FilterResult::DiscardChildren,
                 (Some(file_id), false) => {
-                    if self.should_show_file(*file_id, Some(path))
-                        && (!self.include_only_one_copy
-                            || self.files.get(*file_id).unwrap().path() == path)
-                    {
+                    if self.should_show_file(*file_id, Some(path)) {
                         fs_tree::FilterResult::Keep
                     } else {
                         // don't discard the children, since they may need to be shown
@@ -405,7 +402,7 @@ impl ChangeList {
 
         should_include_file
             && search_matches_path
-            && (self.include_only_one_copy || is_canonical_version)
+            && (!self.include_only_one_copy || is_canonical_version)
     }
 
     /// Determines the row height for a single drawing.
