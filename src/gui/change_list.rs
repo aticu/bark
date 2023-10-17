@@ -446,8 +446,23 @@ impl ChangeList {
                 draw_ctx.current_pos.x += ui.style().spacing.item_spacing.x;
             }
 
+            use sniff::MetaEntryDiff::{Added, Deleted};
+            let mut is_present = file
+                .changes
+                .iter()
+                .find(|change| matches!(change, Some(Added(_) | Deleted(_))))
+                // an entry is present initially if it is deleted before it's added
+                .map(|change| matches!(change, Some(Deleted(_))))
+                // if there is no deletion or addition, it must have been present all along
+                .unwrap_or(true);
+
             for (x, change) in file.changes.iter().enumerate() {
-                self.draw_single_change(change, ui, draw_ctx, x, y);
+                match change {
+                    Some(Added(_)) => is_present = true,
+                    Some(Deleted(_)) => is_present = false,
+                    _ => (),
+                }
+                self.draw_single_change(change, ui, draw_ctx, x, y, is_present);
             }
 
             draw_ctx.current_pos.x += ui.style().spacing.item_spacing.x;
@@ -764,6 +779,7 @@ impl ChangeList {
         draw_ctx: &mut DrawCtx,
         x: usize,
         y: usize,
+        is_present: bool,
     ) {
         let is_highlighted = if let Some(hovered) = self.hovered {
             if hovered.row == y {
@@ -778,7 +794,12 @@ impl ChangeList {
         };
 
         const COLOR_TABLE: [Color32; 2] = [Color32::from_gray(40), Color32::from_gray(45)];
-        let default_bg = COLOR_TABLE[x % COLOR_TABLE.len()];
+        let preliminary_default_bg = COLOR_TABLE[x % COLOR_TABLE.len()];
+        let default_bg = if is_present {
+            preliminary_default_bg
+        } else {
+            crate::gui::lerp_color(preliminary_default_bg, Color32::BLACK, 0.3)
+        };
         let rect = egui::Rect::from_min_size(
             draw_ctx.current_pos,
             egui::vec2(self.change_height / 2.0, self.change_height),
