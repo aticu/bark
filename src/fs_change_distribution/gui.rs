@@ -326,7 +326,9 @@ fn draw_bar_component(
                 ui.ctx(),
                 "change_distribution_graph_tooltip".into(),
                 |ui| {
-                    draw_component_legend(ui, changes, index, show_probability, count);
+                    ui.horizontal(|ui| {
+                        draw_component_legend(ui, changes, index, show_probability, count);
+                    });
                 },
             );
         }
@@ -386,44 +388,42 @@ fn draw_component_legend(
     (min_probability, max_probability): (f64, f64),
     count: Option<u32>,
 ) {
-    ui.horizontal(|ui| {
-        let (rect, _) = ui.allocate_exact_size(
-            egui::vec2(
-                DISTRIBUTION_HEIGHT / 2.0,
-                DISTRIBUTION_HEIGHT + DISTRIBUTION_BAR_HEIGHT,
-            ),
-            egui::Sense::hover(),
-        );
-        let mut change_rect = rect;
-        change_rect.set_height(DISTRIBUTION_HEIGHT);
-        let bar_rect = egui::Rect::from_min_max(change_rect.left_bottom(), rect.right_bottom());
+    let (rect, _) = ui.allocate_exact_size(
+        egui::vec2(
+            DISTRIBUTION_HEIGHT / 2.0,
+            DISTRIBUTION_HEIGHT + DISTRIBUTION_BAR_HEIGHT,
+        ),
+        egui::Sense::hover(),
+    );
+    let mut change_rect = rect;
+    change_rect.set_height(DISTRIBUTION_HEIGHT);
+    let bar_rect = egui::Rect::from_min_max(change_rect.left_bottom(), rect.right_bottom());
 
-        crate::fs_changes::gui::draw(
-            Some(changes),
-            ui,
-            change_rect,
-            egui::Color32::from_gray(40),
-            false,
-            None,
-        );
-        ui.painter()
-            .rect_filled(bar_rect, 0.0, categorical_color(index));
+    crate::fs_changes::gui::draw(
+        Some(changes),
+        ui,
+        change_rect,
+        egui::Color32::from_gray(40),
+        false,
+        None,
+    );
+    ui.painter()
+        .rect_filled(bar_rect, 0.0, categorical_color(index));
 
-        ui.vertical(|ui| {
-            ui.style_mut().spacing.item_spacing.y /= 2.0;
+    ui.vertical(|ui| {
+        ui.style_mut().spacing.item_spacing.y /= 2.0;
 
-            if min_probability == max_probability {
-                ui.label(format!("{:.0}%", min_probability * 100.0));
-            } else {
-                ui.label(format!(
-                    "{:.0}%-{:.0}%",
-                    min_probability * 100.0,
-                    max_probability * 100.0,
-                ));
-            }
-            if let Some(count) = count {
-                ui.label(format!("{}", count));
-            }
-        });
+        if min_probability == max_probability {
+            ui.label(format!("{:.0}%", min_probability * 100.0));
+        } else {
+            ui.label(format!(
+                "{:.0}%-{:.0}%",
+                min_probability * 100.0,
+                max_probability * 100.0,
+            ));
+        }
+        if let Some(count) = count {
+            ui.label(format!("{}", count));
+        }
     });
 }

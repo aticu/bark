@@ -229,7 +229,14 @@ impl Rule {
             distribution.show(ui, None);
             distribution.show_legend(ui, None);
         } else {
-            ui.label("No matching distribution found");
+            ui.label(format!(
+                "No matching distribution found (out of {})",
+                self.distributions().len()
+            ));
+            for distribution in self.distributions() {
+                distribution.show(ui, None);
+                distribution.show_legend(ui, None);
+            }
         }
     }
 }
