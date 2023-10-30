@@ -88,11 +88,8 @@ impl FsChangeDistribution {
 
         match &self.kind {
             super::DistributionKind::Empty => {
-                ui.painter().rect_filled(
-                    rect,
-                    egui::Rounding::none(),
-                    egui::Color32::from_gray(40),
-                );
+                ui.painter()
+                    .rect_filled(rect, egui::Rounding::ZERO, egui::Color32::from_gray(40));
 
                 ui.painter().text(
                     rect.center(),
@@ -355,12 +352,12 @@ fn draw_bar_gradient(ui: &mut egui::Ui, rect: egui::Rect, lower_index: usize, fr
 
     painter.rect_filled(
         left_rect,
-        egui::Rounding::none(),
+        egui::Rounding::ZERO,
         categorical_color(lower_index),
     );
     painter.rect_filled(
         right_rect,
-        egui::Rounding::none(),
+        egui::Rounding::ZERO,
         categorical_color(lower_index + 1),
     );
     for i in 0..gradient_rect.width().ceil() as u32 {
@@ -370,7 +367,7 @@ fn draw_bar_gradient(ui: &mut egui::Ui, rect: egui::Rect, lower_index: usize, fr
         );
         painter.rect_filled(
             part_rect,
-            egui::Rounding::none(),
+            egui::Rounding::ZERO,
             lerp_color(
                 categorical_color(lower_index),
                 categorical_color(lower_index + 1),

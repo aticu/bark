@@ -7,26 +7,26 @@ edition = "2021"
 
 [dependencies]
 # Input handling
-serde = { version = "1.0.164", features = ["derive"] }
-serde_json = "1.0.99"
-postcard = "1.0.4"
+serde = { version = "1.0.190", features = ["derive"] }
+serde_json = "1.0.107"
+postcard = "1.0.8"
 
 # Data model
-time = { version = "0.3.22", features = ["macros", "parsing", "formatting"] }
+time = { version = "0.3.30", features = ["macros", "parsing", "formatting"] }
 sniff = { git = "https://github.com/aticu/sniff_interop", package = "sniff_interop" }
 hashers = "1.0.1"
-bitflags = "2.3.3"
+bitflags = "2.4.1"
 statrs = "0.16.0"
 
 # User interaction
 structopt = "0.3.26"
-eframe = { version = "0.22.0", features = ["wayland"] }
+eframe = { version = "0.23.0", features = ["wayland"] }
 
 # Utils
-anyhow = "1.0.71"
+anyhow = "1.0.75"
 radix_trie = "0.2.1"
-smallvec = { version = "1.10.0", features = ["serde"] }
+smallvec = { version = "1.11.1", features = ["serde"] }
 inlinable_string = { version = "0.1.15", features = ["serde"] }
 ordered-float = { version = "4.1.0", features = ["serde"] }
-tempfile = "3.6.0"
+tempfile = "3.8.1"
 rand = { version = "0.8.5", features = ["small_rng"] }
