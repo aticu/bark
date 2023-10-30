@@ -13,7 +13,7 @@ postcard = "1.0.4"
 
 # Data model
 time = { version = "0.3.22", features = ["macros", "parsing", "formatting"] }
-sniff = { path = "/home/niclas/projects/sniff" }
+sniff = { git = "https://github.com/aticu/sniff_interop", package = "sniff_interop" }
 hashers = "1.0.1"
 bitflags = "2.3.3"
 statrs = "0.16.0"
