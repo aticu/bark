@@ -134,6 +134,41 @@ impl From<&str> for PathMatcher {
                     },
                     after_pattern,
                 ))
+            } else if pattern.len() >= 6 && pattern[..6].eq_ignore_ascii_case("regex[") {
+                // the pattern needs to be parsed again in this case, since the regular expression
+                // may contain a `>` character
+                let mut escaped = false;
+                let mut idx = None;
+                let mut level = 0;
+
+                for (i, c) in value[6..].char_indices() {
+                    if escaped {
+                        escaped = false;
+                        continue;
+                    }
+                    match c {
+                        '\\' => escaped = true,
+                        '[' => level += 1,
+                        ']' => {
+                            if level == 0 {
+                                idx = Some(i);
+                                break;
+                            } else {
+                                level -= 1;
+                            }
+                        }
+                        _ => (),
+                    }
+                }
+
+                let idx = idx? + 6;
+                if !value.get(idx + 1..)?.starts_with('>') {
+                    return None;
+                }
+                let after_pattern = idx + 2;
+                let regex = regex::Regex::new(&value[6..idx]).ok()?;
+
+                Some((PathMatcherPart::Regex { regex }, after_pattern))
             } else if pattern.len() >= 8 && pattern[..8].eq_ignore_ascii_case("alphanum") {
                 let case = pattern[..8]
                     .chars()
@@ -252,9 +287,9 @@ impl From<PathMatcher> for String {
 impl PathMatcher {
     /// Determines how many characters of the given path are matched by this matcher.
     pub(crate) fn match_len(&self, path: &str) -> Option<usize> {
-        let mut iter = path.chars().peekable();
         let mut username = None;
         let mut parts = self.parts.iter().peekable();
+        let mut substr = path;
 
         while let Some(part) = parts.next() {
             let next_lit = if let Some(PathMatcherPart::Literal(lit)) = parts.peek() {
@@ -263,12 +298,12 @@ impl PathMatcher {
                 None
             };
 
-            if !part.matches(&mut iter, &mut username, next_lit) {
+            if !part.matches(&mut substr, &mut username, next_lit) {
                 return None;
             }
         }
 
-        Some(path.len() - iter.count())
+        Some(path.len() - substr.chars().count())
     }
 
     /// Determines if the given path is matched by the path matcher.
@@ -423,12 +458,15 @@ mod tests {
                     min_len: Some(1),
                     max_len: None,
                 },
+                PathMatcherPart::Regex {
+                    regex: regex::Regex::new("\\[[a-z]\\]").unwrap(),
+                },
             ],
         };
 
         let displayed = format!("{matcher}");
 
-        assert_eq!(displayed, "/<username>/<uuid><Locale><assemblyver><digit+><digit1-3><digit*><digit2-><digit-2><digit><digit2><HEX2><alpha><alphanum><Alphanum5><ALPHANUM[\\\\_\\]-]+>");
+        assert_eq!(displayed, "/<username>/<uuid><Locale><assemblyver><digit+><digit1-3><digit*><digit2-><digit-2><digit><digit2><HEX2><alpha><alphanum><Alphanum5><ALPHANUM[\\\\_\\]-]+><regex[\\[[a-z]\\]]>");
 
         let parsed = PathMatcher::from(displayed.as_str());
         assert_eq!(matcher, parsed);
@@ -489,6 +527,7 @@ mod tests {
 
         assert!(matcher.matches_path("/<username>/bla/bla"));
         assert!(!matcher.matches_path("/bla/bla/bla"));
+        assert!(!matcher.matches_path("/\\bla/bla/bla"));
 
         let matcher = PathMatcher::from("/<hEx>/<HEX>/<hex>");
 

@@ -1,6 +1,6 @@
 //! Implements a single part within a part matcher.
 
-use std::fmt;
+use std::{fmt, hash::Hash};
 
 use inlinable_string::{InlinableString, StringExt as _};
 use smallvec::SmallVec;
@@ -8,7 +8,7 @@ use smallvec::SmallVec;
 use super::case::Case;
 
 /// One part of a path matcher.
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone)]
 pub(crate) enum PathMatcherPart {
     /// The path part matches a literal string.
     Literal(InlinableString),
@@ -61,9 +61,114 @@ pub(crate) enum PathMatcherPart {
         /// The maximum length of the alphabetic or alphanumeric digit characters.
         max_len: Option<u16>,
     },
+    /// The path part matches if the contained regular expression matches.
+    Regex {
+        /// An already parsed an compiled regular expression.
+        regex: regex::Regex,
+    },
     /// The path part matches a user name.
     Username,
 }
+
+impl Hash for PathMatcherPart {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        core::mem::discriminant(self).hash(state);
+        match self {
+            PathMatcherPart::Literal(val) => val.hash(state),
+            PathMatcherPart::Uuid(case) => case.hash(state),
+            PathMatcherPart::Locale(case) => case.hash(state),
+            PathMatcherPart::AssemblyVersion => (),
+            PathMatcherPart::Digit { min_len, max_len } => {
+                min_len.hash(state);
+                max_len.hash(state);
+            }
+            PathMatcherPart::HexDigit {
+                case,
+                min_len,
+                max_len,
+            } => {
+                case.hash(state);
+                min_len.hash(state);
+                max_len.hash(state);
+            }
+            PathMatcherPart::AlphaOrAlphanumeric {
+                contains_digits,
+                extra_allowed_chars,
+                case,
+                min_len,
+                max_len,
+            } => {
+                contains_digits.hash(state);
+                extra_allowed_chars.hash(state);
+                case.hash(state);
+                min_len.hash(state);
+                max_len.hash(state);
+            }
+            PathMatcherPart::Regex { regex } => regex.as_str().hash(state),
+            PathMatcherPart::Username => (),
+        }
+    }
+}
+
+impl PartialEq for PathMatcherPart {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Literal(l0), Self::Literal(r0)) => l0 == r0,
+            (Self::Uuid(l0), Self::Uuid(r0)) => l0 == r0,
+            (Self::Locale(l0), Self::Locale(r0)) => l0 == r0,
+            (
+                Self::Digit {
+                    min_len: l_min_len,
+                    max_len: l_max_len,
+                },
+                Self::Digit {
+                    min_len: r_min_len,
+                    max_len: r_max_len,
+                },
+            ) => l_min_len == r_min_len && l_max_len == r_max_len,
+            (
+                Self::HexDigit {
+                    case: l_case,
+                    min_len: l_min_len,
+                    max_len: l_max_len,
+                },
+                Self::HexDigit {
+                    case: r_case,
+                    min_len: r_min_len,
+                    max_len: r_max_len,
+                },
+            ) => l_case == r_case && l_min_len == r_min_len && l_max_len == r_max_len,
+            (
+                Self::AlphaOrAlphanumeric {
+                    contains_digits: l_contains_digits,
+                    extra_allowed_chars: l_extra_allowed_chars,
+                    case: l_case,
+                    min_len: l_min_len,
+                    max_len: l_max_len,
+                },
+                Self::AlphaOrAlphanumeric {
+                    contains_digits: r_contains_digits,
+                    extra_allowed_chars: r_extra_allowed_chars,
+                    case: r_case,
+                    min_len: r_min_len,
+                    max_len: r_max_len,
+                },
+            ) => {
+                l_contains_digits == r_contains_digits
+                    && l_extra_allowed_chars == r_extra_allowed_chars
+                    && l_case == r_case
+                    && l_min_len == r_min_len
+                    && l_max_len == r_max_len
+            }
+            (Self::Regex { regex: l_regex }, Self::Regex { regex: r_regex }) => {
+                l_regex.as_str() == r_regex.as_str()
+            }
+            _ => core::mem::discriminant(self) == core::mem::discriminant(other),
+        }
+    }
+}
+
+impl Eq for PathMatcherPart {}
 
 impl fmt::Display for PathMatcherPart {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -165,6 +270,7 @@ impl fmt::Display for PathMatcherPart {
                 write_min_max(f, *min_len, *max_len)?;
                 write!(f, ">")
             }
+            PathMatcherPart::Regex { regex } => write!(f, "<regex[{}]>", regex.as_str()),
             PathMatcherPart::Username => write!(f, "<username>"),
         }
     }
@@ -182,20 +288,27 @@ pub(crate) const DEFAULT_USERS: [&str; 6] = [
 ];
 
 impl PathMatcherPart {
-    /// Determines if the path part is matched by the given iterator.
+    /// Determines if the path part is matched by the given substring.
     ///
-    /// If this function returns `true` the iterator is advanced such that the next returned
+    /// If this function returns `true` the substring is advanced such that the new first
     /// character is the first character not part of the match.
-    /// If it returns `false`, the state of the iterator is unspecified.
+    /// If it returns `false`, the state of the substring is unspecified.
     pub(super) fn matches(
         &self,
-        iter: &mut std::iter::Peekable<impl Iterator<Item = char> + Clone>,
+        substr: &mut &str,
         username: &mut Option<InlinableString>,
         next_lit: Option<&str>,
     ) -> bool {
         match self {
-            PathMatcherPart::Literal(lit) => iter.take(lit.len()).eq(lit.chars()),
+            PathMatcherPart::Literal(lit) => match substr.strip_prefix(&**lit) {
+                Some(new_substr) => {
+                    *substr = new_substr;
+                    true
+                }
+                None => false,
+            },
             PathMatcherPart::Uuid(case) => {
+                let iter = &mut substr.chars();
                 for part_len in [8, 4, 4, 4, 12] {
                     let mut len = 0;
                     for c in iter.take(part_len) {
@@ -213,9 +326,12 @@ impl PathMatcherPart {
                     }
                 }
 
+                *substr = iter.as_str();
+
                 true
             }
             PathMatcherPart::Locale(case) => {
+                let iter = &mut substr.chars().peekable();
                 let mut len = 0;
 
                 for c in iter.take(2) {
@@ -247,30 +363,35 @@ impl PathMatcherPart {
                     }
                 }
 
+                *substr = &substr[len..];
+
                 true
             }
             PathMatcherPart::AssemblyVersion => {
                 for i in 0..4 {
-                    if !match_part_min_max(iter, |c| c.is_ascii_digit(), Some(1), None) {
+                    if !match_part_min_max(substr, |c| c.is_ascii_digit(), Some(1), None) {
                         return false;
                     }
 
-                    if i != 3 && iter.next() != Some('.') {
-                        return false;
+                    if i != 3 {
+                        match substr.strip_prefix('.') {
+                            Some(new_substr) => *substr = new_substr,
+                            None => return false,
+                        }
                     }
                 }
 
                 true
             }
             PathMatcherPart::Digit { min_len, max_len } => {
-                match_part_min_max(iter, |c| c.is_ascii_digit(), *min_len, *max_len)
+                match_part_min_max(substr, |c| c.is_ascii_digit(), *min_len, *max_len)
             }
             PathMatcherPart::HexDigit {
                 case,
                 min_len,
                 max_len,
             } => match_part_min_max(
-                iter,
+                substr,
                 |c| c.is_ascii_hexdigit() && case.matches_char(c),
                 *min_len,
                 *max_len,
@@ -282,7 +403,7 @@ impl PathMatcherPart {
                 min_len,
                 max_len,
             } => match_part_min_max(
-                iter,
+                substr,
                 |c| {
                     (case.matches_char(c)
                         && if *contains_digits {
@@ -295,9 +416,22 @@ impl PathMatcherPart {
                 *min_len,
                 *max_len,
             ),
+            PathMatcherPart::Regex { regex } => match regex.find(substr) {
+                Some(result) if result.start() == 0 => {
+                    *substr = &substr[result.end()..];
+                    true
+                }
+                _ => false,
+            },
             PathMatcherPart::Username => {
                 if let Some(username) = username {
-                    iter.take(username.len()).eq(username.chars())
+                    match substr.strip_prefix(&**username) {
+                        Some(new_substr) => {
+                            *substr = new_substr;
+                            true
+                        }
+                        None => false,
+                    }
                 } else {
                     let mut new_username = InlinableString::new();
                     let mut non_user_iters = DEFAULT_USERS.map(|user| Some(user.chars()));
@@ -311,7 +445,7 @@ impl PathMatcherPart {
                         };
 
                     loop {
-                        let Some(&c) = iter.peek() else {
+                        let Some(c) = substr.chars().next() else {
                             if any_non_user_iter_matched(&mut non_user_iters) {
                                 return false;
                             }
@@ -326,7 +460,7 @@ impl PathMatcherPart {
                             break;
                         }
                         if let Some(next_lit) = next_lit {
-                            if iter.clone().take(next_lit.len()).eq(next_lit.chars()) {
+                            if substr.starts_with(next_lit) {
                                 if any_non_user_iter_matched(&mut non_user_iters) {
                                     return false;
                                 }
@@ -335,7 +469,7 @@ impl PathMatcherPart {
                             }
                         }
 
-                        iter.next();
+                        *substr = &substr[c.len_utf8()..];
                         for opt_non_user_iter in &mut non_user_iters {
                             if let Some(non_user_iter) = opt_non_user_iter {
                                 if Some(c) != non_user_iter.next() {
@@ -363,10 +497,10 @@ impl PathMatcherPart {
     ) -> Option<usize> {
         let mut username = username.clone();
         let total_len = input.chars().count();
-        let mut iter = input.chars().peekable();
+        let mut substr = input;
 
-        if self.matches(iter.by_ref(), &mut username, next_lit) {
-            Some(total_len - iter.count())
+        if self.matches(&mut substr, &mut username, next_lit) {
+            Some(total_len - substr.chars().count())
         } else {
             None
         }
@@ -457,6 +591,10 @@ impl PathMatcherPart {
                     max_len: None,
                 });
             }
+            PathMatcherPart::Regex { .. } => {
+                // we cannot argue about an arbitrary regex, so the caller is responsible for that
+                results.push(self.clone());
+            }
             PathMatcherPart::Username => {
                 // we cannot confirm that the name of the username is correct here, so the caller
                 // is responsible for that
@@ -493,6 +631,7 @@ impl PathMatcherPart {
             "alphanum",
             "extra_chars",
             "dynamic_len",
+            "regex",
         ];
 
         const FLAG_BITS: usize = IMPORTANCE.len();
@@ -526,6 +665,7 @@ impl PathMatcherPart {
                     contains_digits: true,
                     ..
                 } => add_flag!("alphanum"),
+                PathMatcherPart::Regex { .. } => add_flag!("regex"),
                 PathMatcherPart::Username => add_flag!("username"),
             }
         }
@@ -551,7 +691,8 @@ impl PathMatcherPart {
             | PathMatcherPart::Uuid(_)
             | PathMatcherPart::Locale(_)
             | PathMatcherPart::AssemblyVersion
-            | PathMatcherPart::Username => false,
+            | PathMatcherPart::Username
+            | PathMatcherPart::Regex { .. } => false,
             PathMatcherPart::Digit { .. }
             | PathMatcherPart::HexDigit { .. }
             | PathMatcherPart::AlphaOrAlphanumeric { .. } => true,
@@ -568,7 +709,8 @@ impl PathMatcherPart {
             | PathMatcherPart::Locale(_)
             | PathMatcherPart::AssemblyVersion
             | PathMatcherPart::Digit { .. }
-            | PathMatcherPart::Username => false,
+            | PathMatcherPart::Username
+            | PathMatcherPart::Regex { .. } => false,
             PathMatcherPart::Uuid(case)
             | PathMatcherPart::HexDigit { case, .. }
             | PathMatcherPart::AlphaOrAlphanumeric { case, .. } => *case == Case::Mixed,
@@ -610,19 +752,19 @@ impl PathMatcherPart {
     }
 }
 
-/// A helper function that consumes matching characters from the iterator.
+/// A helper function that consumes matching characters from the substring.
 ///
 /// If `min` is `Some(_)`, then at least that many characters are required to match.
 /// If `max` is `Some(_)`, then at most that many characters are consumed.
 fn match_part_min_max(
-    iter: &mut std::iter::Peekable<impl Iterator<Item = char>>,
+    substr: &mut &str,
     mut matches: impl FnMut(char) -> bool,
     min: Option<u16>,
     max: Option<u16>,
 ) -> bool {
     if let Some(min) = min {
         let mut len = 0;
-        for c in iter.take(min.into()) {
+        for c in substr.chars().take(min.into()) {
             len += 1;
             if !matches(c) {
                 return false;
@@ -630,6 +772,10 @@ fn match_part_min_max(
         }
         if len != min {
             return false;
+        }
+        match substr.char_indices().nth(min.into()) {
+            Some((i, _)) => *substr = &substr[i..],
+            None => *substr = "",
         }
     }
     let max = max.map(|max| max - min.unwrap_or(0));
@@ -640,12 +786,12 @@ fn match_part_min_max(
             return true;
         }
 
-        let Some(&c) = iter.peek() else { return true };
+        let Some(c) = substr.chars().next() else { return true };
         if !matches(c) {
             return true;
         }
 
-        iter.next();
+        *substr = &substr[c.len_utf8()..];
         len += 1;
     }
 }
@@ -660,16 +806,12 @@ mod tests {
         for mut user in [None, Some("user".into())] {
             let user_before = user.clone();
 
-            let mut iter = input.chars().peekable();
+            let mut substr = input;
             if let Some(rest) = rest {
-                assert!(matcher.matches(&mut iter, &mut user, None));
-                assert_eq!(
-                    iter.collect::<String>(),
-                    rest,
-                    "expected {rest} for {input}"
-                );
+                assert!(matcher.matches(&mut substr, &mut user, None));
+                assert_eq!(substr, rest, "expected {rest} for {input}");
             } else {
-                assert!(!matcher.matches(&mut iter, &mut user, None));
+                assert!(!matcher.matches(&mut substr, &mut user, None));
             }
 
             assert_eq!(user, user_before);
@@ -686,16 +828,12 @@ mod tests {
     ) {
         let mut user = user.map(|user| user.into());
 
-        let mut iter = input.chars().peekable();
+        let mut substr = input;
         if let Some(rest) = rest {
-            assert!(matcher.matches(&mut iter, &mut user, next_lit));
-            assert_eq!(
-                iter.collect::<String>(),
-                rest,
-                "expected {rest} for {input}"
-            );
+            assert!(matcher.matches(&mut substr, &mut user, next_lit));
+            assert_eq!(substr, rest, "expected {rest} for {input}");
         } else {
-            assert!(!matcher.matches(&mut iter, &mut user, next_lit));
+            assert!(!matcher.matches(&mut substr, &mut user, next_lit));
         }
 
         assert_eq!(
@@ -936,6 +1074,28 @@ mod tests {
     }
 
     #[test]
+    fn regex() {
+        // This does not really need to test how the regexes themselves work, instead it checks for
+        // the integration of them. For example that they stop at the right time
+        let matcher = PathMatcherPart::Regex {
+            regex: regex::Regex::new("x{3}").unwrap(),
+        };
+
+        test(&matcher, "xxx", Some(""));
+        test(&matcher, "xxxx", Some("x"));
+        test(&matcher, "", None);
+        test(&matcher, "+", None);
+
+        let matcher = PathMatcherPart::Regex {
+            regex: regex::Regex::new("x*").unwrap(),
+        };
+
+        test(&matcher, "xxx", Some(""));
+        test(&matcher, "xxxx", Some(""));
+        test(&matcher, "xxxxxxxxxxxxxxy", Some("y"));
+    }
+
+    #[test]
     fn username() {
         let matcher = PathMatcherPart::Username;
 
@@ -958,6 +1118,7 @@ mod tests {
             None,
         );
         test_with_user(&matcher, "All User", Some(""), None, Some("All User"), None);
+        test_with_user(&matcher, "publix", Some(""), None, Some("publix"), None);
 
         test_with_user(
             &matcher,
@@ -1079,6 +1240,9 @@ mod tests {
                 extra_allowed_chars: vec!['-'],
                 min_len: None,
                 max_len: None,
+            },
+            PathMatcherPart::Regex {
+                regex: regex::Regex::new("abc").unwrap(),
             },
         ];
 
