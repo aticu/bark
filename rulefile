@@ -120137,7 +120137,7 @@
     "tags": []
   },
   {
-    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/Windows/INetCache/IE/<ALPHANUM8>/ConvergedLogin_PCore_<Alphanum[_]23>[<digit>].js",
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/Windows/INetCache/IE/<ALPHANUM8>/ConvergedLogin_PCore_<regex[[-_a-zA-Z0-9]{23}]>[<digit>].js",
     "observations": [
       {
         "data": {
@@ -120161,7 +120161,7 @@
     "tags": []
   },
   {
-    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/Windows/INetCache/IE/<ALPHANUM8>/Converged_v<digit5>_<Alphanum[_-]23>[<digit>].css",
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/Windows/INetCache/IE/<ALPHANUM8>/Converged_v<digit5>_<regex[[-_a-zA-Z0-9]{23}]>[<digit>].css",
     "observations": [
       {
         "data": {
@@ -120201,7 +120201,7 @@
     "tags": []
   },
   {
-    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/AppCache/<ALPHANUM8>/<digit+>/<Alphanum[_-]27>.br[<digit>].js",
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/AppCache/<ALPHANUM8>/<digit+>/<regex[[-_a-zA-Z0-9]{27}]>.br[<digit>].js",
     "observations": [
       {
         "data": {
@@ -120515,7 +120515,7 @@
     "tags": []
   },
   {
-    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/AppCache/<ALPHANUM8>/<digit+>/<Alphanum[_-]27>[<digit>].css",
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/AppCache/<ALPHANUM8>/<digit+>/<regex[[-_a-zA-Z0-9]{27}]>[<digit>].css",
     "observations": [
       {
         "data": {
@@ -120821,7 +120821,7 @@
     "tags": []
   },
   {
-    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/AppCache/<ALPHANUM8>/<digit+>/<Alphanum[_-]27>[<digit>].js",
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/AppCache/<ALPHANUM8>/<digit+>/<regex[[-_a-zA-Z0-9]{27}]>[<digit>].js",
     "observations": [
       {
         "data": {
@@ -121315,7 +121315,7 @@
     "tags": []
   },
   {
-    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/INetCache/<ALPHANUM8>/<Alphanum[-_]27>.br[<digit>].js",
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/INetCache/<ALPHANUM8>/<regex[[-_a-zA-Z0-9]{27}]>.br[<digit>].js",
     "observations": [
       {
         "data": {
@@ -121400,7 +121400,7 @@
     "tags": []
   },
   {
-    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/INetCache/<ALPHANUM8>/<Alphanum[-_]27>[<digit>].js",
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/INetCache/<ALPHANUM8>/<regex[[-_a-zA-Z0-9]{27}]>[<digit>].js",
     "observations": [
       {
         "data": {
@@ -123780,7 +123780,7 @@
     "tags": []
   },
   {
-    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/Windows/INetCache/IE/<ALPHANUM8>/ConvergedLoginPaginatedStrings.<Locale>_<Alphanum[-_]23>[<digit>].js",
+    "path_matcher": "/Users/<username>/AppData/Local/Microsoft/Windows/INetCache/IE/<ALPHANUM8>/ConvergedLoginPaginatedStrings.<Locale>_<regex[[-_a-zA-Z0-9]{23}]>[<digit>].js",
     "observations": [
       {
         "data": {
@@ -141060,7 +141060,7 @@
     "tags": []
   },
   {
-    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/INetCache/<ALPHANUM8>/<Alphanum[-_]27>[<digit+>].css",
+    "path_matcher": "/Users/<username>/AppData/Local/Packages/Microsoft.Windows.Search_cw5n1h2txyewy/AC/INetCache/<ALPHANUM8>/<regex[[-_a-zA-Z0-9]{27}]>[<digit+>].css",
     "observations": [
       {
         "data": {
