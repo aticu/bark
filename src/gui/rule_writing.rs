@@ -260,8 +260,12 @@ impl RuleWriter {
                         let prefix = &matcher_str[..selection.start];
                         let suffix = &matcher_str[selection.end..];
 
-                        let mut show_button = |text: &str, replacement: String| {
-                            let response = ui.button(text);
+                        let mut show_button = |text: &str, replacement: String, selected: bool| {
+                            let mut button = egui::Button::new(text);
+                            if selected {
+                                button = button.fill(Color32::from_rgb(0x00, 0x5c, 0x80));
+                            }
+                            let response = ui.add(button);
 
                             if response.clicked() {
                                 self.matcher_str = replacement;
@@ -270,17 +274,22 @@ impl RuleWriter {
                             }
                         };
 
-                        if lit != &matcher_str[selection.clone()] {
-                            show_button(
-                                lit,
-                                format!("{prefix}{}{suffix}", PathMatcherPart::Literal(lit.into())),
-                            );
-                        }
+                        let selected_str = &matcher_str[selection.clone()];
+
+                        show_button(
+                            lit,
+                            format!("{prefix}{}{suffix}", PathMatcherPart::Literal(lit.into())),
+                            lit == selected_str,
+                        );
 
                         for (part, _) in
                             crate::path_matcher::possible_replacements(lit, true, false, &None)
                         {
-                            show_button(&format!("{}", part), format!("{prefix}{}{suffix}", part));
+                            show_button(
+                                &format!("{}", part),
+                                format!("{prefix}{}{suffix}", part),
+                                format!("{part}") == selected_str,
+                            );
                         }
                     }
                 });

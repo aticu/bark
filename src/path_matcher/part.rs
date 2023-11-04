@@ -52,8 +52,6 @@ pub(crate) enum PathMatcherPart {
         /// If this is `true`, this matcher matches alphanumeric characters, otherwise it only
         /// matches alphabetic characters.
         contains_digits: bool,
-        /// Other characters that are additionally allowed.
-        extra_allowed_chars: Vec<char>,
         /// The case of the alphabetic characters.
         case: Case,
         /// The minimum length of the alphabetic or alphanumeric digit characters.
@@ -93,13 +91,11 @@ impl Hash for PathMatcherPart {
             }
             PathMatcherPart::AlphaOrAlphanumeric {
                 contains_digits,
-                extra_allowed_chars,
                 case,
                 min_len,
                 max_len,
             } => {
                 contains_digits.hash(state);
-                extra_allowed_chars.hash(state);
                 case.hash(state);
                 min_len.hash(state);
                 max_len.hash(state);
@@ -141,21 +137,18 @@ impl PartialEq for PathMatcherPart {
             (
                 Self::AlphaOrAlphanumeric {
                     contains_digits: l_contains_digits,
-                    extra_allowed_chars: l_extra_allowed_chars,
                     case: l_case,
                     min_len: l_min_len,
                     max_len: l_max_len,
                 },
                 Self::AlphaOrAlphanumeric {
                     contains_digits: r_contains_digits,
-                    extra_allowed_chars: r_extra_allowed_chars,
                     case: r_case,
                     min_len: r_min_len,
                     max_len: r_max_len,
                 },
             ) => {
                 l_contains_digits == r_contains_digits
-                    && l_extra_allowed_chars == r_extra_allowed_chars
                     && l_case == r_case
                     && l_min_len == r_min_len
                     && l_max_len == r_max_len
@@ -239,7 +232,6 @@ impl fmt::Display for PathMatcherPart {
             }
             PathMatcherPart::AlphaOrAlphanumeric {
                 contains_digits,
-                extra_allowed_chars,
                 case,
                 min_len,
                 max_len,
@@ -256,16 +248,6 @@ impl fmt::Display for PathMatcherPart {
                         Case::Lower => write!(f, "<alpha")?,
                         Case::Mixed => write!(f, "<Alpha")?,
                     }
-                }
-                if !extra_allowed_chars.is_empty() {
-                    write!(f, "[")?;
-                    for &c in extra_allowed_chars {
-                        if c == '\\' || c == ']' {
-                            write!(f, "\\")?;
-                        }
-                        write!(f, "{c}")?;
-                    }
-                    write!(f, "]")?;
                 }
                 write_min_max(f, *min_len, *max_len)?;
                 write!(f, ">")
@@ -399,19 +381,17 @@ impl PathMatcherPart {
             PathMatcherPart::AlphaOrAlphanumeric {
                 contains_digits,
                 case,
-                extra_allowed_chars,
                 min_len,
                 max_len,
             } => match_part_min_max(
                 substr,
                 |c| {
-                    (case.matches_char(c)
+                    case.matches_char(c)
                         && if *contains_digits {
                             c.is_alphanumeric()
                         } else {
                             c.is_alphabetic()
-                        })
-                        || extra_allowed_chars.contains(&c)
+                        }
                 },
                 *min_len,
                 *max_len,
@@ -569,7 +549,6 @@ impl PathMatcherPart {
             }
             PathMatcherPart::AlphaOrAlphanumeric {
                 contains_digits,
-                extra_allowed_chars,
                 case,
                 ..
             } => {
@@ -577,7 +556,6 @@ impl PathMatcherPart {
                 if let Ok(len) = len.try_into() {
                     results.push(PathMatcherPart::AlphaOrAlphanumeric {
                         contains_digits: *contains_digits,
-                        extra_allowed_chars: extra_allowed_chars.clone(),
                         case,
                         min_len: Some(len),
                         max_len: Some(len),
@@ -585,15 +563,29 @@ impl PathMatcherPart {
                 }
                 results.push(PathMatcherPart::AlphaOrAlphanumeric {
                     contains_digits: *contains_digits,
-                    extra_allowed_chars: extra_allowed_chars.clone(),
                     case,
                     min_len: Some(1),
                     max_len: None,
                 });
             }
-            PathMatcherPart::Regex { .. } => {
-                // we cannot argue about an arbitrary regex, so the caller is responsible for that
+            PathMatcherPart::Regex { regex } => {
+                // the original regex is always an option
                 results.push(self.clone());
+
+                // for regexes of the form "[...]+" we can replace the final plus with a specific
+                // len: "[...]{len}"
+                let regex = regex.as_str();
+                let unescaped_open = regex.split('[').count() - regex.split("\\[").count();
+                let unescaped_close = regex.split(']').count() - regex.split("\\]").count();
+                if regex.starts_with('[')
+                    && regex.ends_with("]+")
+                    && unescaped_open == 1
+                    && unescaped_close == 1
+                {
+                    let regex_str = format!("{}{{{len}}}", &regex[..regex.len() - 1]);
+                    let regex = regex::Regex::new(&regex_str).unwrap();
+                    results.push(PathMatcherPart::Regex { regex });
+                }
             }
             PathMatcherPart::Username => {
                 // we cannot confirm that the name of the username is correct here, so the caller
@@ -629,7 +621,6 @@ impl PathMatcherPart {
             "hexdigit",
             "alpha",
             "alphanum",
-            "extra_chars",
             "dynamic_len",
             "regex",
         ];
@@ -716,21 +707,12 @@ impl PathMatcherPart {
             | PathMatcherPart::AlphaOrAlphanumeric { case, .. } => *case == Case::Mixed,
         };
 
-        let extra_chars = matches!(self, PathMatcherPart::AlphaOrAlphanumeric {
-                extra_allowed_chars,
-                ..
-            } if !extra_allowed_chars.is_empty());
-
         if dynamic_len {
             add_flag!("dynamic_len");
         }
 
         if mixed_case {
             add_flag!("mixed_case");
-        }
-
-        if extra_chars {
-            add_flag!("extra_chars");
         }
 
         let possible_lens = match (min, max) {
@@ -997,7 +979,6 @@ mod tests {
         let matcher = PathMatcherPart::AlphaOrAlphanumeric {
             contains_digits: false,
             case: Case::Lower,
-            extra_allowed_chars: Vec::new(),
             min_len: Some(1),
             max_len: None,
         };
@@ -1015,7 +996,6 @@ mod tests {
         let matcher = PathMatcherPart::AlphaOrAlphanumeric {
             contains_digits: false,
             case: Case::Mixed,
-            extra_allowed_chars: Vec::new(),
             min_len: Some(1),
             max_len: None,
         };
@@ -1036,7 +1016,6 @@ mod tests {
         let matcher = PathMatcherPart::AlphaOrAlphanumeric {
             contains_digits: true,
             case: Case::Mixed,
-            extra_allowed_chars: Vec::new(),
             min_len: Some(1),
             max_len: None,
         };
@@ -1047,27 +1026,6 @@ mod tests {
         test(&matcher, "ABCDE", Some(""));
         test(&matcher, "soBIG", Some(""));
         test(&matcher, "0", Some(""));
-
-        test(&matcher, "", None);
-        test(&matcher, "+", None);
-    }
-
-    #[test]
-    fn alphanum_extra_chars() {
-        let matcher = PathMatcherPart::AlphaOrAlphanumeric {
-            contains_digits: true,
-            case: Case::Mixed,
-            extra_allowed_chars: vec!['-'],
-            min_len: Some(1),
-            max_len: None,
-        };
-
-        test(&matcher, "abc", Some(""));
-        test(&matcher, "aos-eht", Some(""));
-        test(&matcher, "bl-abber0yes", Some(""));
-        test(&matcher, "ABC-DE", Some(""));
-        test(&matcher, "so-BIG", Some(""));
-        test(&matcher, "----0----", Some(""));
 
         test(&matcher, "", None);
         test(&matcher, "+", None);
@@ -1179,21 +1137,18 @@ mod tests {
             PathMatcherPart::AlphaOrAlphanumeric {
                 contains_digits: false,
                 case: Case::Lower,
-                extra_allowed_chars: Vec::new(),
                 min_len: Some(1),
                 max_len: Some(1),
             },
             PathMatcherPart::AlphaOrAlphanumeric {
                 contains_digits: false,
                 case: Case::Mixed,
-                extra_allowed_chars: Vec::new(),
                 min_len: Some(1),
                 max_len: Some(1),
             },
             PathMatcherPart::AlphaOrAlphanumeric {
                 contains_digits: true,
                 case: Case::Lower,
-                extra_allowed_chars: Vec::new(),
                 min_len: Some(1),
                 max_len: Some(1),
             },
@@ -1230,14 +1185,6 @@ mod tests {
             PathMatcherPart::AlphaOrAlphanumeric {
                 contains_digits: true,
                 case: Case::Mixed,
-                extra_allowed_chars: Vec::new(),
-                min_len: None,
-                max_len: None,
-            },
-            PathMatcherPart::AlphaOrAlphanumeric {
-                contains_digits: true,
-                case: Case::Mixed,
-                extra_allowed_chars: vec!['-'],
                 min_len: None,
                 max_len: None,
             },

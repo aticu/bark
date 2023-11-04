@@ -78,34 +78,6 @@ impl From<&str> for PathMatcher {
             }
         }
 
-        fn parse_extra_chars(value: &str) -> Option<(Vec<char>, &str)> {
-            if !value.starts_with('[') {
-                return Some((Vec::new(), value));
-            }
-
-            let mut result = Vec::new();
-            let mut escape = false;
-
-            for (i, c) in value.char_indices().skip(1) {
-                if escape {
-                    result.push(c);
-                    escape = false;
-                    continue;
-                }
-                if c == '\\' {
-                    escape = true;
-                    continue;
-                }
-                if c == ']' {
-                    return Some((result, &value[i + 1..]));
-                }
-
-                result.push(c);
-            }
-
-            None
-        }
-
         fn parse_pattern(value: &str) -> Option<(PathMatcherPart, usize)> {
             let (pattern, _) = value.split_once('>')?;
             let after_pattern = pattern.len() + 1;
@@ -175,14 +147,12 @@ impl From<&str> for PathMatcher {
                     .map(|c| Case::try_from(c).unwrap())
                     .reduce(|case1, case2| case1 + case2)
                     .unwrap();
-                let (extra_allowed_chars, rest) = parse_extra_chars(&pattern[8..])?;
-                let (min, max) = parse_min_max(rest)?;
+                let (min, max) = parse_min_max(&pattern[8..])?;
 
                 Some((
                     PathMatcherPart::AlphaOrAlphanumeric {
                         contains_digits: true,
                         case,
-                        extra_allowed_chars,
                         min_len: min,
                         max_len: max,
                     },
@@ -194,14 +164,12 @@ impl From<&str> for PathMatcher {
                     .map(|c| Case::try_from(c).unwrap())
                     .reduce(|case1, case2| case1 + case2)
                     .unwrap();
-                let (extra_allowed_chars, rest) = parse_extra_chars(&pattern[5..])?;
-                let (min, max) = parse_min_max(rest)?;
+                let (min, max) = parse_min_max(&pattern[5..])?;
 
                 Some((
                     PathMatcherPart::AlphaOrAlphanumeric {
                         contains_digits: false,
                         case,
-                        extra_allowed_chars,
                         min_len: min,
                         max_len: max,
                     },
@@ -433,30 +401,20 @@ mod tests {
                 PathMatcherPart::AlphaOrAlphanumeric {
                     contains_digits: false,
                     case: Case::Lower,
-                    extra_allowed_chars: Vec::new(),
                     min_len: Some(1),
                     max_len: Some(1),
                 },
                 PathMatcherPart::AlphaOrAlphanumeric {
                     contains_digits: true,
                     case: Case::Lower,
-                    extra_allowed_chars: Vec::new(),
                     min_len: Some(1),
                     max_len: Some(1),
                 },
                 PathMatcherPart::AlphaOrAlphanumeric {
                     contains_digits: true,
                     case: Case::Mixed,
-                    extra_allowed_chars: Vec::new(),
                     min_len: Some(5),
                     max_len: Some(5),
-                },
-                PathMatcherPart::AlphaOrAlphanumeric {
-                    contains_digits: true,
-                    case: Case::Upper,
-                    extra_allowed_chars: vec!['\\', '_', ']', '-'],
-                    min_len: Some(1),
-                    max_len: None,
                 },
                 PathMatcherPart::Regex {
                     regex: regex::Regex::new("\\[[a-z]\\]").unwrap(),
@@ -466,7 +424,7 @@ mod tests {
 
         let displayed = format!("{matcher}");
 
-        assert_eq!(displayed, "/<username>/<uuid><Locale><assemblyver><digit+><digit1-3><digit*><digit2-><digit-2><digit><digit2><HEX2><alpha><alphanum><Alphanum5><ALPHANUM[\\\\_\\]-]+><regex[\\[[a-z]\\]]>");
+        assert_eq!(displayed, "/<username>/<uuid><Locale><assemblyver><digit+><digit1-3><digit*><digit2-><digit-2><digit><digit2><HEX2><alpha><alphanum><Alphanum5><regex[\\[[a-z]\\]]>");
 
         let parsed = PathMatcher::from(displayed.as_str());
         assert_eq!(matcher, parsed);
@@ -540,12 +498,6 @@ mod tests {
 
         assert!(matcher.matches_path("/only-lits"));
         assert!(!matcher.matches_path("/only-lads"));
-
-        let matcher = PathMatcher::from("/<Alphanum[-_]+>");
-
-        assert!(matcher.matches_path("/only-lits"));
-        assert!(matcher.matches_path("/aNaebBE6-o1aEOL6__37"));
-        assert!(!matcher.matches_path("/aNaebBE6+o1aEOL6__37"));
     }
 
     #[test]

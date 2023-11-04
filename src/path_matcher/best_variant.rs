@@ -356,24 +356,56 @@ pub(crate) fn possible_replacements(
         },
     ];
     if !automatic {
-        let extra_allowed_chars = path_part
-            .chars()
-            .filter(|c| !c.is_alphanumeric())
-            .collect::<BTreeSet<char>>()
-            .into_iter()
-            .collect::<Vec<char>>();
-
         for case in [Case::Upper, Case::Lower, Case::Mixed] {
             for contains_digits in [false, true] {
                 possible_parts.push(PathMatcherPart::AlphaOrAlphanumeric {
                     contains_digits,
                     case,
-                    extra_allowed_chars: extra_allowed_chars.clone(),
                     min_len: Some(1),
                     max_len: None,
                 });
             }
         }
+
+        let charset = path_part.chars().collect::<BTreeSet<char>>();
+
+        let mut contains_ascii_lower = false;
+        let mut contains_ascii_upper = false;
+        let mut contains_ascii_digit = false;
+        for c in &charset {
+            match c {
+                'a'..='z' => contains_ascii_lower = true,
+                'A'..='Z' => contains_ascii_upper = true,
+                '0'..='9' => contains_ascii_digit = true,
+                _ => (),
+            }
+        }
+
+        let mut regex_str = charset
+            .into_iter()
+            .filter(|c| !matches!(c, 'a'..='z' | 'A'..='Z' | '0'..='9'))
+            .flat_map(|c| {
+                ["\\.[]{}()*+-=!?^$|".contains(c).then_some('\\'), Some(c)]
+                    .into_iter()
+                    .flatten()
+            })
+            .collect::<String>();
+
+        regex_str.insert(0, '[');
+        if contains_ascii_lower {
+            regex_str.push_str("a-z");
+        }
+        if contains_ascii_upper {
+            regex_str.push_str("A-Z");
+        }
+        if contains_ascii_digit {
+            regex_str.push_str("0-9");
+        }
+        regex_str.push_str("]+");
+
+        possible_parts.push(PathMatcherPart::Regex {
+            regex: regex::Regex::new(&regex_str).unwrap(),
+        });
     }
     if username.is_some() || !automatic {
         possible_parts.push(PathMatcherPart::Username);
