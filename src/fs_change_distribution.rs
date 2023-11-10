@@ -81,51 +81,6 @@ impl FsChangeDistribution {
 
                 Some(1.0)
             }
-            DistributionKind::Either {
-                first,
-                second,
-                min_probability,
-                max_probability,
-            } => {
-                let min_probability = **min_probability;
-                let max_probability = **max_probability;
-                for (count_changes, _) in counts {
-                    if self.permits_addition && count_changes == FsChanges::ADDED {
-                        continue;
-                    }
-                    if self.permits_deletion && count_changes == FsChanges::DELETED {
-                        continue;
-                    }
-                    if count_changes == *first {
-                        continue;
-                    }
-                    if count_changes == *second {
-                        continue;
-                    }
-                    return None;
-                }
-
-                let first_count = counts.get(*first).unwrap_or_default();
-                let second_count = counts.get(*second).unwrap_or_default();
-                let total = first_count + second_count;
-                let first_prob = first_count as f64 / total as f64;
-
-                if min_probability <= first_prob && first_prob <= max_probability {
-                    Some(1.0)
-                } else if first_prob <= min_probability {
-                    g_test(
-                        [(first, min_probability), (second, 1.0 - min_probability)].into_iter(),
-                        |count| counts.get(*count),
-                        total,
-                    )
-                } else {
-                    g_test(
-                        [(first, max_probability), (second, 1.0 - max_probability)].into_iter(),
-                        |count| counts.get(*count),
-                        total,
-                    )
-                }
-            }
             DistributionKind::Complex { changes } => {
                 for (count_changes, _) in counts {
                     if self.permits_addition && count_changes == FsChanges::ADDED {
@@ -184,18 +139,6 @@ enum DistributionKind {
     Deterministic {
         /// The changes that occurred every time.
         changes: FsChanges,
-    },
-    /// Either the first or the second change have been observed with possibly different
-    /// probabilities.
-    Either {
-        /// The first observed changes.
-        first: FsChanges,
-        /// The second observed changes.
-        second: FsChanges,
-        /// The minimum observed probability for the first changes.
-        min_probability: NotNan<f64>,
-        /// The maximum observed probability for the first changes.
-        max_probability: NotNan<f64>,
     },
     /// The set of changes seen was more complex than any of the other variants capture.
     Complex {

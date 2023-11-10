@@ -1,6 +1,6 @@
 //! Merging of change counts into change distributions.
 
-use std::collections::{BTreeMap, HashSet};
+use std::collections::BTreeMap;
 
 use ordered_float::NotNan;
 use smallvec::SmallVec;
@@ -10,7 +10,7 @@ use crate::{
     provenance::{Provenance, Tracked},
 };
 
-use super::{g_test, DistributionKind, FsChangeDistribution};
+use super::{DistributionKind, FsChangeDistribution};
 
 /// Merges many change counts into possibly fewer change distributions.
 pub(crate) fn merge_counts_into_distributions(
@@ -59,8 +59,6 @@ pub(crate) fn merge_counts_into_distributions(
             &mut filtered_observations,
         ));
     }
-
-    merge_distributions_range(&mut result);
 
     result
 }
@@ -121,138 +119,6 @@ fn try_merge_deterministic(
         },
         provenance,
     ))
-}
-
-/// Merges the given distributions into range distributions where possible.
-fn merge_distributions_range(distributions: &mut SmallVec<[Tracked<FsChangeDistribution>; 1]>) {
-    let mut tried_range_matches = HashSet::<[FsChanges; 2]>::new();
-
-    let mut i = 0;
-    while i + 1 < distributions.len() {
-        let distribution = &distributions[i];
-        let FsChangeDistribution { mut permits_addition, mut permits_deletion, kind: DistributionKind::Complex { changes: map } } = &distribution.data else {
-            i += 1;
-            continue
-        };
-
-        let mut iter = map.keys();
-        let Some(&first) = iter.next() else {
-            i += 1;
-            continue;
-        };
-        let Some(&second) = iter.next() else {
-            i += 1;
-            continue;
-        };
-        let None = iter.next() else {
-            i += 1;
-            continue;
-        };
-
-        let changes = [first, second];
-        if tried_range_matches.contains(&changes) {
-            i += 1;
-            continue;
-        }
-
-        tried_range_matches.insert(changes);
-
-        let p = *map.values().next().unwrap();
-        let mut probabilities = vec![p];
-
-        for other in &distributions[i + 1..] {
-            let FsChangeDistribution { kind: DistributionKind::Complex { changes: other_map }, .. } = &other.data else { continue };
-
-            if !other_map.keys().eq(changes.iter()) {
-                continue;
-            }
-
-            let p = *other_map.values().next().unwrap();
-
-            probabilities.push(p);
-        }
-
-        if probabilities.len() < 3 {
-            i += 1;
-            continue;
-        }
-
-        let min_probability = *probabilities.iter().min().unwrap();
-        let max_probability = *probabilities.iter().max().unwrap();
-
-        let interval_size = max_probability - min_probability;
-        assert_ne!(interval_size, 0.0);
-
-        // determine whether the other probabilities are distributed roughly uniformly between
-        // min and max
-        const BUCKET_COUNT: usize = 4;
-        let mut buckets = [0; BUCKET_COUNT];
-        for probability in &probabilities {
-            let bucket_idx = (((probability - min_probability) / interval_size
-                * BUCKET_COUNT as f64)
-                .trunc() as usize)
-                .clamp(0, BUCKET_COUNT - 1);
-            buckets[bucket_idx] += 1;
-        }
-
-        let total_count = buckets.iter().sum::<u32>();
-        let uniform_distribution_probability = g_test(
-            (0..BUCKET_COUNT).map(|bucket| (bucket, 1.0 / BUCKET_COUNT as f64)),
-            |bucket| {
-                if bucket < BUCKET_COUNT {
-                    Some(buckets[bucket])
-                } else {
-                    None
-                }
-            },
-            total_count,
-        );
-
-        if uniform_distribution_probability < Some(0.25) {
-            i += 1;
-            continue;
-        }
-
-        let mut provenance = distributions.remove(i).provenance;
-
-        let mut j = i;
-        while j < distributions.len() {
-            let distribution = &distributions[j];
-            let FsChangeDistribution { permits_addition: p_a, permits_deletion: p_d, kind: DistributionKind::Complex { changes: other_map } } = &distribution.data else {
-                j += 1;
-                continue
-            };
-
-            if !other_map.keys().eq(changes.iter()) {
-                j += 1;
-                continue;
-            }
-
-            provenance.join(&distribution.provenance);
-
-            permits_addition |= p_a;
-            permits_deletion |= p_d;
-
-            distributions.remove(j);
-        }
-
-        distributions.insert(
-            i,
-            Tracked::new(
-                FsChangeDistribution {
-                    permits_addition,
-                    permits_deletion,
-                    kind: DistributionKind::Either {
-                        first,
-                        second,
-                        min_probability,
-                        max_probability,
-                    },
-                },
-                provenance,
-            ),
-        )
-    }
 }
 
 /// Tries to merge the given observation into other distributions similar to it.

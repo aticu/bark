@@ -5,7 +5,7 @@ use eframe::egui;
 use crate::{
     fs_change_distribution::FsChangeDistribution,
     fs_changes::{FsChangeCounts, FsChanges},
-    gui::{lerp_color, utils::categorical_color},
+    gui::utils::categorical_color,
 };
 
 /// The width of a single distribution graph.
@@ -122,52 +122,6 @@ impl FsChangeDistribution {
                 Some((1.0, 1.0)),
                 get_count(*changes, counts),
             ),
-            super::DistributionKind::Either {
-                first,
-                second,
-                min_probability,
-                max_probability,
-            } => {
-                let min_probability = **min_probability;
-                let max_probability = **max_probability;
-
-                let min_width = ((DISTRIBUTION_HEIGHT / 2.0) / DISTRIBUTION_GRAPH_WIDTH).into();
-                let p1 = (min_probability).clamp(min_width, 1.0 - min_width);
-                let p3 = (1.0 - max_probability).clamp(min_width, 1.0 - min_width);
-                let p2 = 1.0 - p1 - p3;
-
-                draw_bar_component(
-                    ui,
-                    rect,
-                    *first,
-                    0,
-                    &mut current_offset,
-                    p1,
-                    Some((min_probability, max_probability)),
-                    None,
-                );
-                draw_bar_component(
-                    ui,
-                    rect,
-                    FsChanges::empty(),
-                    0,
-                    &mut current_offset,
-                    p2,
-                    None,
-                    None,
-                );
-                draw_bar_component(
-                    ui,
-                    rect,
-                    *second,
-                    1,
-                    &mut current_offset,
-                    p3,
-                    Some((1.0 - max_probability, 1.0 - min_probability)),
-                    None,
-                );
-                draw_bar_gradient(ui, rect, 0, min_probability, max_probability)
-            }
             super::DistributionKind::Complex { changes } => {
                 for (i, (&changes, &probability)) in changes.iter().enumerate() {
                     draw_bar_component(
@@ -232,29 +186,6 @@ impl FsChangeDistribution {
                 }
                 super::DistributionKind::Deterministic { changes } => {
                     draw_component_legend(ui, *changes, 0, (1.0, 1.0), get_count(*changes, counts))
-                }
-                super::DistributionKind::Either {
-                    first,
-                    second,
-                    min_probability,
-                    max_probability,
-                } => {
-                    let min_probability = **min_probability;
-                    let max_probability = **max_probability;
-                    draw_component_legend(
-                        ui,
-                        *first,
-                        0,
-                        (min_probability, max_probability),
-                        get_count(*first, counts),
-                    );
-                    draw_component_legend(
-                        ui,
-                        *second,
-                        0,
-                        (1.0 - max_probability, 1.0 - min_probability),
-                        get_count(*second, counts),
-                    );
                 }
                 super::DistributionKind::Complex { changes } => {
                     for (i, (&changes, &probability)) in changes.iter().enumerate() {
@@ -329,51 +260,6 @@ fn draw_bar_component(
                 },
             );
         }
-    }
-}
-
-/// Draws a gradient on the bar, from `from` to `to` as fractions between `0.0` and `1.0`.
-fn draw_bar_gradient(ui: &mut egui::Ui, rect: egui::Rect, lower_index: usize, from: f64, to: f64) {
-    let bar_rect = egui::Rect::from_min_size(
-        rect.left_bottom() - egui::vec2(0.0, DISTRIBUTION_BAR_HEIGHT),
-        egui::vec2(rect.width(), DISTRIBUTION_BAR_HEIGHT),
-    );
-    let painter = ui.painter_at(bar_rect);
-
-    let left_rect = egui::Rect::from_min_size(
-        bar_rect.left_top(),
-        egui::vec2(from as f32 * bar_rect.width(), bar_rect.height()),
-    );
-    let gradient_rect = egui::Rect::from_min_size(
-        left_rect.right_top(),
-        egui::vec2((to - from) as f32 * rect.width(), bar_rect.height()),
-    );
-    let right_rect = egui::Rect::from_min_max(gradient_rect.right_top(), bar_rect.right_bottom());
-
-    painter.rect_filled(
-        left_rect,
-        egui::Rounding::ZERO,
-        categorical_color(lower_index),
-    );
-    painter.rect_filled(
-        right_rect,
-        egui::Rounding::ZERO,
-        categorical_color(lower_index + 1),
-    );
-    for i in 0..gradient_rect.width().ceil() as u32 {
-        let part_rect = egui::Rect::from_min_size(
-            gradient_rect.left_top() + egui::vec2(i as f32, 0.0),
-            egui::vec2(1.0, bar_rect.height()),
-        );
-        painter.rect_filled(
-            part_rect,
-            egui::Rounding::ZERO,
-            lerp_color(
-                categorical_color(lower_index),
-                categorical_color(lower_index + 1),
-                i as f64 / f64::from(gradient_rect.width()),
-            ),
-        );
     }
 }
 
