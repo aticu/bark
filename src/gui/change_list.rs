@@ -392,11 +392,32 @@ impl ChangeList {
             .map(|file_filter| file_filter.should_include_file(match_score))
             .unwrap_or(match_score.is_some());
 
+        let matching_fn: fn(&str, &str) -> bool = if self.search_text.ends_with('$') {
+            if self.search_text.ends_with("\\$") {
+                |path, search_text| {
+                    let (end_offset, optional_backslash) = if search_text.ends_with("\\\\$") {
+                        (3, "\\")
+                    } else {
+                        (2, "")
+                    };
+                    // the search text needs to be reconstructed here to deal with the backslash
+                    let search_text = format!(
+                        "{}{optional_backslash}$",
+                        &search_text[..search_text.len() - end_offset]
+                    );
+                    path.contains(&search_text)
+                }
+            } else {
+                |path, search_text| path.ends_with(&search_text[..search_text.len() - 1])
+            }
+        } else {
+            |path, search_text| path.contains(search_text)
+        };
         let search_matches_path = self.search_text.is_empty()
             || file
                 .paths
                 .iter()
-                .any(|path| path.contains(&self.search_text));
+                .any(|path| matching_fn(path, &self.search_text));
 
         let is_canonical_version = path.map(|path| path == file.path()).unwrap_or(true);
 
