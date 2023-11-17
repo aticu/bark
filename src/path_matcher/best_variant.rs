@@ -403,9 +403,9 @@ pub(crate) fn possible_replacements(
         }
         regex_str.push_str("]+");
 
-        possible_parts.push(PathMatcherPart::Regex {
-            regex: regex::Regex::new(&regex_str).unwrap(),
-        });
+        if let Ok(regex) = regex::Regex::new(&regex_str) {
+            possible_parts.push(PathMatcherPart::Regex { regex });
+        }
     }
     if username.is_some() || !automatic {
         possible_parts.push(PathMatcherPart::Username);
