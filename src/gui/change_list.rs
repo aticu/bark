@@ -325,7 +325,12 @@ impl ChangeList {
                         self.file_tree.get_mut(&result.path()).unwrap().val_mut().1 = collapsed;
                     }
                 }
-                self.draw_path(ui, draw_ctx, file, &result.name, y);
+                let full_path = format!(
+                    "{}/{}",
+                    result.parents[result.parents.len() - 1].0,
+                    result.name
+                );
+                self.draw_path(ui, draw_ctx, file, &result.name, &full_path, y);
 
                 size.x = (draw_ctx.current_pos.x - start_pos.x).max(size.x);
                 size.y += draw_ctx.time_dimensions.y;
@@ -365,7 +370,7 @@ impl ChangeList {
 
             if self.row_needs_drawing(ui, row_height, draw_ctx) {
                 self.draw_changes(ui, draw_ctx, y, Some(file.file), match_score);
-                self.draw_path(ui, draw_ctx, Some(file.file), file.path, y);
+                self.draw_path(ui, draw_ctx, Some(file.file), file.path, file.path, y);
 
                 size.x = (draw_ctx.current_pos.x - start_pos.x).max(size.x);
                 size.y += draw_ctx.time_dimensions.y;
@@ -670,6 +675,7 @@ impl ChangeList {
         draw_ctx: &mut DrawCtx,
         file: Option<&File>,
         path: &str,
+        full_path: &str,
         y: usize,
     ) {
         let path_rect = ui.painter().text(
@@ -682,8 +688,8 @@ impl ChangeList {
             TEXT_FONT,
             ui.style().noninteractive().text_color(),
         );
-        let path_response = ui.allocate_rect(path_rect, egui::Sense::hover()).hovered();
-        if path_response && !draw_ctx.any_hovered {
+        let path_response = ui.allocate_rect(path_rect, egui::Sense::click());
+        if path_response.hovered() && !draw_ctx.any_hovered {
             self.hovered = Some(ChangeListElement {
                 row: y,
                 element_type: ChangeListElementType::Path,
@@ -695,6 +701,17 @@ impl ChangeList {
                     ui.label(file.paths.join("\n"))
                 });
             }
+        }
+
+        let to_copy = if path_response.clicked_by(egui::PointerButton::Primary) {
+            Some(full_path)
+        } else if path_response.clicked_by(egui::PointerButton::Secondary) {
+            Some(full_path.split('/').last().unwrap())
+        } else {
+            None
+        };
+        if let Some(to_copy) = to_copy {
+            ui.ctx().copy_text(to_copy.to_string());
         }
 
         draw_ctx.current_pos.x += path_rect.width();
