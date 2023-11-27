@@ -235,13 +235,7 @@ impl serde::Serialize for RuleStorage {
     where
         S: serde::Serializer,
     {
-        use serde::ser::SerializeSeq as _;
-
-        let mut seq = serializer.serialize_seq(Some(self.rules.len()))?;
-        for rule in self {
-            seq.serialize_element(rule)?;
-        }
-        seq.end()
+        self.rules.serialize(serializer)
     }
 }
 

@@ -2,7 +2,6 @@
 
 mod storage;
 
-use inlinable_string::InlinableString;
 use smallvec::SmallVec;
 pub(crate) use storage::{MatchCountCache, RuleStorage};
 
@@ -27,12 +26,6 @@ pub(crate) struct Rule {
     /// each time.
     #[serde(skip)]
     distributions: SmallVec<[Tracked<FsChangeDistribution>; 1]>,
-    /// Tags that can classify the rule.
-    ///
-    /// Tags are just small pieces of text associated with a rule that can be used for a number of
-    /// purposes.
-    /// For example to explain where a rule originates (e.g. `win10`, `shutdown_button`).
-    tags: SmallVec<[InlinableString; 2]>,
 }
 
 impl Rule {
@@ -42,7 +35,6 @@ impl Rule {
             path_matcher,
             observations: SmallVec::new(),
             distributions: SmallVec::new(),
-            tags: Default::default(),
         };
 
         this.add_data_source(files);
@@ -103,20 +95,6 @@ impl Rule {
     /// Returns the path matcher that this rule uses.
     pub(crate) fn path_matcher(&self) -> &PathMatcher {
         &self.path_matcher
-    }
-
-    /// Tags the rule with the given tag.
-    ///
-    /// This has no effect if the rule is already tagged with the tag.
-    pub(crate) fn tag(&mut self, tag: &str) {
-        if !self.tags.iter().any(|t| *t == tag) {
-            self.tags.push(tag.into());
-        }
-    }
-
-    /// Returns the tags of this rule.
-    pub(crate) fn tags(&self) -> &[InlinableString] {
-        &self.tags[..]
     }
 
     /// Returns the distributions of this rule.

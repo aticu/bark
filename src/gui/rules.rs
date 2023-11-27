@@ -18,8 +18,6 @@ pub(crate) struct RuleList {
     filter: String,
     /// The match status of shown rules.
     match_status: MatchStatus,
-    /// The content of the tag text editing box.
-    tag_str: String,
     /// The number of rules shown last frame.
     shown_rules: usize,
     /// The file to store the rules to when a rule is added.
@@ -45,7 +43,6 @@ impl RuleList {
             files,
             filter: String::new(),
             match_status: MatchStatus::Ignore,
-            tag_str: String::new(),
             shown_rules: 0,
             rule_file,
             match_count_cache: Default::default(),
@@ -54,8 +51,6 @@ impl RuleList {
 
     /// Displays the rules in the given rule storage.
     pub(crate) fn display(&mut self, ui: &mut egui::Ui, storage: &mut RuleStorage) {
-        let mut apply_tag = None;
-
         ui.horizontal(|ui| {
             ui.label("Filter:");
             ui.text_edit_singleline(&mut self.filter);
@@ -78,17 +73,6 @@ impl RuleList {
             }
 
             ui.separator();
-
-            if ui
-                .button(format!("Tag all {} shown rules with", self.shown_rules))
-                .clicked()
-            {
-                apply_tag = Some(std::mem::take(&mut self.tag_str));
-                if apply_tag.as_deref() == Some("") {
-                    apply_tag = None;
-                }
-            }
-            ui.text_edit_singleline(&mut self.tag_str);
         });
 
         let mut shown_rules = 0;
@@ -131,10 +115,6 @@ impl RuleList {
                                     rule.show(ui, true);
 
                                     shown_rules += 1;
-
-                                    if let Some(tag) = &apply_tag {
-                                        rule.tag(tag);
-                                    }
                                 });
                             }
                         }
@@ -163,12 +143,6 @@ impl RuleList {
         }
 
         self.shown_rules = shown_rules;
-
-        if apply_tag.is_some() {
-            if let Some(rule_file) = &self.rule_file {
-                storage.save(rule_file);
-            }
-        }
     }
 }
 
@@ -187,27 +161,6 @@ impl Rule {
 
         for distribution in self.distributions() {
             distribution.show(ui, None);
-        }
-
-        for tag in self.tags() {
-            const TAG_FONT: egui::FontId = egui::FontId::proportional(12.0);
-
-            let tag_layout = ui.painter().layout_no_wrap(
-                String::from(&**tag),
-                TAG_FONT,
-                ui.style().noninteractive().text_color(),
-            );
-
-            let (rect, _) = ui.allocate_exact_size(tag_layout.rect.size(), egui::Sense::hover());
-            let rect = rect.expand(2.0);
-            ui.painter().rect_filled(rect, 5.0, Color32::LIGHT_BLUE);
-            ui.painter().text(
-                rect.center(),
-                egui::Align2::CENTER_CENTER,
-                &**tag,
-                TAG_FONT,
-                Color32::BLACK,
-            );
         }
 
         if show_glob {
