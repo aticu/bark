@@ -1,7 +1,7 @@
 //! Provides a container for rules to efficiently match on them.
 
 use std::{
-    collections::HashMap,
+    collections::{BTreeMap, HashMap},
     fmt,
     path::{Path, PathBuf},
 };
@@ -10,35 +10,64 @@ use radix_trie::{Trie, TrieCommon};
 use smallvec::SmallVec;
 
 use crate::{
-    file::{File, Files},
+    file::{DatasourceId, File, Files},
     future_value::ComputableValue,
     path_matcher::PathMatcher,
+    provenance::Source,
 };
 
 use super::Rule;
 
 /// A container to efficiently match multiple rules.
-#[derive(Clone)]
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[serde(into = "RuleStorageSerializeDummy", from = "RuleStorageSerializeDummy")]
 pub(crate) struct RuleStorage {
+    /// The sources that the rules are derived from.
+    sources: BTreeMap<DatasourceId, Source>,
     /// Stores the rules.
     rules: Vec<Rule>,
     /// The inner trie that stores the indices of the rules.
     ///
     /// This is used so that lookup of rules by their path is more efficient.
     trie: Trie<String, SmallVec<[usize; 1]>>,
+    /// Maps a data source to its name, for new sources.
+    name_mapping: BTreeMap<DatasourceId, String>,
 }
 
 impl RuleStorage {
     /// Creates a new empty rule storage.
     pub(crate) fn new() -> RuleStorage {
         RuleStorage {
+            sources: BTreeMap::new(),
             rules: Vec::new(),
             trie: Trie::new(),
+            name_mapping: BTreeMap::new(),
+        }
+    }
+
+    /// Creates a new empty rule storage, with a mapping for the source names.
+    pub(crate) fn new_with_mapping(name_mapping: BTreeMap<DatasourceId, String>) -> RuleStorage {
+        RuleStorage {
+            sources: BTreeMap::new(),
+            rules: Vec::new(),
+            trie: Trie::new(),
+            name_mapping,
         }
     }
 
     /// Inserts the given rule into the storage.
     pub(crate) fn insert(&mut self, rule: Rule) {
+        for source in rule.sources() {
+            if self.source(source).is_none() {
+                if let Some(name) = self.name_mapping.get(&source) {
+                    self.sources
+                        .insert(source, Source::new_with_name(source, name.to_string()));
+                } else {
+                    self.sources.insert(source, Source::new(source));
+                }
+            }
+        }
+
         let prefix = rule.path_matcher.literal_prefix().to_string();
 
         let idx = self.rules.len();
@@ -113,8 +142,19 @@ impl RuleStorage {
         };
 
         let mut hasher = DefaultHasher::new();
+        self.sources.hash(&mut hasher);
         self.rules.hash(&mut hasher);
         hasher.finish()
+    }
+
+    /// Returns a reference to the source for the given id.
+    pub(crate) fn source(&self, datasource_id: DatasourceId) -> Option<&Source> {
+        self.sources.get(&datasource_id)
+    }
+
+    /// Returns a mutable reference to the source for the given id.
+    pub(crate) fn source_mut(&mut self, datasource_id: DatasourceId) -> Option<&mut Source> {
+        self.sources.get_mut(&datasource_id)
     }
 
     /// Saves the rule storage to the given rule file.
@@ -230,45 +270,39 @@ impl fmt::Debug for RuleStorage {
     }
 }
 
-impl serde::Serialize for RuleStorage {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        self.rules.serialize(serializer)
+// This is the serialized data layout of the
+#[derive(serde::Serialize, serde::Deserialize)]
+#[serde(rename = "RuleStorage")]
+struct RuleStorageSerializeDummy {
+    sources: Vec<Source>,
+    rules: Vec<Rule>,
+}
+
+impl From<RuleStorage> for RuleStorageSerializeDummy {
+    fn from(storage: RuleStorage) -> Self {
+        RuleStorageSerializeDummy {
+            sources: storage.sources.into_values().collect(),
+            rules: storage.rules,
+        }
     }
 }
 
-impl<'de> serde::Deserialize<'de> for RuleStorage {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        struct Visitor;
+impl From<RuleStorageSerializeDummy> for RuleStorage {
+    fn from(dummy: RuleStorageSerializeDummy) -> Self {
+        let mut storage = RuleStorage::new();
 
-        impl<'de> serde::de::Visitor<'de> for Visitor {
-            type Value = RuleStorage;
+        storage.sources = dummy
+            .sources
+            .into_iter()
+            .map(|source| (source.id, source))
+            .collect();
 
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("rule storage")
-            }
-
-            fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
-            where
-                A: serde::de::SeqAccess<'de>,
-            {
-                let mut storage = RuleStorage::new();
-
-                while let Some(mut rule) = seq.next_element::<Rule>()? {
-                    rule.ensure_consistency();
-                    storage.insert(rule);
-                }
-
-                Ok(storage)
-            }
+        for mut rule in dummy.rules {
+            rule.ensure_consistency();
+            storage.insert(rule);
         }
 
-        deserializer.deserialize_seq(Visitor)
+        storage
     }
 }
 

@@ -1,6 +1,6 @@
 #![feature(let_chains)]
 
-use std::io::Write as _;
+use std::{collections::BTreeMap, io::Write as _};
 
 mod file;
 mod fs_change_distribution;
@@ -36,11 +36,11 @@ fn main() -> anyhow::Result<()> {
 
     match config {
         Config::Run {
-            input,
+            input: input_path,
             rules: rules_path,
             path_list,
         } => {
-            let input = input::read(input)?;
+            let input = input::read(&input_path)?;
             let files = file::Files::from_changesets(&input);
             let mut path_lists = std::collections::BTreeMap::new();
 
@@ -73,17 +73,22 @@ fn main() -> anyhow::Result<()> {
                 }
             }
 
+            let mut name_mapping = BTreeMap::new();
+            if let Some(name) = input_path.file_stem().and_then(|name| name.to_str()) {
+                name_mapping.insert(files.datasource_id(), name.to_string());
+            }
+
             let rules = if let Some(rules) = &rules_path {
                 match rules::RuleStorage::load(rules) {
                     Ok(storage) => storage,
                     Err(err) => {
                         eprintln!("{err}");
                         eprintln!("Using empty rule storage instead");
-                        rules::RuleStorage::new()
+                        rules::RuleStorage::new_with_mapping(name_mapping)
                     }
                 }
             } else {
-                rules::RuleStorage::new()
+                rules::RuleStorage::new_with_mapping(name_mapping)
             };
 
             gui::GuiApp::run(rules, files, rules_path, path_lists).unwrap();
@@ -111,11 +116,11 @@ fn main() -> anyhow::Result<()> {
 
             let mut rules = rules::RuleStorage::load(&rules_path)?;
 
-            for source in source_paths {
-                print!("{:.<70}...", source.display());
+            for source_path in source_paths {
+                print!("{:.<70}...", source_path.display());
                 std::io::stdout().flush()?;
 
-                let input = match input::read(source) {
+                let input = match input::read(&source_path) {
                     Ok(val) => val,
                     Err(err) => {
                         println!("ERROR");
@@ -128,6 +133,15 @@ fn main() -> anyhow::Result<()> {
                 let mut updated = false;
                 for rule in rules.iter_mut() {
                     updated |= rule.add_data_source(&files);
+                }
+
+                if let Some(source) = rules.source_mut(files.datasource_id()) {
+                    if source.name.is_none() {
+                        if let Some(name) = source_path.file_stem().and_then(|name| name.to_str()) {
+                            source.name = Some(name.to_string());
+                            updated = true;
+                        }
+                    }
                 }
 
                 if updated {

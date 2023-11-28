@@ -1,12 +1,13 @@
 //! Handles displaying of rules.
 
-use std::path::PathBuf;
-
 use eframe::egui::{self, Color32};
 
 use crate::{
     file::{File, Files},
+    fs_change_distribution::FsChangeDistribution,
     future_value::FutureValue,
+    gui::utils,
+    provenance::Tracked,
     rules::{MatchCountCache, Rule, RuleStorage},
 };
 
@@ -20,8 +21,6 @@ pub(crate) struct RuleList {
     match_status: MatchStatus,
     /// The number of rules shown last frame.
     shown_rules: usize,
-    /// The file to store the rules to when a rule is added.
-    rule_file: Option<PathBuf>,
     /// The cache for the match counts of the rules.
     match_count_cache: FutureValue<MatchCountCache>,
 }
@@ -38,13 +37,12 @@ enum MatchStatus {
 
 impl RuleList {
     /// Creates a new rule list.
-    pub(crate) fn new(files: &'static Files, rule_file: Option<PathBuf>) -> Self {
+    pub(crate) fn new(files: &'static Files) -> Self {
         Self {
             files,
             filter: String::new(),
             match_status: MatchStatus::Ignore,
             shown_rules: 0,
-            rule_file,
             match_count_cache: Default::default(),
         }
     }
@@ -87,7 +85,7 @@ impl RuleList {
             egui::ScrollArea::both()
                 .auto_shrink([false, true])
                 .show(ui, |ui| {
-                    for rule in storage.iter_mut() {
+                    for rule in storage.iter() {
                         // TODO: maybe do something like smart case here?
                         if format!("{}", rule.path_matcher())
                             .to_lowercase()
@@ -112,26 +110,11 @@ impl RuleList {
                                         [20.0, ui.style().text_styles[&egui::TextStyle::Body].size],
                                         egui::Label::new(format!("{match_count}")),
                                     );
-                                    rule.show(ui, true);
+                                    rule.show(ui, storage, true);
 
                                     shown_rules += 1;
                                 });
                             }
-                        }
-                    }
-
-                    if ui
-                        .add(
-                            egui::Button::new("add current data source to rules")
-                                .fill(Color32::DARK_RED),
-                        )
-                        .clicked()
-                    {
-                        for rule in storage.iter_mut() {
-                            rule.add_data_source(self.files);
-                        }
-                        if let Some(rule_file) = &self.rule_file {
-                            storage.save(rule_file);
                         }
                     }
                 });
@@ -146,9 +129,37 @@ impl RuleList {
     }
 }
 
+/// Displays the tags for the given distribution.
+pub(crate) fn display_distribution_tags(
+    ui: &mut egui::Ui,
+    distribution: &Tracked<FsChangeDistribution>,
+    storage: &RuleStorage,
+) {
+    for tag in distribution.tags(storage) {
+        const TAG_FONT: egui::FontId = egui::FontId::proportional(12.0);
+
+        let tag_layout = ui.painter().layout_no_wrap(
+            String::from(tag),
+            TAG_FONT,
+            ui.style().noninteractive().text_color(),
+        );
+
+        let (rect, _) = ui.allocate_exact_size(tag_layout.rect.size(), egui::Sense::hover());
+        let rect = rect.expand(2.0);
+        ui.painter().rect_filled(rect, 5.0, utils::tag_color(tag));
+        ui.painter().text(
+            rect.center(),
+            egui::Align2::CENTER_CENTER,
+            tag,
+            TAG_FONT,
+            Color32::BLACK,
+        );
+    }
+}
+
 impl Rule {
     /// Displays a summary of the rule.
-    pub(crate) fn show(&self, ui: &mut egui::Ui, show_glob: bool) {
+    pub(crate) fn show(&self, ui: &mut egui::Ui, storage: &RuleStorage, show_glob: bool) {
         let sample_count = self.sample_count();
         ui.add_sized(
             [80.0, ui.style().text_styles[&egui::TextStyle::Body].size],
@@ -160,7 +171,7 @@ impl Rule {
         );
 
         for distribution in self.distributions() {
-            distribution.show(ui, None);
+            distribution.show(ui, None, storage);
         }
 
         if show_glob {
@@ -169,7 +180,7 @@ impl Rule {
     }
 
     /// Displays the match information for the given file.
-    pub(crate) fn display_file_match(&self, ui: &mut egui::Ui, file: &File) {
+    pub(crate) fn display_file_match(&self, ui: &mut egui::Ui, file: &File, storage: &RuleStorage) {
         if let Some((distribution, _)) = self.best_matching_distribution(file) {
             if self.distributions().len() > 1 {
                 ui.label(format!(
@@ -179,15 +190,17 @@ impl Rule {
             } else {
                 ui.label("Best match:");
             }
-            distribution.show(ui, None);
+            distribution.show(ui, None, storage);
             distribution.show_legend(ui, None);
+
+            display_distribution_tags(ui, distribution, storage);
         } else {
             ui.label(format!(
                 "No matching distribution found (out of {})",
                 self.distributions().len()
             ));
             for distribution in self.distributions() {
-                distribution.show(ui, None);
+                distribution.show(ui, None, storage);
                 distribution.show_legend(ui, None);
             }
         }

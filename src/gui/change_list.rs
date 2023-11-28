@@ -8,6 +8,7 @@ use crate::{
     fs_changes::{FsChangeCounts, FsChanges},
     fs_tree::{self, FsTree, FsTreeIter},
     future_value::FutureValue,
+    provenance::Tracked,
     rules::RuleStorage,
 };
 
@@ -652,14 +653,16 @@ impl ChangeList {
                 egui::show_tooltip_at_pointer(ui.ctx(), "rule_display_tooltip".into(), |ui| {
                     if let Some(measured_counts) = measured_counts {
                         ui.label("Found:");
-                        let counts_distribution =
-                            FsChangeDistribution::naive_from_counts(&measured_counts);
-                        counts_distribution.show(ui, Some(&measured_counts));
+                        let counts_distribution = Tracked::new(
+                            FsChangeDistribution::naive_from_counts(&measured_counts),
+                            Default::default(),
+                        );
+                        counts_distribution.show(ui, Some(&measured_counts), draw_ctx.rules);
                         counts_distribution.show_legend(ui, Some(&measured_counts));
                     }
 
                     if let Some(rule) = rule {
-                        rule.display_file_match(ui, file);
+                        rule.display_file_match(ui, file, draw_ctx.rules);
                     }
                 });
             }

@@ -5,7 +5,9 @@ use eframe::egui;
 use crate::{
     fs_change_distribution::FsChangeDistribution,
     fs_changes::{FsChangeCounts, FsChanges},
-    gui::utils::categorical_color,
+    gui::{display_distribution_tags, utils::categorical_color},
+    provenance::Tracked,
+    rules::RuleStorage,
 };
 
 /// The width of a single distribution graph.
@@ -20,9 +22,14 @@ const DISTRIBUTION_HEIGHT: f32 = 24.0;
 /// The height of the legend bar in the change distribution graph.
 const DISTRIBUTION_BAR_HEIGHT: f32 = 3.0;
 
-impl FsChangeDistribution {
+impl Tracked<FsChangeDistribution> {
     /// Shows this change distribution in the GUI.
-    pub(crate) fn show(&self, ui: &mut egui::Ui, counts: Option<&FsChangeCounts>) {
+    pub(crate) fn show(
+        &self,
+        ui: &mut egui::Ui,
+        counts: Option<&FsChangeCounts>,
+        storage: &RuleStorage,
+    ) {
         let (all_rect, _) = ui.allocate_exact_size(
             egui::vec2(
                 DISTRIBUTION_GRAPH_WIDTH,
@@ -121,6 +128,8 @@ impl FsChangeDistribution {
                 1.0,
                 Some((1.0, 1.0)),
                 get_count(*changes, counts),
+                self,
+                storage,
             ),
             super::DistributionKind::Complex { changes } => {
                 for (i, (&changes, &probability)) in changes.iter().enumerate() {
@@ -133,6 +142,8 @@ impl FsChangeDistribution {
                         *probability,
                         Some((*probability, *probability)),
                         get_count(changes, counts),
+                        self,
+                        storage,
                     )
                 }
             }
@@ -226,6 +237,8 @@ fn draw_bar_component(
     probability: f64,
     show_probability: Option<(f64, f64)>,
     count: Option<u32>,
+    distribution: &Tracked<FsChangeDistribution>,
+    storage: &RuleStorage,
 ) {
     let rect = egui::Rect::from_min_size(
         rect.min + egui::vec2(*current_offset, 0.0),
@@ -254,8 +267,11 @@ fn draw_bar_component(
                 ui.ctx(),
                 "change_distribution_graph_tooltip".into(),
                 |ui| {
-                    ui.horizontal(|ui| {
-                        draw_component_legend(ui, changes, index, show_probability, count);
+                    ui.vertical(|ui| {
+                        ui.horizontal(|ui| {
+                            draw_component_legend(ui, changes, index, show_probability, count);
+                        });
+                        display_distribution_tags(ui, distribution, storage);
                     });
                 },
             );

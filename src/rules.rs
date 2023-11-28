@@ -2,11 +2,13 @@
 
 mod storage;
 
+use std::collections::BTreeSet;
+
 use smallvec::SmallVec;
 pub(crate) use storage::{MatchCountCache, RuleStorage};
 
 use crate::{
-    file::{File, Files},
+    file::{DatasourceId, File, Files},
     fs_change_distribution::{self, FsChangeDistribution},
     fs_changes::FsChangeCounts,
     path_matcher::PathMatcher,
@@ -95,6 +97,16 @@ impl Rule {
     /// Returns the path matcher that this rule uses.
     pub(crate) fn path_matcher(&self) -> &PathMatcher {
         &self.path_matcher
+    }
+
+    /// Returns an iterator over the sources that this rule is derived from.
+    pub(crate) fn sources(&self) -> impl Iterator<Item = DatasourceId> {
+        self.observations
+            .iter()
+            .flat_map(|observation| observation.provenance.sources.keys())
+            .copied()
+            .collect::<BTreeSet<_>>()
+            .into_iter()
     }
 
     /// Returns the distributions of this rule.

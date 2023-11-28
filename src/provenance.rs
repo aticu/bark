@@ -1,18 +1,18 @@
 //! Contains types to describe the origin of data derived from sources.
 
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     ops::{Deref, DerefMut},
 };
 
-use crate::file::DatasourceId;
+use crate::{file::DatasourceId, rules::RuleStorage};
 
 /// Describes the origin of data derived from sources.
 #[derive(Debug, Default, Clone, Hash, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
 pub(crate) struct Provenance {
     /// Maps each data source to the number of occurrences that the data had in that source.
     #[serde(flatten)]
-    sources: BTreeMap<DatasourceId, u32>,
+    pub(crate) sources: BTreeMap<DatasourceId, u32>,
 }
 
 impl Provenance {
@@ -80,6 +80,26 @@ impl<T> Tracked<T> {
     pub(crate) fn occurrence_count(&self) -> u32 {
         self.provenance.sources.values().sum()
     }
+
+    /// Returns all tags that match the tracked object.
+    pub(crate) fn tags<'storage>(&self, storage: &'storage RuleStorage) -> BTreeSet<&'storage str> {
+        let mut first = true;
+        let mut tags = BTreeSet::new();
+
+        for &source in self.provenance.sources.keys() {
+            let Some(source) = storage.source(source) else { continue };
+            let source_tags = source.tags.iter().map(|s| &**s).collect();
+
+            if first {
+                first = false;
+                tags = source_tags;
+            } else {
+                tags = tags.intersection(&source_tags).copied().collect();
+            }
+        }
+
+        tags
+    }
 }
 
 impl<T> Deref for Tracked<T> {
@@ -93,5 +113,40 @@ impl<T> Deref for Tracked<T> {
 impl<T> DerefMut for Tracked<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.data
+    }
+}
+
+/// Stored information about a data source.
+#[derive(Debug, Clone, Hash, serde::Serialize, serde::Deserialize)]
+pub(crate) struct Source {
+    /// The ID of the source.
+    pub(crate) id: DatasourceId,
+    /// The name of the source.
+    pub(crate) name: Option<String>,
+    /// A description of the source.
+    pub(crate) description: Option<String>,
+    /// Some tags that are associated with the source.
+    pub(crate) tags: Vec<String>,
+}
+
+impl Source {
+    /// Creates a new Source from the given ID.
+    pub(crate) fn new(id: DatasourceId) -> Source {
+        Source {
+            id,
+            name: None,
+            description: None,
+            tags: Vec::new(),
+        }
+    }
+
+    /// Creates a new Source from the given ID.
+    pub(crate) fn new_with_name(id: DatasourceId, name: String) -> Source {
+        Source {
+            id,
+            name: Some(name),
+            description: None,
+            tags: Vec::new(),
+        }
     }
 }

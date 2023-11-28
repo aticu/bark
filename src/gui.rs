@@ -12,7 +12,7 @@ use eframe::egui;
 
 use crate::{file::Files, rules::RuleStorage};
 
-pub(crate) use utils::lerp_color;
+pub(crate) use {rules::display_distribution_tags, utils::lerp_color};
 
 /// The bark GUI app state.
 pub(crate) struct GuiApp {
@@ -59,12 +59,12 @@ impl GuiApp {
                     rule_writer: rule_writing::RuleWriter::new(
                         files,
                         &rules,
-                        rule_file.clone(),
+                        rule_file,
                         path_lists,
                         ctx.egui_ctx.clone(),
                     ),
                     change_list: change_list::ChangeList::new(files, "Filtered changes", false),
-                    rule_list: rules::RuleList::new(files, rule_file),
+                    rule_list: rules::RuleList::new(files),
                     rules,
                     current_tab: Tab::ChangeList,
                     last_frame_time: None,

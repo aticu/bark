@@ -433,7 +433,7 @@ pub(crate) struct DatasourceId(u64);
 
 impl fmt::Display for DatasourceId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:08x}", self.0)
+        write!(f, "{:016x}", self.0)
     }
 }
 

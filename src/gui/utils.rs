@@ -29,6 +29,15 @@ pub(crate) fn categorical_color(index: usize) -> Color32 {
     COLOR_TABLE[index % COLOR_TABLE.len()]
 }
 
+/// Returns a color for the given tag.
+pub(crate) fn tag_color(tag: &str) -> Color32 {
+    let mut hasher = hashers::fnv::FNV1aHasher64::default();
+    std::hash::Hash::hash(tag, &mut hasher);
+    let hash = std::hash::Hasher::finish(&hasher) as usize;
+
+    categorical_color(hash)
+}
+
 /// Linearly interpolates between the two given colors.
 ///
 /// If `between` is `0.0`, the result will be `color1` and if it is `1.0`, the result will be
