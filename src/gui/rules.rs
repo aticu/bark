@@ -54,23 +54,39 @@ impl RuleList {
             ui.text_edit_singleline(&mut self.filter);
             match self.match_status {
                 MatchStatus::Ignore => {
-                    if ui.button("Ignoring whether rules match").clicked() {
+                    if ui
+                        .button(format!(
+                            "Showing {} rules disregarding their match status",
+                            self.shown_rules
+                        ))
+                        .clicked()
+                    {
                         self.match_status = MatchStatus::OnlyMatching;
                     }
                 }
                 MatchStatus::OnlyMatching => {
-                    if ui.button("Showing only matching rules").clicked() {
+                    if ui
+                        .button(format!(
+                            "Showing {} rules that match at least one entry",
+                            self.shown_rules
+                        ))
+                        .clicked()
+                    {
                         self.match_status = MatchStatus::OnlyNonMatching;
                     }
                 }
                 MatchStatus::OnlyNonMatching => {
-                    if ui.button("Showing only non matching rules").clicked() {
+                    if ui
+                        .button(format!(
+                            "Showing {} rules that match no entries",
+                            self.shown_rules
+                        ))
+                        .clicked()
+                    {
                         self.match_status = MatchStatus::Ignore;
                     }
                 }
             }
-
-            ui.separator();
         });
 
         let mut shown_rules = 0;
@@ -107,8 +123,11 @@ impl RuleList {
                             if show {
                                 ui.horizontal(|ui| {
                                     ui.add_sized(
-                                        [20.0, ui.style().text_styles[&egui::TextStyle::Body].size],
-                                        egui::Label::new(format!("{match_count}")),
+                                        [60.0, ui.style().text_styles[&egui::TextStyle::Body].size],
+                                        egui::Label::new(format!(
+                                            "{match_count} match{}",
+                                            if match_count == 1 { "" } else { "es" }
+                                        )),
                                     );
                                     rule.show(ui, storage, true);
 
