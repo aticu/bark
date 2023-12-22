@@ -20,7 +20,7 @@ pub(crate) struct ChangeTime {
 
 impl PartialOrd for ChangeTime {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.avg.partial_cmp(&other.avg)
+        Some(self.cmp(other))
     }
 }
 
@@ -219,7 +219,7 @@ impl Files {
             path_trie.insert(path.to_string(), ());
         }
 
-        let width = files.get(0).map(|file| file.changes.len()).unwrap_or(0);
+        let width = files.first().map(|file| file.changes.len()).unwrap_or(0);
 
         let mut hasher = hashers::fnv::FNV1aHasher64::default();
         std::hash::Hash::hash(&files, &mut hasher);

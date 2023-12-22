@@ -404,7 +404,9 @@ impl RuleWriter {
 
                 let text_color = if Some(name) == self.selected_path_list.as_ref() {
                     Color32::YELLOW
-                } else if let Some(selected_os) = selected_os && name.ends_with(selected_os) {
+                } else if let Some(selected_os) = selected_os
+                    && name.ends_with(selected_os)
+                {
                     Color32::LIGHT_YELLOW
                 } else {
                     ui.style().noninteractive().text_color()

@@ -205,7 +205,16 @@ impl<T: Default> FsTree<T> {
                             }
                         }
                         None => {
-                            let Some(LevelInfo { val, name, explicitly_included, level_map: map, .. }) = stack.pop() else { unreachable!("we're still in the loop, so there exists an element") };
+                            let Some(LevelInfo {
+                                val,
+                                name,
+                                explicitly_included,
+                                level_map: map,
+                                ..
+                            }) = stack.pop()
+                            else {
+                                unreachable!("we're still in the loop, so there exists an element")
+                            };
                             remove_last_path_component(&mut path);
 
                             if let Some(LevelInfo {

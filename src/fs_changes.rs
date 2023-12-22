@@ -203,7 +203,9 @@ impl TryFrom<InlinableString> for FsChanges {
         let mut event = FsChanges::empty();
 
         for (expected, field) in FsChanges::FIELD_CHARS {
-            let Some(c) = iter.next() else { return Err("input string is too short") };
+            let Some(c) = iter.next() else {
+                return Err("input string is too short");
+            };
 
             if c == expected {
                 event.insert(field);

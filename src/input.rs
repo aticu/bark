@@ -189,7 +189,9 @@ impl PathList {
     /// Returns all paths matching the given matcher.
     pub(crate) fn matching_paths(&self, matcher: PathMatcher) -> impl Iterator<Item = &str> {
         for (list_matcher, list) in &self.path_lists {
-            let Some(after_prefix_matcher) = matcher.strip_prefix(list_matcher) else { continue };
+            let Some(after_prefix_matcher) = matcher.strip_prefix(list_matcher) else {
+                continue;
+            };
 
             let needle = after_prefix_matcher.literal_prefix();
             let range = search_sorted_list(

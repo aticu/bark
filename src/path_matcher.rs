@@ -338,9 +338,10 @@ impl PathMatcher {
             let mut new_parts = SmallVec::new();
 
             for part in std::mem::take(&mut self.parts) {
-                if let PathMatcherPart::Literal(new_lit) = &part &&
-                    let Some(PathMatcherPart::Literal(lit)) = new_parts.last_mut() {
-                        lit.push_str(new_lit);
+                if let PathMatcherPart::Literal(new_lit) = &part
+                    && let Some(PathMatcherPart::Literal(lit)) = new_parts.last_mut()
+                {
+                    lit.push_str(new_lit);
                 } else {
                     new_parts.push(part);
                 }

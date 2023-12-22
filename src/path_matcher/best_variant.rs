@@ -414,7 +414,9 @@ pub(crate) fn possible_replacements(
     let mut result = Vec::new();
 
     for part in possible_parts {
-        let Some(match_len) = part.match_len(path_part, username, None) else { continue };
+        let Some(match_len) = part.match_len(path_part, username, None) else {
+            continue;
+        };
         if full_match && match_len != path_part.len() {
             continue;
         }

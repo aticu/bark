@@ -167,7 +167,9 @@ fn merge_clustering(
         observation: &Tracked<FsChangeCounts>,
         center: &FsChangeDistribution,
     ) -> bool {
-        let Some(score) = center.match_probability(observation) else { return false };
+        let Some(score) = center.match_probability(observation) else {
+            return false;
+        };
 
         score > 0.20
     }

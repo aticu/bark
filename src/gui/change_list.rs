@@ -384,7 +384,9 @@ impl ChangeList {
 
     /// Determine whether or not the file needs to be shown.
     fn should_show_file(&self, file_id: FileId, path: Option<&str>) -> bool {
-        let Some(file) = self.files.get(file_id) else { return false };
+        let Some(file) = self.files.get(file_id) else {
+            return false;
+        };
         let match_score = self
             .file_score_cache
             .get()

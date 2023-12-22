@@ -87,7 +87,9 @@ impl<T> Tracked<T> {
         let mut tags = BTreeSet::new();
 
         for &source in self.provenance.sources.keys() {
-            let Some(source) = storage.source(source) else { continue };
+            let Some(source) = storage.source(source) else {
+                continue;
+            };
             let source_tags = source.tags.iter().map(|s| &**s).collect();
 
             if first {

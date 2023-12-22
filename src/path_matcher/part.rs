@@ -430,7 +430,7 @@ impl PathMatcherPart {
                                 return false;
                             }
 
-                            break
+                            break;
                         };
                         if c == '/' {
                             if any_non_user_iter_matched(&mut non_user_iters) {
@@ -768,7 +768,9 @@ fn match_part_min_max(
             return true;
         }
 
-        let Some(c) = substr.chars().next() else { return true };
+        let Some(c) = substr.chars().next() else {
+            return true;
+        };
         if !matches(c) {
             return true;
         }

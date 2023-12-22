@@ -174,12 +174,16 @@ impl RuleStorage {
 
             'end: {
                 if let Some(dir) = path.parent() {
-                    let Ok(temp) = tempfile::NamedTempFile::new_in(dir) else { break 'end };
+                    let Ok(temp) = tempfile::NamedTempFile::new_in(dir) else {
+                        break 'end;
+                    };
                     let mut file = std::io::BufWriter::new(temp);
                     if serde_json::to_writer_pretty(&mut file, &clone).is_err() {
                         break 'end;
                     };
-                    let Ok(temp) = file.into_inner() else { break 'end };
+                    let Ok(temp) = file.into_inner() else {
+                        break 'end;
+                    };
                     if temp.persist(path).is_err() {
                         break 'end;
                     };
@@ -243,8 +247,10 @@ impl<'storage> Iterator for RulesFor<'storage> {
                 }
             }
 
-            let Some(path) = self.path else { return None };
-            let Some(subtrie) = self.storage.trie.get_ancestor(path) else { return None };
+            let path = self.path?;
+            let Some(subtrie) = self.storage.trie.get_ancestor(path) else {
+                return None;
+            };
 
             let path = subtrie.key().unwrap();
             if let Some((last_idx, _)) = path.char_indices().next_back() {
